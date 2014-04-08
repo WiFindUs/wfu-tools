@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(argv[i],"-r") == 0 || strcmp(argv[i],"--reboot") == 0)
 			autoReboot = TRUE;
-		if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--halt") == 0)
+		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--halt") == 0)
 			autoHalt = TRUE;
 		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--help") == 0)
 			detailedHelpMode = TRUE;
