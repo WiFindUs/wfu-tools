@@ -28,6 +28,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "Usage: %s [options] <1-254>\n",argv0);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "-r or --reboot: auto reboot after completion.\n");
+	fprintf(stderr, "-h or --halt: auto halt after completion.\n");
 	fprintf(stderr, "-w or --wallpaper: do not automatically change wallpaper.\n");
 	fprintf(stderr, "-h or --help: print full description only.\n");
 }
@@ -374,6 +375,7 @@ int main(int argc, char **argv)
 	int i = 0;
 	int num = 0;
 	int autoReboot = FALSE;
+	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
 	int autoWallpaper = TRUE;
 	char sbuf[256];
@@ -390,6 +392,8 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(argv[i],"-r") == 0 || strcmp(argv[i],"--reboot") == 0)
 			autoReboot = TRUE;
+		if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--halt") == 0)
+			autoHalt = TRUE;
 		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--help") == 0)
 			detailedHelpMode = TRUE;
 		else if (strcmp(argv[i],"-w") == 0 || strcmp(argv[i],"--wallpaper") == 0)
@@ -441,11 +445,17 @@ int main(int argc, char **argv)
 		else if (proc < 0)
 			return 40;
 	}
-	if (autoReboot)
+	if (autoReboot || autoHalt)
 	{
 		pid_t proc = fork();
 		if (proc == 0)
-			return system("shutdown -r now");
+		{
+			if (autoHalt)
+				sprintf(sbuf,"shutdown -h now");
+			else
+				sprintf(sbuf,"shutdown -r now");
+			return system(sbuf);
+		}
 		else if (proc < 0)
 			return 50;
 	}
