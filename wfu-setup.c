@@ -149,6 +149,7 @@ int write_rc_local(int num)
 	fprintf(file,"        sudo iwconfig wlan0 mode Ad-Hoc\n");
 	fprintf(file,"        sudo iwconfig wlan0 essid 'wifindus_mesh'\n");
 	fprintf(file,"        sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
+	fprintf(file,"        sudo ifconfig wlan0 192.168.2.%d\n",num);
 	fprintf(file,"        sudo ifconfig wlan0 up\n");
 	fprintf(file,"fi\n\n");
 	
@@ -265,11 +266,12 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        gateway 192.168.1.254\n\n");
 
-
+	/*
 	fprintf(file,"auto wlan0\n");
 	fprintf(file,"iface wlan0 inet static\n");
 	fprintf(file,"        address 192.168.2.%d\n",num);
 	fprintf(file,"        netmask 255.255.255.0\n");
+	*/
 	
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
