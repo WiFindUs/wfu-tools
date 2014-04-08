@@ -139,7 +139,6 @@ int write_rc_local(int num)
 	fprintf(file,"#!/bin/sh -e\n");
 	fprintf(file,"sleep 5\n");
 	
-	/*
 	fprintf(file,"_IS_MESH_UP=$(ip addr | grep -E -i -w \"wlan0.+state UP\") || true\n");
 	fprintf(file,"if [ \"$_IS_MESH_UP\" ]; then\n");
 	fprintf(file,"        echo \"[WFU Mesh Setup] - WFU mesh already connected\"\n");
@@ -149,10 +148,9 @@ int write_rc_local(int num)
 	fprintf(file,"        sudo iwconfig wlan0 channel 1\n");
 	fprintf(file,"        sudo iwconfig wlan0 mode Ad-Hoc\n");
 	fprintf(file,"        sudo iwconfig wlan0 essid 'wifindus_mesh'\n");
-	fprintf(file,"        sudo iwconfig wlan0 key s:PWbDq39QQ863215\n");
+	fprintf(file,"        sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
 	fprintf(file,"        sudo ifconfig wlan0 up\n");
 	fprintf(file,"fi\n\n");
-	*/
 	
 	/*
 	fprintf(file,"_IS_PUBLIC_UP=$(ip addr | grep -E -i -w \"wlan1.+state UP\") || true\n");
@@ -224,7 +222,8 @@ int write_supplicant(int num)
 	
 	fprintf(file,"ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n");
 	fprintf(file,"update_config=1\n\n");
-
+	
+	/*
 	fprintf(file,"ap_scan=2\n");
 	fprintf(file,"network={\n");
 	fprintf(file,"        ssid=\"wifindus_mesh\"\n");
@@ -238,6 +237,7 @@ int write_supplicant(int num)
 	fprintf(file,"        id_str=\"mesh\"\n");
 	fprintf(file,"        priority=100\n");
 	fprintf(file,"}\n\n");
+*/
 
 	fclose(file);
 	printf(" [ok]\n");
@@ -270,7 +270,6 @@ int write_network_interfaces(int num)
 	fprintf(file,"iface wlan0 inet static\n");
 	fprintf(file,"        address 192.168.2.%d\n",num);
 	fprintf(file,"        netmask 255.255.255.0\n");
-	fprintf(file,"        wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf\n\n");
 	
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
@@ -428,7 +427,7 @@ int main(int argc, char **argv)
 		return 10;
 	if (autoWallpaper)
 	{
-		sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper /home/pi/wfu-setup-images/wfu-brain-%d.png",num);
+		sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper /home/pi/wfu-setup-images/wfu-brain-%d.png > /dev/null",num);
 		
 		pid_t proc = fork();
 		if (proc == 0)
