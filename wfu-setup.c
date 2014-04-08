@@ -25,12 +25,15 @@ int min(int a, int b)
 
 void print_usage(char * argv0)
 {
-	fprintf(stderr, "Usage: %s [options] <1-254>\n",argv0);
+	fprintf(stderr, "Usage: %s [options] [1-254]\n",argv0);
 	fprintf(stderr, "Options:\n");
-	fprintf(stderr, "-r or --reboot: auto reboot after completion.\n");
-	fprintf(stderr, "-h or --halt: auto halt after completion.\n");
-	fprintf(stderr, "-w or --wallpaper: do not automatically change wallpaper.\n");
-	fprintf(stderr, "-h or --help: print full description only.\n");
+	fprintf(stderr, "  -r or --reboot: auto reboot after completion.\n");
+	fprintf(stderr, "  -h or --halt: auto halt after completion.\n");
+	fprintf(stderr, "  -w or --wallpaper: do not automatically change wallpaper.\n");
+	fprintf(stderr, "  -h or --help: print full description only.\n");
+	fprintf(stderr, "Remarks:\n");
+	fprintf(stderr, "  If the number is omitted the value stored in /home/pi/src/wfu-brain-num\
+will be used (if it exists).\n");
 }
 
 void print_detailed_help()
@@ -51,7 +54,8 @@ scripts needed to set up the mesh network.\n\n"
     /etc/udhcpd.conf\n\
     /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
-    /usr/local/etc/serval/serval.conf\n\n\
+    /usr/local/etc/serval/serval.conf\n\
+	/home/pi/src/wfu-brain-num\n\n\
 If you wish to make changes to these files yourself, either back them\n\
 up and re-apply them after running the program, or change the program\n\
 in /home.pi/projects/wfu-setup/wfu-setup.c.\n\n"
@@ -136,45 +140,16 @@ int write_rc_local(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"#!/bin/sh -e\n");
-	//fprintf(file,"sleep 5\n");
-	
-	/*
-	fprintf(file,"_IS_MESH_UP=$(ip addr | grep -E -i -w \"wlan0.+state UP\") || true\n");
-	fprintf(file,"if [ \"$_IS_MESH_UP\" ]; then\n");
-	fprintf(file,"        echo \"[WFU Mesh Setup] - WFU mesh already connected\"\n");
-	fprintf(file,"else\n");
-	*/
-	fprintf(file,"        echo \"[WFU Mesh Setup] - creating node...\"\n");
-	fprintf(file,"        sudo ip link set wlan0 down\n");
-	fprintf(file,"        sudo iw wlan0 set type ibss\n");
-	fprintf(file,"        sudo ip link set wlan0 up\n");
-	fprintf(file,"        sudo iw wlan0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
-	fprintf(file,"        sudo ip addr add 192.168.2.%d dev wlan0\n",num);
-	
-	
-	/*
-	fprintf(file,"        sudo ifconfig wlan0 down\n");
-	fprintf(file,"        sudo iwconfig wlan0 channel 1\n");
-	fprintf(file,"        sudo iwconfig wlan0 mode Ad-Hoc\n");
-	fprintf(file,"        sudo iwconfig wlan0 essid 'wifindus_mesh'\n");
-	fprintf(file,"        sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
-	fprintf(file,"        sudo ifconfig wlan0 192.168.2.%d\n",num);
-	fprintf(file,"        sudo ifconfig wlan0 up\n");
-	*/
-	fprintf(file,"fi\n\n");
-	
-	/*
-	fprintf(file,"_IS_PUBLIC_UP=$(ip addr | grep -E -i -w \"wlan1.+state UP\") || true\n");
-	fprintf(file,"if [ \"$_IS_PUBLIC_UP\" ]; then\n");
-	fprintf(file,"        echo \"[WFU Public Setup] - WFU public already connected\"\n");
-	fprintf(file,"else\n");
-	fprintf(file,"        echo \"[WFU Public Setup] - creating access point...\"\n");
-	fprintf(file,"        sudo service hostapd start\n");
-	fprintf(file,"        sudo service udhcpd start\n");
-	fprintf(file,"fi\n\n");
-	*/
-	
+	fprintf(file,"#!/bin/sh -e\n\n");
+
+	fprintf(file,"sudo ifconfig wlan0 down\n");
+	fprintf(file,"sudo iwconfig wlan0 channel 1\n");
+	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc\n");
+	fprintf(file,"sudo iwconfig wlan0 essid 'wifindus_mesh'\n");
+	fprintf(file,"sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
+	fprintf(file,"sudo ifconfig wlan0 192.168.2.%d\n",num);
+	fprintf(file,"sudo ifconfig wlan0 up\n\n");
+
 	fprintf(file,"exit 0\n");
 	
 	fclose(file);
@@ -235,22 +210,6 @@ int write_supplicant(int num)
 	fprintf(file,"ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n");
 	fprintf(file,"update_config=1\n\n");
 	
-	/*
-	fprintf(file,"ap_scan=2\n");
-	fprintf(file,"network={\n");
-	fprintf(file,"        ssid=\"wifindus_mesh\"\n");
-	fprintf(file,"        mode=1\n");
-	fprintf(file,"        frequency=2412\n");
-	fprintf(file,"        proto=WPA\n");
-	fprintf(file,"        key_mgmt=WPA-NONE\n");
-	fprintf(file,"        pairwise=NONE\n");
-	fprintf(file,"        group=TKIP\n");
-	fprintf(file,"        psk=\"PWbDq39QQ863215\"\n");
-	fprintf(file,"        id_str=\"mesh\"\n");
-	fprintf(file,"        priority=100\n");
-	fprintf(file,"}\n\n");
-*/
-
 	fclose(file);
 	printf(" [ok]\n");
 	
@@ -277,47 +236,10 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        gateway 192.168.1.254\n\n");
 
-	/*
-	fprintf(file,"auto wlan0\n");
-	fprintf(file,"iface wlan0 inet static\n");
-	fprintf(file,"        address 192.168.2.%d\n",num);
-	fprintf(file,"        netmask 255.255.255.0\n");
-	*/
-	
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
 	fprintf(file,"        address 192.168.0.1\n");
 	fprintf(file,"        netmask 255.255.255.0\n\n");
-	/*
-	fprintf(file,"allow-hotplug wlan0\n");
-	fprintf(file,"iface wlan0 inet manual\n");
-	fprintf(file,"wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf\n\n");
-	
-	fprintf(file,"iface mesh inet static\n");
-	fprintf(file,"        address 192.168.2.%d\n",num);
-	fprintf(file,"        netmask 255.255.255.0\n\n");
-	
-	
-	fprintf(file,"allow-hotplug wlan1\n");
-	fprintf(file,"iface wlan1 inet static\n");
-	fprintf(file,"        address 192.168.0.1\n");
-	fprintf(file,"        netmask 255.255.255.0\n\n");
-	
-
-	fprintf(file,"auto wlan0\n");
-	fprintf(file,"allow-hotplug wlan0\n");
-	fprintf(file,"iface wlan0 inet static\n");
-	fprintf(file,"        address 192.168.2.%d\n",num);
-	fprintf(file,"        netmask 255.255.255.0\n");
-	fprintf(file,"        wireless-channel 1\n");
-	fprintf(file,"        wireless-mode ad-hoc\n");
-	fprintf(file,"        wireless-essid wifindus_mesh\n");
-	fprintf(file,"        wireless-ap 01:63:1E:22:23:48\n\n");
-	
-	fprintf(file,"iface default inet dhcp\n");
-	*/
-	
-	
 
 	fclose(file);
 	printf(" [ok]\n");
@@ -372,11 +294,46 @@ int write_servald(int num)
 	return TRUE;
 }
 
+int write_brain_num(int num)
+{
+	FILE* file = NULL;
+	
+	printf("Writing /home/pi/src/wfu-brain-num...");
+	file = fopen("/home/pi/src/wfu-brain-num","w");
+	if (file == NULL)
+	{
+		printf("error. are you root?\n");
+		return FALSE;
+	}
+	
+	fprintf(file,"%d\n",num);
+	
+	fclose(file);
+	printf(" [ok]\n");
+	
+	return TRUE;
+}
+
+int read_brain_num()
+{
+	FILE* file = NULL;
+	int val = FALSE;
+	
+	file = fopen("/home/pi/src/wfu-brain-num","r");
+	if (file == NULL)
+		return FALSE;
+	fscanf(file, "%d", &val);
+	fclose(file);
+	if (val < 1 || val > 254)
+		return FALSE;
+	return val;	
+}
+
 int main(int argc, char **argv)
 {
 	//vars
 	int i = 0;
-	int num = 0;
+	int num = FALSE;
 	int autoReboot = FALSE;
 	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
@@ -405,7 +362,7 @@ int main(int argc, char **argv)
 		{
 			num = atoi(argv[i]);
 			if (num < 1 || num > 254)
-				num = 0;
+				num = FALSE;
 		}
 	}
 	
@@ -415,7 +372,9 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	if (num == 0)
+	if (num == FALSE)
+		num = read_brain_num();
+	if (num == FALSE)
 	{
 		print_usage(argv[0]);
 		return 2;
@@ -438,6 +397,8 @@ int main(int argc, char **argv)
 		return 9;
 	if (!write_servald(num))
 		return 10;
+	if (!write_brain_num(num))
+		return 11;
 	if (autoWallpaper)
 	{
 		sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper /home/pi/wfu-setup-images/wfu-brain-%d.png > /dev/null",num);
