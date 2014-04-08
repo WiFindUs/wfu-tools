@@ -20,6 +20,6 @@ chown root:root /etc/init.d/gpsdboot
 chmod 755 /etc/init.d/gpsdboot
 update-rc.d gpsdboot defaults
 
-chmod 755 projects/wfu-setup/wfu-setup
+chmod 755 wfu-setup
 rm -f /usr/bin/wfu-setup
-ln -s /home/pi/src/wfu-tools/projects/wfu-setup/wfu-setup /usr/bin/wfu-setup
+ln -s /home/pi/src/wfu-tools/wfu-setup /usr/bin/wfu-setup
