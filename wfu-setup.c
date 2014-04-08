@@ -28,7 +28,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "Usage: %s [options] [1-254]\n",argv0);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -r or --reboot: auto reboot after completion.\n");
-	fprintf(stderr, "  -h or --halt: auto halt after completion.\n");
+	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
 	fprintf(stderr, "  -w or --wallpaper: do not automatically change wallpaper.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "Remarks:\n");
@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(argv[i],"-r") == 0 || strcmp(argv[i],"--reboot") == 0)
 			autoReboot = TRUE;
-		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--halt") == 0)
+		else if (strcmp(argv[i],"-s") == 0 || strcmp(argv[i],"--shutdown") == 0)
 			autoHalt = TRUE;
 		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--help") == 0)
 			detailedHelpMode = TRUE;
