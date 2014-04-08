@@ -22,4 +22,4 @@ update-rc.d gpsdboot defaults
 
 chmod 755 projects/wfu-setup/wfu-setup
 rm -f /usr/bin/wfu-setup
-ln -s projects/wfu-setup/wfu-setup /usr/bin/wfu-setup
+ln -s /home/pi/src/wfu-tools/projects/wfu-setup/wfu-setup /usr/bin/wfu-setup
