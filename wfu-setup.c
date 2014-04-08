@@ -243,10 +243,17 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        gateway 192.168.1.254\n\n");
 
+	fprintf(file,"auto wlan0\n");
+	fprintf(file,"iface wlan0 inet static\n");
+	fprintf(file,"        address 192.168.2.%d\n",num);
+	fprintf(file,"        netmask 255.255.255.0\n");
+	
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
 	fprintf(file,"        address 192.168.0.1\n");
 	fprintf(file,"        netmask 255.255.255.0\n\n");
+	
+	fprintf(file,"iface default inet dhcp\n");
 
 	fclose(file);
 	printf(" [ok]\n");
