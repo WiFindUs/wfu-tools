@@ -28,6 +28,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "Usage: %s [options] <1-254>\n",argv0);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "-r or --reboot: auto reboot after completion.\n");
+	fprintf(stderr, "-w or --wallpaper: do not automatically change wallpaper.\n");
 	fprintf(stderr, "-h or --help: print full description only.\n");
 }
 
@@ -374,6 +375,8 @@ int main(int argc, char **argv)
 	int num = 0;
 	int autoReboot = FALSE;
 	int detailedHelpMode = FALSE;
+	int autoWallpaper = TRUE;
+	char sbuf[256];
 	
 	//end vars
 	
@@ -389,6 +392,8 @@ int main(int argc, char **argv)
 			autoReboot = TRUE;
 		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--help") == 0)
 			detailedHelpMode = TRUE;
+		else if (strcmp(argv[i],"-w") == 0 || strcmp(argv[i],"--wallpaper") == 0)
+			autoWallpaper = FALSE;
 		else
 		{
 			num = atoi(argv[i]);
@@ -426,6 +431,16 @@ int main(int argc, char **argv)
 		return 9;
 	if (!write_servald(num))
 		return 10;
+	if (autoWallpaper)
+	{
+		sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper /home/pi/wfu-setup-images/wfu-brain-%d.png",num);
+		
+		pid_t proc = fork();
+		if (proc == 0)
+			return system(sbuf);
+		else if (proc < 0)
+			return 40;
+	}
 	if (autoReboot)
 	{
 		pid_t proc = fork();
