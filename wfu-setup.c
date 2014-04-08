@@ -137,14 +137,15 @@ int write_rc_local(int num)
 	}
 	
 	fprintf(file,"#!/bin/sh -e\n");
-	fprintf(file,"sleep 5\n");
+	//fprintf(file,"sleep 5\n");
 	
+	/*
 	fprintf(file,"_IS_MESH_UP=$(ip addr | grep -E -i -w \"wlan0.+state UP\") || true\n");
 	fprintf(file,"if [ \"$_IS_MESH_UP\" ]; then\n");
 	fprintf(file,"        echo \"[WFU Mesh Setup] - WFU mesh already connected\"\n");
 	fprintf(file,"else\n");
+	*/
 	fprintf(file,"        echo \"[WFU Mesh Setup] - creating node...\"\n");
-	
 	fprintf(file,"        sudo ip link set wlan0 down\n");
 	fprintf(file,"        sudo iw wlan0 set type ibss\n");
 	fprintf(file,"        sudo ip link set wlan0 up\n");
