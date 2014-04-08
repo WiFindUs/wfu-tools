@@ -1,0 +1,30 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: gpsdboot
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start GPS Server Daemon at boot time
+# Description: Start GPS Server Daemon at boot time
+### END INIT INFO
+
+case "$1" in
+	start)
+		echo "Starting GPS Server"
+		sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock
+		;;
+
+	stop)
+		echo "Stopping GPS Server"
+		sudo pkill gpsd
+		;;
+
+	*)
+		echo "Usage: gpsdboot {start|stop}"
+		exit 1
+		;;
+esac
+
+exit 0
+
