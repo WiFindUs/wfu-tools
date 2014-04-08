@@ -55,7 +55,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-	/home/pi/src/wfu-brain-num\n\n\
+    /home/pi/src/wfu-brain-num\n\n\
 If you wish to make changes to these files yourself, either back them\n\
 up and re-apply them after running the program, or change the program\n\
 in /home.pi/projects/wfu-setup/wfu-setup.c.\n\n"
@@ -142,6 +142,9 @@ int write_rc_local(int num)
 	
 	fprintf(file,"#!/bin/sh -e\n\n");
 
+	fprintf(file,"sleep 5\n\n");
+	
+	fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
 	fprintf(file,"sudo ifconfig wlan0 down\n");
 	fprintf(file,"sudo iwconfig wlan0 channel 1\n");
 	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc\n");
