@@ -139,7 +139,7 @@ int write_rc_local(int num)
 	fprintf(file,"#!/bin/sh -e\n");
 	fprintf(file,"sleep 5\n");
 	
-	
+	/*
 	fprintf(file,"_IS_MESH_UP=$(ip addr | grep -E -i -w \"wlan0.+state UP\") || true\n");
 	fprintf(file,"if [ \"$_IS_MESH_UP\" ]; then\n");
 	fprintf(file,"        echo \"[WFU Mesh Setup] - WFU mesh already connected\"\n");
@@ -152,6 +152,7 @@ int write_rc_local(int num)
 	fprintf(file,"        sudo iwconfig wlan0 key s:PWbDq39QQ863215\n");
 	fprintf(file,"        sudo ifconfig wlan0 up\n");
 	fprintf(file,"fi\n\n");
+	*/
 	
 	/*
 	fprintf(file,"_IS_PUBLIC_UP=$(ip addr | grep -E -i -w \"wlan1.+state UP\") || true\n");
@@ -224,31 +225,20 @@ int write_supplicant(int num)
 	fprintf(file,"ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n");
 	fprintf(file,"update_config=1\n\n");
 
-	/*
+	fprintf(file,"ap_scan=2\n");
 	fprintf(file,"network={\n");
-	fprintf(file,"        mode=0\n");
 	fprintf(file,"        ssid=\"wifindus_mesh\"\n");
-	fprintf(file,"        key_mgmt=WPA-NONE\n");
+	fprintf(file,"        mode=1\n");
+	fprintf(file,"        frequency=2412\n");
 	fprintf(file,"        proto=WPA\n");
+	fprintf(file,"        key_mgmt=WPA-NONE\n");
 	fprintf(file,"        pairwise=NONE\n");
 	fprintf(file,"        group=TKIP\n");
 	fprintf(file,"        psk=\"PWbDq39QQ863215\"\n");
 	fprintf(file,"        id_str=\"mesh\"\n");
 	fprintf(file,"        priority=100\n");
 	fprintf(file,"}\n\n");
-	
-	fprintf(file,"network={\n");
-	fprintf(file,"        mode=1\n");
-	fprintf(file,"        ssid=\"Marzer WLAN\"\n");
-	fprintf(file,"        proto=RSN\n");
-	fprintf(file,"        key_mgmt=WPA-PSK\n");
-	fprintf(file,"        pairwise=CCMP TKIP\n");
-	fprintf(file,"        group=CCMP TKIP\n");
-	fprintf(file,"        psk=\"omgwtflol87\"\n");
-	fprintf(file,"        id_str=\"marzer\"\n");
-	fprintf(file,"        priority=1\n");
-	fprintf(file,"}\n\n");
-	*/
+
 	fclose(file);
 	printf(" [ok]\n");
 	
@@ -279,7 +269,8 @@ int write_network_interfaces(int num)
 	fprintf(file,"auto wlan0\n");
 	fprintf(file,"iface wlan0 inet static\n");
 	fprintf(file,"        address 192.168.2.%d\n",num);
-	fprintf(file,"        netmask 255.255.255.0\n\n");
+	fprintf(file,"        netmask 255.255.255.0\n");
+	fprintf(file,"        wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf\n\n");
 	
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
