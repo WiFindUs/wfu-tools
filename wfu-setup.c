@@ -341,13 +341,7 @@ int main(int argc, char **argv)
 	char sbuf[256];
 	
 	//end vars
-	
-	if (argc < 2)
-	{
-		print_usage(argv[0]);
-		return 1;
-	}
-	
+
 	for (i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i],"-r") == 0 || strcmp(argv[i],"--reboot") == 0)
