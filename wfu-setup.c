@@ -357,7 +357,7 @@ int main(int argc, char **argv)
 	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
 	int autoWallpaper = TRUE;
-	char sbuf[256];
+	char sbuf[256], nbuf[256];
 	
 	//end vars
 
@@ -414,13 +414,18 @@ int main(int argc, char **argv)
 		return 11;
 	if (autoWallpaper)
 	{
-		sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper /home/pi/wfu-setup-images/wfu-brain-%d.png > /dev/null",num);
+		sprintf(nbuf,"/home/pi/wfu-setup-images/wfu-brain-%d.png",num);
 		
-		pid_t proc = fork();
-		if (proc == 0)
-			return system(sbuf);
-		else if (proc < 0)
-			return 40;
+		if (access(nbuf, F_OK) == 0)
+		{
+			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper %s > /dev/null",nbuf);
+			
+			pid_t proc = fork();
+			if (proc == 0)
+				return system(sbuf);
+			else if (proc < 0)
+				return 40;
+		}
 	}
 	if (autoReboot || autoHalt)
 	{
