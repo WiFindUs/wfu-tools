@@ -143,11 +143,13 @@ int write_rc_local(int num)
 	fprintf(file,"#!/bin/sh -e\n");
 	fprintf(file,"sleep 5\n");
 
+	/*
 	fprintf(file,"_IS_MESH_UP=$(ip addr | grep -E -i -w \"wlan0.+state UP\") || true\n");
 	fprintf(file,"if [ \"$_IS_MESH_UP\" ]; then\n");
 	fprintf(file,"	echo \"[WFU Mesh Setup] - WFU mesh already connected\"\n");
 	fprintf(file,"else\n");
 	fprintf(file,"	echo \"[WFU Mesh Setup] - creating node...\"\n");
+	*/
 	fprintf(file,"	sudo ifconfig wlan0 down\n");
 	fprintf(file,"	sudo iwconfig wlan0 channel 1\n");
 	fprintf(file,"	sudo iwconfig wlan0 mode Ad-Hoc\n");
@@ -155,7 +157,7 @@ int write_rc_local(int num)
 	fprintf(file,"	sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
 	fprintf(file,"	sudo ifconfig wlan0 192.168.2.%d\n",num);
 	fprintf(file,"	sudo ifconfig wlan0 up\n");
-	fprintf(file,"fi\n\n");
+	//fprintf(file,"fi\n\n");
 
 	fprintf(file,"exit 0\n");
 	
@@ -243,16 +245,19 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        gateway 192.168.1.254\n\n");
 
+	/* //shouldn't need this since/etc/rc.local explicitly enables wlan0
 	fprintf(file,"auto wlan0\n");
 	fprintf(file,"iface wlan0 inet static\n");
 	fprintf(file,"        address 192.168.2.%d\n",num);
 	fprintf(file,"        netmask 255.255.255.0\n");
+	*/
 	
+	/* //wlan1 is currently AWOL
 	fprintf(file,"auto wlan1\n");
 	fprintf(file,"iface wlan1 inet static\n");
 	fprintf(file,"        address 192.168.0.1\n");
 	fprintf(file,"        netmask 255.255.255.0\n\n");
-	
+	*/
 	fprintf(file,"iface default inet dhcp\n");
 
 	fclose(file);
