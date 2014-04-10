@@ -55,7 +55,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-    ~/src/wfu-brain-num\n\n\
+    /home/pi/src/wfu-brain-num\n\n\
 If you wish to make changes to these files yourself, either back them\n\
 up and re-apply them after running the program, or change the program\n\
 in /home.pi/projects/wfu-setup/wfu-setup.c.\n\n"
@@ -315,8 +315,8 @@ int write_brain_num(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing ~/src/wfu-brain-num...");
-	file = fopen("~/src/wfu-brain-num","w");
+	printf("Writing /home/pi/src/wfu-brain-num...");
+	file = fopen("/home/pi/src/wfu-brain-num","w");
 	if (file == NULL)
 	{
 		printf("error. are you root?\n");
@@ -336,7 +336,7 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	file = fopen("~/src/wfu-brain-num","r");
+	file = fopen("/home/pi/src/wfu-brain-num","r");
 	if (file == NULL)
 		return FALSE;
 	fscanf(file, "%d", &val);
@@ -428,7 +428,7 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 11;
 	if (autoWallpaper)
 	{
-		sprintf(nbuf,"~/src/wfu-brain-wallpapers/wfu-brain-%d.png",num);
+		sprintf(nbuf,"/home/pi/src/wfu-brain-wallpapers/wfu-brain-%d.png",num);
 		
 		if (access(nbuf, F_OK) == 0)
 		{

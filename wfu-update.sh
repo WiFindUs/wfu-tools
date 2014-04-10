@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ~/src
+cd /home/pi/src
 rm -f -r wfu-tools
 git clone -q git://github.com/WiFindUs/wfu-tools.git
 

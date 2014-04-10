@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ~/src/wfu-tools
+cd /home/pi/src/wfu-tools
 
 rm -f /etc/init.d/vncboot
 cp vncboot /etc/init.d/vncboot
