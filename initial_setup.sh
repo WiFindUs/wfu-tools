@@ -43,7 +43,7 @@ sudo apt-get -y dist-upgrade > /dev/null
 cd /home/pi
 
 echo "${Cyan}Installing [most] apps...${Rst}"
-sudo apt-get -y install hostapd udhcpd iw git autoconf tightvncserver > /dev/null
+sudo apt-get -y install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null
 
 echo "${Cyan}Creating src dir...${Rst}"
 mkdir -p src
