@@ -23,7 +23,7 @@ echo               "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
 
 echo "${Cyan}Purging junk...${Rst}"
-sudo apt-get -y purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk wolfram-engine > /dev/null
+sudo apt-get -y purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk wolfram-engine sonic-pi > /dev/null
 
 echo "${Cyan}Removing leftovers...${Rst}"
 sudo apt-get -y autoremove
