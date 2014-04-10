@@ -5,6 +5,7 @@ rm -f -r wfu-tools
 git clone -q git://github.com/WiFindUs/wfu-tools.git
 
 cd wfu-tools
+rm -f initial_setup.sh
 chmod 755 wfu-update.sh
 chmod 755 wfu-relink.sh
 rm -f /usr/bin/wfu-relink
