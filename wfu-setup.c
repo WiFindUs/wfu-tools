@@ -55,7 +55,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-    /home/pi/src/wfu-brain-num\n\n\
+    ~/src/wfu-brain-num\n\n\
 If you wish to make changes to these files yourself, either back them\n\
 up and re-apply them after running the program, or change the program\n\
 in /home.pi/projects/wfu-setup/wfu-setup.c.\n\n"
@@ -315,8 +315,8 @@ int write_brain_num(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /home/pi/src/wfu-brain-num...");
-	file = fopen("/home/pi/src/wfu-brain-num","w");
+	printf("Writing ~/src/wfu-brain-num...");
+	file = fopen("~/src/wfu-brain-num","w");
 	if (file == NULL)
 	{
 		printf("error. are you root?\n");
@@ -336,7 +336,7 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	file = fopen("/home/pi/src/wfu-brain-num","r");
+	file = fopen("~/src/wfu-brain-num","r");
 	if (file == NULL)
 		return FALSE;
 	fscanf(file, "%d", &val);
@@ -351,6 +351,8 @@ int main(int argc, char **argv)
 	//vars
 	int i = 0;
 	int num = FALSE;
+	int numDefault = FALSE;
+	int numExplicit = FALSE;
 	int autoReboot = FALSE;
 	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
@@ -371,6 +373,7 @@ int main(int argc, char **argv)
 			autoWallpaper = FALSE;
 		else
 		{
+			numExplicit = TRUE;
 			num = atoi(argv[i]);
 			if (num < 1 || num > 254)
 				num = FALSE;
@@ -383,14 +386,27 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	if (num == FALSE)
+	if (!num)
 		num = read_brain_num();
-	if (num == FALSE)
+	if (!num && !numExplicit)
+	{
+		num = 1;
+		numDefault = TRUE;
+	}
+	if (!num)
 	{
 		print_usage(argv[0]);
 		return 2;
 	}
-	printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d\n\n",VERSION_STR,num);
+	printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d\n",VERSION_STR,num);
+	if (numDefault)
+	{
+		printf("  -- Notice --\n\
+You did not provide a unit number, and\n\
+one has not previously been used on this\n\
+system. 1 has been used as default.\n",VERSION_STR,num);
+	}
+	printf("\n");
 	
 	if (!write_hosts(num))
 		return 3;
@@ -412,7 +428,7 @@ int main(int argc, char **argv)
 		return 11;
 	if (autoWallpaper)
 	{
-		sprintf(nbuf,"/home/pi/wfu-setup-images/wfu-brain-%d.png",num);
+		sprintf(nbuf,"~/src/wfu-brain-wallpapers/wfu-brain-%d.png",num);
 		
 		if (access(nbuf, F_OK) == 0)
 		{
