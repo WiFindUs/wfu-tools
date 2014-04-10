@@ -67,6 +67,8 @@ else
 
 		echo "  creating symlinks..."
 		if [ -f servald ]; then
+			sudo mkdir -p /usr/local/var/log/serval
+			sudo mkdir -p /usr/local/etc/serval
 			sudo chmod 755 servald
 			sudo rm -f /usr/bin/servald
 			sudo ln -s /home/pi/src/serval-dna/servald /usr/bin/servald
