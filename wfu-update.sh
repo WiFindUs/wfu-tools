@@ -13,4 +13,4 @@ ln -s /home/pi/src/wfu-tools/wfu-relink.sh /usr/bin/wfu-relink
 ln -s /home/pi/src/wfu-tools/wfu-update.sh /usr/bin/wfu-update
 wfu-relink
 
-make
+make > /dev/null

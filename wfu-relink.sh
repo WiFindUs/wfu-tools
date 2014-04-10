@@ -6,19 +6,19 @@ rm -f /etc/init.d/vncboot
 cp vncboot /etc/init.d/vncboot
 chown root:root /etc/init.d/vncboot
 chmod 755 /etc/init.d/vncboot
-update-rc.d vncboot defaults
+update-rc.d vncboot defaults > /dev/null
 
 rm -f /etc/init.d/servalboot
 cp servalboot /etc/init.d/servalboot
 chown root:root /etc/init.d/servalboot
 chmod 755 /etc/init.d/servalboot
-update-rc.d servalboot defaults
+update-rc.d servalboot defaults > /dev/null
 
 rm -f /etc/init.d/gpsdboot
 cp gpsdboot /etc/init.d/gpsdboot
 chown root:root /etc/init.d/gpsdboot
 chmod 755 /etc/init.d/gpsdboot
-update-rc.d gpsdboot defaults
+update-rc.d gpsdboot defaults > /dev/null
 
 chmod 755 wfu-setup
 rm -f /usr/bin/wfu-setup
