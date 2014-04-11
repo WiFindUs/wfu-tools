@@ -144,6 +144,8 @@ if [ -d ".vnc" ]; then
 	echo "$VNC_PASS" | vncpasswd -f > passwd
 	if [ -f passwd ]; then
 		echo "    ${Green}OK! password: $VNC_PASS${Rst}"
+		killall Xtightvnc > /dev/null 2>&1
+		vncserver :1 -geometry 1024x576 > /dev/null 2>&1
 	else
 		echo "    ${IRed}error! could not create passwd file.${Rst}"
 	fi
