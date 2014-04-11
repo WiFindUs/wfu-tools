@@ -23,6 +23,7 @@
 #define VERSION_STR "v1.1" 
 #endif
 int quietMode = FALSE;
+char home[256], sbuf[256], nbuf[256];
 
 int min(int a, int b)
 {
@@ -70,10 +71,8 @@ scripts needed to set up the mesh network.\n\n"
     /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-    /home/pi/src/wfu-brain-num\n\n\
-If you wish to make changes to these files yourself, either back them\n\
-up and re-apply them after running the program, or change the program\n\
-in /home.pi/projects/wfu-setup/wfu-setup.c.\n\n"
+    %s/src/wfu-brain-num\n\n",
+	home
 	);
 		
 	printf(
@@ -355,8 +354,9 @@ int write_brain_num(int num)
 	FILE* file = NULL;
 	
 	if (!quietMode)
-		printf("Writing /home/pi/src/wfu-brain-num...");
-	file = fopen("/home/pi/src/wfu-brain-num","w");
+		printf("Writing %s/src/wfu-brain-num...",home);
+	sprintf(nbuf,"%s/src/wfu-brain-num",home);
+	file = fopen(nbuf,"w");
 	if (file == NULL)
 	{
 		if (!quietMode)
@@ -378,7 +378,8 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	file = fopen("/home/pi/src/wfu-brain-num","r");
+	sprintf(nbuf,"%s/src/wfu-brain-num",home);
+	file = fopen(nbuf,"r");
 	if (file == NULL)
 		return FALSE;
 	fscanf(file, "%d", &val);
@@ -399,9 +400,9 @@ int main(int argc, char **argv)
 	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
 	int autoWallpaper = TRUE;
-	char sbuf[256], nbuf[256];
-	
 	//end vars
+	
+	strcpy(home,getenv("HOME"));
 
 	for (i = 1; i < argc; i++)
 	{
@@ -475,11 +476,11 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 11;
 	if (autoWallpaper)
 	{
-		sprintf(nbuf,"/home/pi/src/wfu-brain-wallpapers/wfu-brain-%d.png",num);
+		sprintf(nbuf,"%s/src/wfu-brain-wallpapers/wfu-brain-%d.png",home,num);
 		
 		if (access(nbuf, F_OK) == 0)
 		{
-			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper %s >& /dev/null",nbuf);
+			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper \"%s\" >& /dev/null",nbuf);
 			
 			pid_t proc = fork();
 			if (proc == 0)
