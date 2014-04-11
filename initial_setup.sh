@@ -25,9 +25,13 @@ Cyan="${SMK}0;36m"
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
 echo              "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
+cd /home/pi
 
 echo "${Cyan}Purging junk...${Rst}"
-sudo apt-get -y purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk wolfram-engine sonic-pi > /dev/null
+sudo rm -rf /usr/games/
+sudo rm -rf python_games
+sudo rm -f ocr_pi.png
+sudo apt-get -y purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi > /dev/null
 
 echo "${Cyan}Removing leftovers...${Rst}"
 sudo apt-get -y autoremove
@@ -47,7 +51,6 @@ sudo apt-get -y dist-upgrade > /dev/null
 echo "${Cyan}Installing [most] apps...${Rst}"
 sudo apt-get -y install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null
 
-cd /home/pi
 if [ ! -d src ]; then
 	echo "${Cyan}Creating src dir...${Rst}"
 	mkdir -p src
