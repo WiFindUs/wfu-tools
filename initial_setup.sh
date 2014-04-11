@@ -111,7 +111,7 @@ for i in `seq 1 254`; do
 		echo -n "${Green}"
 	fi
 	
-	ticker=`expr $i % 10`
+	ticker=`expr $i % 5`
 	if [ $ticker -eq 0 ]; then
 		echo -n "="
 	fi
