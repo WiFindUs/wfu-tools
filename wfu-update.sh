@@ -14,6 +14,7 @@ cd wfu-tools
 sudo rm -f rebuild_rpi_kernel.sh
 sudo chmod 755 wfu-update.sh
 sudo chmod 755 wfu-relink.sh
+sudo chmod 755 initial_setup.sh
 sudo rm -f /usr/bin/wfu-relink
 sudo rm -f /usr/bin/wfu-update
 sudo ln -s /home/pi/src/wfu-tools/wfu-relink.sh /usr/bin/wfu-relink
