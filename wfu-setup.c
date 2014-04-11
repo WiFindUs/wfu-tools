@@ -413,6 +413,8 @@ int main(int argc, char **argv)
 			detailedHelpMode = TRUE;
 		else if (strcmp(argv[i],"-w") == 0 || strcmp(argv[i],"--wallpaper") == 0)
 			autoWallpaper = FALSE;
+		else if (strcmp(argv[i],"-q") == 0 || strcmp(argv[i],"--quiet") == 0)
+			quietMode = TRUE;
 		else
 		{
 			numExplicit = TRUE;
