@@ -13,6 +13,7 @@
 #===============================================================
 clear
 
+VNC_PASS="omgwtf42"
 SMK="\033["
 TitleStyle="${SMK}1;36m"
 Rst="${SMK}0m"
@@ -25,7 +26,7 @@ Cyan="${SMK}0;36m"
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
 echo              "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
-cd /home/pi
+cd "$HOME"
 
 echo "${Cyan}Purging junk...${Rst}"
 sudo rm -rf /usr/games/
@@ -132,10 +133,22 @@ if [ -d wfu-tools ]; then
 else
 	echo "    ${IRed}error! cloning probably failed.${Rst}"
 fi
+cd ..
 
-echo "${Cyan}Lauching tightvncserver to set password...${Rst}"
-tightvncserver
-killall Xtightvnc
+echo "${Cyan}Setting VNC password...${Rst}"
+mkdir -p ".vnc"
+if [ -d ".vnc" ]; then
+	cd ".vnc"
+	echo -e "$VNC_PASS\n\n" | vncpasswd -f > passwd
+	if [ -f passwd ]; then
+		echo "    ${Green}OK! password: $VNC_PASS${Rst}"
+	else
+		echo "    ${IRed}error! could not create passwd file.${Rst}"
+	fi
+	cd ..
+else
+	echo "    ${IRed}error! could not create .vnc dir.${Rst}"
+fi
 
 echo "${Cyan}Installing babeld...${Rst}"
 echo "  ${Yellow}It may auto-run and halt this script!"
