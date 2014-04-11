@@ -141,7 +141,7 @@ echo "${Cyan}Setting VNC password...${Rst}"
 mkdir -p ".vnc"
 if [ -d ".vnc" ]; then
 	cd ".vnc"
-	echo -e "$VNC_PASS\n\n" | vncpasswd -f > passwd
+	echo "$VNC_PASS" | vncpasswd -f > passwd
 	if [ -f passwd ]; then
 		echo "    ${Green}OK! password: $VNC_PASS${Rst}"
 	else
