@@ -480,7 +480,7 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		
 		if (access(nbuf, F_OK) == 0)
 		{
-			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper \"%s\" &> /dev/null",nbuf);
+			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper \"%s\" > /dev/null 2>&1",nbuf);
 			
 			pid_t proc = fork();
 			if (proc == 0)
@@ -495,9 +495,9 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		if (proc == 0)
 		{
 			if (autoHalt)
-				sprintf(sbuf,"shutdown -h now &> /dev/null");
+				sprintf(sbuf,"shutdown -h now > /dev/null 2>&1");
 			else
-				sprintf(sbuf,"shutdown -r now &> /dev/null");
+				sprintf(sbuf,"shutdown -r now > /dev/null 2>&1");
 			return system(sbuf);
 		}
 		else if (proc < 0)
