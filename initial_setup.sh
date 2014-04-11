@@ -54,13 +54,13 @@ cd src
 
 echo "${Cyan}Assembling serval-dna...${Rst}"
 if [ -d serval-dna ]; then
-	echo "  already present."
-	echo "  To rebuild, rm src/serval-dna and re-run this script."
+	echo "  ${Yellow}already present."
+	echo "  To rebuild, rm src/serval-dna and re-run this script.${Rst}"
 else
-	echo "  cloning..."
+	echo "  ${Cyan}cloning...${Rst}"
 	git clone -q git://github.com/servalproject/serval-dna.git
 
-	echo "  making..."
+	echo "  ${Cyan}making...${Rst}"
 	if [ -d serval-dna ]; then
 		cd serval-dna
 		autoreconf -f -i
@@ -68,7 +68,7 @@ else
 		make clean
 		make
 
-		echo "  creating symlinks..."
+		echo "  ${Cyan}creating symlinks...${Rst}"
 		if [ -f servald ]; then
 			sudo mkdir -p /usr/local/var/log/serval
 			sudo mkdir -p /usr/local/etc/serval
@@ -76,11 +76,11 @@ else
 			sudo rm -f /usr/bin/servald
 			sudo ln -s /home/pi/src/serval-dna/servald /usr/bin/servald
 		else
-			echo "    error! servald may not have built."
+			echo "    ${IRed}error! servald may not have built.${Rst}"
 		fi
 		cd ..
 	else
-		echo "    error! cloning probably failed."
+		echo "    ${IRed}error! cloning probably failed.${Rst}"
 	fi
 fi
 
@@ -113,13 +113,13 @@ cd ..
 
 echo "${Cyan}Assembling wfu-tools...${Rst}"
 if [ -d wfu-tools ]; then
-	echo "  already present."
-	echo "  To rebuilt, rm src/wfu-tools and re-run this script."
+	echo "  ${Yellow}already present."
+	echo "  To rebuild, rm src/wfu-tools and re-run this script.${Rst}"
 else
-	echo "  cloning..."
+	echo "  ${Cyan}cloning...${Rst}"
 	git clone -q git://github.com/WiFindUs/wfu-tools.git
 
-	echo "  making..."
+	echo "  ${Cyan}making...${Rst}"
 	if [ -d wfu-tools ]; then
 		cd wfu-tools
 		sudo chmod 755 wfu-update.sh
@@ -127,7 +127,7 @@ else
 		sudo wfu-setup > /dev/null
 		cd ..
 	else
-		echo "    error! cloning probably failed."
+		echo "    ${IRed}error! cloning probably failed.${Rst}"
 	fi
 fi
 
@@ -136,8 +136,8 @@ tightvncserver
 killall Xtightvnc
 
 echo "${Cyan}Installing babeld...${Rst}"
-echo "  It may auto-run and halt this script!"
-echo "  You will need to terminate it manually."
+echo "  ${Yellow}It may auto-run and halt this script!"
+echo "  You will need to terminate it manually.${Rst}"
 sudo apt-get -y install babeld > /dev/null
 
 echo "${Green}Finished :)\n${Yellow}You should reboot now!${Rst}"
