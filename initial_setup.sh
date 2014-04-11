@@ -31,6 +31,7 @@ cd "$HOME"
 echo "${Cyan}Purging junk...${Rst}"
 sudo rm -rf /usr/games/
 sudo rm -rf python_games
+sudo rm -rf indiecity
 sudo rm -f ocr_pi.png
 sudo apt-get -qq purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi > /dev/null 2>&1
 
@@ -128,7 +129,7 @@ echo "  ${Cyan}making...${Rst}"
 if [ -d wfu-tools ]; then
 	cd wfu-tools
 	sudo chmod 755 wfu-update.sh
-	sudo ./wfu-update.sh
+	./wfu-update.sh
 	sudo wfu-setup -q
 	cd ..
 else

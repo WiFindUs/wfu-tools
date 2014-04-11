@@ -45,8 +45,8 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
 	fprintf(stderr, "Remarks:\n");
-	fprintf(stderr, "  If the number is omitted the value stored in /home/pi/src/wfu-brain-num\
-will be used (if it exists).\n");
+	fprintf(stderr, "  If the number is omitted the value stored in %s/src/wfu-brain-num\
+will be used (if it exists).\n",home);
 }
 
 void print_detailed_help()
@@ -402,7 +402,7 @@ int main(int argc, char **argv)
 	int autoWallpaper = TRUE;
 	//end vars
 	
-	strcpy(home,getenv("HOME"));
+	strcpy(home,"/home/pi");//getenv("HOME"));
 
 	for (i = 1; i < argc; i++)
 	{
