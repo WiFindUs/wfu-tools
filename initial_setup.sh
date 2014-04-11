@@ -32,26 +32,26 @@ echo "${Cyan}Purging junk...${Rst}"
 sudo rm -rf /usr/games/
 sudo rm -rf python_games
 sudo rm -f ocr_pi.png
-sudo apt-get -qq purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi >& /dev/null
+sudo apt-get -qq purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi &> /dev/null
 
 echo "${Cyan}Removing leftovers...${Rst}"
-sudo apt-get -qq autoremove >& /dev/null
+sudo apt-get -qq autoremove &> /dev/null
 
 echo "${Cyan}Updating apt-get list...${Rst}"
-sudo apt-get -qq update >& /dev/null
+sudo apt-get -qq update &> /dev/null
 
 echo "${Cyan}Upgrading packages...${Rst}"
-sudo apt-get -qq upgrade >& /dev/null
+sudo apt-get -qq upgrade &> /dev/null
 
 echo "${Cyan}Upgrading distro...${Rst}"
-sudo apt-get -qq dist-upgrade >& /dev/null
+sudo apt-get -qq dist-upgrade &> /dev/null
 
 echo "${Cyan}Installing [most] apps...${Rst}"
-sudo apt-get -qq install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver >& /dev/null
+sudo apt-get -qq install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver &> /dev/null
 
 echo "${Cyan}Cleaning up...${Rst}"
-sudo apt-get -qq clean >& /dev/null
-sudo apt-get -qq autoclean >& /dev/null
+sudo apt-get -qq clean &> /dev/null
+sudo apt-get -qq autoclean &> /dev/null
 
 if [ ! -d src ]; then
 	echo "${Cyan}Creating src dir...${Rst}"
@@ -154,6 +154,6 @@ fi
 echo "${Cyan}Installing babeld...${Rst}"
 echo "  ${Yellow}It may auto-run and halt this script!"
 echo "  You will need to terminate it manually.${Rst}"
-sudo apt-get -qq install babeld >& /dev/null
+sudo apt-get -qq install babeld &> /dev/null
 
 echo "${Green}Finished :)\n${Yellow}You should reboot now!${Rst}"
