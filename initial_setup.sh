@@ -10,10 +10,6 @@
 #   This script is intended to be the first thing
 #   you run on a new build of Raspbian that DOES NOT
 #   already have any WFU stuff.
-#
-#   Do not run it from a git clone; it's only in the
-#   wfu-tools repo for convenience. Download it and run it
-#   independantly; it will clone wfu-tools itself.
 #===============================================================
 clear
 
@@ -118,23 +114,20 @@ echo "${Rst}]"
 cd ..
 
 echo "${Cyan}Assembling wfu-tools...${Rst}"
-if [ -d wfu-tools ]; then
-	echo "  ${Yellow}already present."
-	echo "  To rebuild, rm src/wfu-tools and re-run this script.${Rst}"
-else
+if [ ! -d wfu-tools ]; then
 	echo "  ${Cyan}cloning...${Rst}"
 	git clone -q git://github.com/WiFindUs/wfu-tools.git
+fi
 
-	echo "  ${Cyan}making...${Rst}"
-	if [ -d wfu-tools ]; then
-		cd wfu-tools
-		sudo chmod 755 wfu-update.sh
-		sudo ./wfu-update.sh
-		sudo wfu-setup > /dev/null
-		cd ..
-	else
-		echo "    ${IRed}error! cloning probably failed.${Rst}"
-	fi
+echo "  ${Cyan}making...${Rst}"
+if [ -d wfu-tools ]; then
+	cd wfu-tools
+	sudo chmod 755 wfu-update.sh
+	sudo ./wfu-update.sh
+	sudo wfu-setup -q
+	cd ..
+else
+	echo "    ${IRed}error! cloning probably failed.${Rst}"
 fi
 
 echo "${Cyan}Lauching tightvncserver to set password...${Rst}"

@@ -11,7 +11,7 @@ sudo rm -f -r wfu-tools
 git clone -q git://github.com/WiFindUs/wfu-tools.git
 
 cd wfu-tools
-sudo rm -f initial_setup.sh
+sudo rm -f rebuild_rpi_kernel.sh
 sudo chmod 755 wfu-update.sh
 sudo chmod 755 wfu-relink.sh
 sudo rm -f /usr/bin/wfu-relink

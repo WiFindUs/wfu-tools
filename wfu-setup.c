@@ -22,6 +22,7 @@
 #ifndef VERSION_STR
 #define VERSION_STR "v1.1" 
 #endif
+int quietMode = FALSE;
 
 int min(int a, int b)
 {
@@ -32,12 +33,16 @@ int min(int a, int b)
 
 void print_usage(char * argv0)
 {
+	if (quietMode)
+		return;
+	
 	fprintf(stderr, "Usage: %s [options] [1-254]\n",argv0);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -r or --reboot: auto reboot after completion.\n");
 	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
 	fprintf(stderr, "  -w or --wallpaper: do not automatically change wallpaper.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
+	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
 	fprintf(stderr, "Remarks:\n");
 	fprintf(stderr, "  If the number is omitted the value stored in /home/pi/src/wfu-brain-num\
 will be used (if it exists).\n");
@@ -45,6 +50,9 @@ will be used (if it exists).\n");
 
 void print_detailed_help()
 {
+	if (quietMode)
+		return;
+
 	printf("[WiFindUs Brain Auto-Setup %s]\n\n",VERSION_STR);
 	printf(
 "This program assigns this brain unit with it's unique ID number\n\
@@ -80,11 +88,13 @@ int write_hosts(int num)
 	FILE* file = NULL;
 	int i;
 	
-	printf("Writing /etc/hosts...");
+	if (!quietMode)
+		printf("Writing /etc/hosts...");
 	file = fopen("/etc/hosts","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 	
@@ -112,7 +122,8 @@ int write_hosts(int num)
 	
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	return TRUE;
 }
 
@@ -120,18 +131,21 @@ int write_hostname(int num)
 {
 	FILE* file = NULL;
 
-	printf("Writing /etc/hostname...");
+	if (!quietMode)
+		printf("Writing /etc/hostname...");
 	file = fopen("/etc/hostname","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 	
 	fprintf(file,"wfu-brain-%d\n",num);
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	return TRUE;
 }
 
@@ -139,11 +153,13 @@ int write_rc_local(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /etc/rc.local...");
+	if (!quietMode)
+		printf("Writing /etc/rc.local...");
 	file = fopen("/etc/rc.local","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 	
@@ -167,7 +183,8 @@ int write_rc_local(int num)
 	fprintf(file,"exit 0\n");
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -176,11 +193,13 @@ int write_hostapd(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /etc/hostapd/hostapd.conf...");
+	if (!quietMode)
+		printf("Writing /etc/hostapd/hostapd.conf...");
 	file = fopen("/etc/hostapd/hostapd.conf","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 	
@@ -204,7 +223,8 @@ int write_hostapd(int num)
 	fprintf(file,"wmm_enabled=1\n");
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -213,11 +233,13 @@ int write_supplicant(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /etc/wpa_supplicant/wpa_supplicant.conf...");
+	if (!quietMode)
+		printf("Writing /etc/wpa_supplicant/wpa_supplicant.conf...");
 	file = fopen("/etc/wpa_supplicant/wpa_supplicant.conf","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 	
@@ -225,7 +247,8 @@ int write_supplicant(int num)
 	fprintf(file,"update_config=1\n\n");
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -234,11 +257,13 @@ int write_network_interfaces(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /etc/network/interfaces...");
+	if (!quietMode)
+		printf("Writing /etc/network/interfaces...");
 	file = fopen("/etc/network/interfaces","w");
 	if (file == NULL)
 	{
-		printf("error. are you root?\n");
+		if (!quietMode)
+			printf("error. are you root?\n");
 		return FALSE;
 	}
 
@@ -266,7 +291,8 @@ int write_network_interfaces(int num)
 	fprintf(file,"iface default inet dhcp\n");
 
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -275,10 +301,12 @@ int write_udhcpd(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /etc/udhcpd.conf...");
+	if (!quietMode)
+		printf("Writing /etc/udhcpd.conf...");
 	file = fopen("/etc/udhcpd.conf","w");
 	if (file == NULL)
 	{
+		if (!quietMode)
 		printf("error. are you root?\n");
 		return FALSE;
 	}
@@ -292,7 +320,8 @@ int write_udhcpd(int num)
 	fprintf(file,"opt router 192.168.0.1\n");
 
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -301,10 +330,12 @@ int write_servald(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /usr/local/etc/serval/serval.conf...");
+	if (!quietMode)
+		printf("Writing /usr/local/etc/serval/serval.conf...");
 	file = fopen("/usr/local/etc/serval/serval.conf","w");
 	if (file == NULL)
 	{
+		if (!quietMode)
 		printf("error. are you root?\n");
 		return FALSE;
 	}
@@ -313,7 +344,8 @@ int write_servald(int num)
 	fprintf(file,"interfaces.0.type=wifi\n");
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -322,10 +354,12 @@ int write_brain_num(int num)
 {
 	FILE* file = NULL;
 	
-	printf("Writing /home/pi/src/wfu-brain-num...");
+	if (!quietMode)
+		printf("Writing /home/pi/src/wfu-brain-num...");
 	file = fopen("/home/pi/src/wfu-brain-num","w");
 	if (file == NULL)
 	{
+		if (!quietMode)
 		printf("error. are you root?\n");
 		return FALSE;
 	}
@@ -333,7 +367,8 @@ int write_brain_num(int num)
 	fprintf(file,"%d\n",num);
 	
 	fclose(file);
-	printf(" [ok]\n");
+	if (!quietMode)
+		printf(" [ok]\n");
 	
 	return TRUE;
 }
@@ -405,15 +440,18 @@ int main(int argc, char **argv)
 		print_usage(argv[0]);
 		return 2;
 	}
-	printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d\n",VERSION_STR,num);
-	if (numDefault)
+	if (!quietMode)
 	{
-		printf("  -- Notice --\n\
+		printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d\n",VERSION_STR,num);
+		if (numDefault)
+		{
+			printf("  -- Notice --\n\
 You did not provide a unit number, and\n\
 one has not previously been used on this\n\
 system. 1 has been used as default.\n",VERSION_STR,num);
+		}
+		printf("\n");
 	}
-	printf("\n");
 	
 	if (!write_hosts(num))
 		return 3;
@@ -454,9 +492,9 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		if (proc == 0)
 		{
 			if (autoHalt)
-				sprintf(sbuf,"shutdown -h now");
+				sprintf(sbuf,"shutdown -h now > /dev/null");
 			else
-				sprintf(sbuf,"shutdown -r now");
+				sprintf(sbuf,"shutdown -r now > /dev/null");
 			return system(sbuf);
 		}
 		else if (proc < 0)
