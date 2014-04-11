@@ -11,12 +11,14 @@
 #
 clear
 
-TitleStyle="\033[1;36m"
-Rst="\033[0m"
-IRed="\033[0;91m"
-Green="\033[0;32m"
-Yellow="\033[0;33m"
-Cyan="\033[0;36m"
+SMK="\033["
+TitleStyle="${SMK}1;36m"
+Rst="${SMK}0m"
+IRed="${SMK}0;91m"
+Red="${SMK}0;31m"
+Green="${SMK}0;32m"
+Yellow="${SMK}0;33m"
+Cyan="${SMK}0;36m"
 
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
 echo               "============================${Rst}"
@@ -40,13 +42,14 @@ sudo apt-get -y upgrade > /dev/null
 echo "${Cyan}Upgrading distro...${Rst}"
 sudo apt-get -y dist-upgrade > /dev/null
 
-cd /home/pi
-
 echo "${Cyan}Installing [most] apps...${Rst}"
 sudo apt-get -y install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null
 
-echo "${Cyan}Creating src dir...${Rst}"
-mkdir -p src
+cd /home/pi
+if [ ! -d src ]; then
+	echo "${Cyan}Creating src dir...${Rst}"
+	mkdir -p src
+fi
 cd src
 
 echo "${Cyan}Assembling serval-dna...${Rst}"
@@ -82,23 +85,31 @@ else
 fi
 
 echo "${Cyan}Fetching wallpapers...${Rst}"
-if [ -d wfu-brain-wallpapers ]; then
-	echo "  already present."
-	echo "  To re-fetch, rm src/wfu-brain-wallpapers and re-run this script."
-else
+if [ ! -d wfu-brain-wallpapers ]; then
 	mkdir -p wfu-brain-wallpapers
-	cd wfu-brain-wallpapers
-	echo -n "  ["
-	for i in `seq 1 254`; do
-		modulus=`expr $i % 10`
-		wget -q http://www.wifindus.com/downloads/wfu-brain-wallpapers/wfu-brain-$i.png
-		if [ $modulus -eq 0 ]; then
-			echo -n "="
-		fi
-	done
-	echo "]"
-	cd ..
 fi
+cd wfu-brain-wallpapers
+echo -n "  [${Red}"
+ONE_THIRD=`expr 254 / 3`
+TWO_THIRDS=`expr 2 \* 254 / 3`
+for i in `seq 1 254`; do
+	if [ ! -f wfu-brain-$i.png ]; then
+		wget -q http://www.wifindus.com/downloads/wfu-brain-wallpapers/wfu-brain-$i.png
+	fi
+	
+	if [ $i -eq $ONE_THIRD ]; then
+		echo -n "${Yellow}"
+	elif [ $i -eq $TWO_THIRDS ]; then
+		echo -n "${Green}"
+	fi
+	
+	ticker=`expr $i % 10`
+	if [ $ticker -eq 0 ]; then
+		echo -n "="
+	fi
+done
+echo "${Rst}]"
+cd ..
 
 echo "${Cyan}Assembling wfu-tools...${Rst}"
 if [ -d wfu-tools ]; then
