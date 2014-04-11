@@ -1,25 +1,31 @@
 #!/bin/sh
-
+#===============================================================
+# File: wfu-relink.sh
+# Author: Mark Gillard
+# Target environment: Raspbian
+# Description:
+#   Recreates wfu symbolic links and init.d scripts.
+#===============================================================
 cd /home/pi/src/wfu-tools
 
-rm -f /etc/init.d/vncboot
-cp vncboot /etc/init.d/vncboot
-chown root:root /etc/init.d/vncboot
-chmod 755 /etc/init.d/vncboot
-update-rc.d vncboot defaults > /dev/null
+sudo rm -f /etc/init.d/vncboot
+sudo cp vncboot /etc/init.d/vncboot
+sudo chown root:root /etc/init.d/vncboot
+sudo chmod 755 /etc/init.d/vncboot
+sudo update-rc.d vncboot defaults > /dev/null
 
-rm -f /etc/init.d/servalboot
-cp servalboot /etc/init.d/servalboot
-chown root:root /etc/init.d/servalboot
-chmod 755 /etc/init.d/servalboot
-update-rc.d servalboot defaults > /dev/null
+sudo rm -f /etc/init.d/servalboot
+sudo cp servalboot /etc/init.d/servalboot
+sudo chown root:root /etc/init.d/servalboot
+sudo chmod 755 /etc/init.d/servalboot
+sudo update-rc.d servalboot defaults > /dev/null
 
-rm -f /etc/init.d/gpsdboot
-cp gpsdboot /etc/init.d/gpsdboot
-chown root:root /etc/init.d/gpsdboot
-chmod 755 /etc/init.d/gpsdboot
-update-rc.d gpsdboot defaults > /dev/null
+sudo rm -f /etc/init.d/gpsdboot
+sudo cp gpsdboot /etc/init.d/gpsdboot
+sudo chown root:root /etc/init.d/gpsdboot
+sudo chmod 755 /etc/init.d/gpsdboot
+sudo update-rc.d gpsdboot defaults > /dev/null
 
-chmod 755 wfu-setup
-rm -f /usr/bin/wfu-setup
-ln -s /home/pi/src/wfu-tools/wfu-setup /usr/bin/wfu-setup
+sudo chmod 755 wfu-setup
+sudo rm -f /usr/bin/wfu-setup
+sudo ln -s /home/pi/src/wfu-tools/wfu-setup /usr/bin/wfu-setup

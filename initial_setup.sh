@@ -1,14 +1,20 @@
 #!/bin/sh
+#===============================================================
+# File: initial_setup.sh
+# Author: Mark Gillard
+# Target environment: Raspbian
+# Description:
+#   Sets up a fresh Rasbian install for use as a wfu-brain unit.
 #
-#	#### NOTICE ####
-#	This script is intended to be the first thing
-#	you run on a new build of Raspbian that DOES NOT
-#	already have any WFU stuff.
+# Remarks:
+#   This script is intended to be the first thing
+#   you run on a new build of Raspbian that DOES NOT
+#   already have any WFU stuff.
 #
-#	Do not run it from a git clone; it's only in the
-#	wfu-tools repo for convenience. Download it and run it
-#	independantly; it will clone wfu-tools itself.
-#
+#   Do not run it from a git clone; it's only in the
+#   wfu-tools repo for convenience. Download it and run it
+#   independantly; it will clone wfu-tools itself.
+#===============================================================
 clear
 
 SMK="\033["
@@ -21,7 +27,7 @@ Yellow="${SMK}0;33m"
 Cyan="${SMK}0;36m"
 
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
-echo               "============================${Rst}"
+echo              "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
 
 echo "${Cyan}Purging junk...${Rst}"
@@ -65,8 +71,8 @@ else
 		cd serval-dna
 		autoreconf -f -i
 		./configure
-		make clean
-		make
+		make clean -s -k
+		make -s -k
 
 		echo "  ${Cyan}creating symlinks...${Rst}"
 		if [ -f servald ]; then

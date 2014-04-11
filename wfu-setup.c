@@ -1,3 +1,10 @@
+//===============================================================
+// File: wfu-setup.c
+// Author: Mark Gillard
+// Target environment: Raspbian
+// Description:
+//   Sets the PI unit up according to it's ID number (1-254).
+//===============================================================
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +20,7 @@
 #define NULL 0
 #endif
 #ifndef VERSION_STR
-#define VERSION_STR "v1.0" 
+#define VERSION_STR "v1.1" 
 #endif
 
 int min(int a, int b)
