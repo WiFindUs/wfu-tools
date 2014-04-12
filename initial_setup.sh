@@ -54,6 +54,38 @@ echo "${Cyan}Cleaning up...${Rst}"
 sudo apt-get -qq clean > /dev/null 2>&1
 sudo apt-get -qq autoclean > /dev/null 2>&1
 
+echo "${Cyan}Initializing SSH/Git...${Rst}"
+mkdir -p ".ssh"
+if [ -f ".ssh/id_rsa" ]
+	sudo rm -f ".ssh/id_rsa" > /dev/null 2>&1
+	sudo rm -f ".ssh/id_rsa.pub" > /dev/null 2>&1
+fi
+VALID=0
+NAME=""
+EMAIL=""
+PASSPHRASE=""
+while [$VALID -eq 0] do
+	echo -n "${Yellow}Enter your full name: ${Rst}"
+	read NAME
+	echo -n "${Yellow}Enter your email address: ${Rst}"
+	read EMAIL
+	echo -n "${Yellow}Enter a passphrase: ${Rst}"
+	read PASSPHRASE
+
+	echo "You entered ${Yellow}$NAME${Rst}, ${Yellow}$EMAIL${Rst}, ${Yellow}$PASSPHRASE${Rst}"
+	echo -n "Are they correct? (y/N):"
+	read ANSWER
+	case "$ANSWER" in
+		y) VALID=1 ;;
+		*) ;;
+	esac
+done
+echo "\n$PASSPHRASE\n$PASSPHRASE" | ssh-keygen -t rsa -C "EMAIL" > /dev/null 2>&1
+sudo chmod 600 ".ssh/id_rsa"
+sudo chmod 600 ".ssh/id_rsa.pub"
+eval $(ssh-agent) > /dev/null 2>&1
+echo "$PASSPHRASE" | ssh-add ".ssh/id_rsa" > /dev/null 2>&1
+
 if [ ! -d src ]; then
 	echo "${Cyan}Creating src dir...${Rst}"
 	mkdir -p src
