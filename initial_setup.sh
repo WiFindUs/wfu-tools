@@ -137,6 +137,13 @@ else
 	fi
 fi
 
+echo "${Cyan}Fetching Atheros firmware...${Rst}"
+if [ ! -f "/lib/firmware/htc_9271.fw"  ]
+	cd "/lib/firmware"
+	sudo wget -q http://linuxwireless.org/download/htc_fw/1.3/htc_9271.fw
+	cd "$HOME/src"
+fi
+
 echo "${Cyan}Fetching wallpapers...${Rst}"
 if [ ! -d wfu-brain-wallpapers ]; then
 	mkdir -p wfu-brain-wallpapers
