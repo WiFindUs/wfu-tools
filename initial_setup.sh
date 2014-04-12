@@ -13,7 +13,8 @@
 #===============================================================
 clear
 
-VNC_PASS="omgwtf42"
+SSH_DIR="$HOME/.ssh"
+VNC_DIR="$HOME/.vnc"
 SMK="\033["
 TitleStyle="${SMK}1;36m"
 Rst="${SMK}0m"
@@ -22,11 +23,11 @@ Red="${SMK}0;31m"
 Green="${SMK}0;32m"
 Yellow="${SMK}0;33m"
 Cyan="${SMK}0;36m"
+cd "$HOME"
 
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
 echo              "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
-cd "$HOME"
 
 echo "${Cyan}Purging junk...${Rst}"
 sudo rm -rf /usr/games/
@@ -55,36 +56,48 @@ sudo apt-get -qq clean > /dev/null 2>&1
 sudo apt-get -qq autoclean > /dev/null 2>&1
 
 echo "${Cyan}Initializing SSH/Git...${Rst}"
-mkdir -p ".ssh"
-if [ -f ".ssh/id_rsa" ]
-	sudo rm -f ".ssh/id_rsa" > /dev/null 2>&1
-	sudo rm -f ".ssh/id_rsa.pub" > /dev/null 2>&1
+mkdir -p "$SSH_DIR"
+if [ -f "$SSH_DIR/id_rsa" ]; then
+	sudo rm -f "$SSH_DIR/id_rsa"
+	sudo rm -f "$SSH_DIR/id_rsa.pub"
 fi
 VALID=0
 NAME=""
 EMAIL=""
 PASSPHRASE=""
-while [$VALID -eq 0] do
+while [ $VALID -eq 0 ]
+do
 	echo -n "${Yellow}Enter your full name: ${Rst}"
 	read NAME
 	echo -n "${Yellow}Enter your email address: ${Rst}"
 	read EMAIL
 	echo -n "${Yellow}Enter a passphrase: ${Rst}"
 	read PASSPHRASE
+	
+	ANSWERED=0
+	echo -n "You entered ${Yellow}$NAME${Rst}, ${Yellow}$EMAIL${Rst}, ${Yellow}$PASSPHRASE${Rst}. "
+	while [ $ANSWERED -eq 0 ]
+	do
+		echo -n "Correct? (y/N):"
+		read ANSWER
+		case "$ANSWER" in
+			y|Y) VALID=1
+			ANSWERED=1
+			;;
 
-	echo "You entered ${Yellow}$NAME${Rst}, ${Yellow}$EMAIL${Rst}, ${Yellow}$PASSPHRASE${Rst}"
-	echo -n "Are they correct? (y/N):"
-	read ANSWER
-	case "$ANSWER" in
-		y) VALID=1 ;;
-		*) ;;
-	esac
+			n|N) VALID=0
+			ANSWERED=1
+			;;
+		
+			*) ;;
+		esac
+	done
 done
-echo "\n$PASSPHRASE\n$PASSPHRASE" | ssh-keygen -t rsa -C "EMAIL" > /dev/null 2>&1
-sudo chmod 600 ".ssh/id_rsa"
-sudo chmod 600 ".ssh/id_rsa.pub"
+echo "$SSH_DIR/id_rsa\n$PASSPHRASE\n$PASSPHRASE" | ssh-keygen -t rsa -C "$EMAIL" > /dev/null 2>&1
+sudo chmod 600 "$SSH_DIR/id_rsa" > /dev/null 2>&1
+sudo chmod 600 "$SSH_DIR/id_rsa.pub" > /dev/null 2>&1
 eval $(ssh-agent) > /dev/null 2>&1
-echo "$PASSPHRASE" | ssh-add ".ssh/id_rsa" > /dev/null 2>&1
+echo "$PASSPHRASE" | ssh-add "$SSH_DIR/id_rsa" > /dev/null 2>&1
 
 if [ ! -d src ]; then
 	echo "${Cyan}Creating src dir...${Rst}"
@@ -100,11 +113,11 @@ else
 	echo "  ${Cyan}cloning...${Rst}"
 	git clone -q git://github.com/servalproject/serval-dna.git
 
-	echo "  ${Cyan}making...${Rst}"
+	echo "  ${Cyan}making... {Yellow}(may take a while)${Rst}" $
 	if [ -d serval-dna ]; then
 		cd serval-dna
-		autoreconf -f -i
-		./configure
+		autoreconf -f -i  > /dev/null
+		./configure  > /dev/null
 		make clean -s -k
 		make -s -k
 
@@ -114,7 +127,7 @@ else
 			sudo mkdir -p /usr/local/etc/serval
 			sudo chmod 755 servald
 			sudo rm -f /usr/bin/servald
-			sudo ln -s /home/pi/src/serval-dna/servald /usr/bin/servald
+			sudo ln -s "$HOME/src/serval-dna/servald" /usr/bin/servald
 		else
 			echo "    ${IRed}error! servald may not have built.${Rst}"
 		fi
@@ -171,20 +184,56 @@ fi
 cd ..
 
 echo "${Cyan}Setting VNC password...${Rst}"
-mkdir -p ".vnc"
-if [ -d ".vnc" ]; then
-	cd ".vnc"
-	echo "$VNC_PASS" | vncpasswd -f > passwd
+mkdir -p "$VNC_DIR"
+if [ -d "$VNC_DIR" ]; then
+	VALID=0
+	while [ $VALID -eq 0 ]
+	do
+		FIRST_PASS=""
+		SECOND_PASS=""
+
+		while [ "$FIRST_PASS" = "" ]
+		do
+			echo -n "${Yellow}Enter a password: ${Rst}"
+			stty -echo
+			read FIRST_PASS
+			stty echo
+			echo ""
+			FIRST_PASS=`echo "$FIRST_PASS" | sed 's/^ *//;s/ *$//'`
+		done
+
+		while [ "$SECOND_PASS" = "" ]
+		do
+			echo -n "${Yellow}Re-enter password: ${Rst}"
+			stty -echo
+			read SECOND_PASS
+			stty echo
+			echo ""
+			SECOND_PASS=`echo "$SECOND_PASS" | sed 's/^ *//;s/ *$//'`
+		done
+		
+		VALID=1
+		if [ "$FIRST_PASS" != "$SECOND_PASS" ]; then
+			echo "    ${IRed}error! did not match.${Rst}"
+			VALID=0
+		fi
+
+		if [ $VALID -eq 1 ] && [ `expr length "$FIRST_PASS"` -lt 5 ]; then
+			echo "    ${IRed}error! too short (min 5 chars).${Rst}"
+			VALID=0
+		fi
+	done
+
+	echo "$FIRST_PASS" | vncpasswd -f > "$VNC_DIR/passwd"
 	if [ -f passwd ]; then
-		echo "    ${Green}OK! password: $VNC_PASS${Rst}"
+		echo "    ${Green}OK!${Rst}"
 		killall Xtightvnc > /dev/null 2>&1
 		vncserver :1 -geometry 1024x576 > /dev/null 2>&1
 	else
-		echo "    ${IRed}error! could not create passwd file.${Rst}"
+		echo "    ${IRed}error! could not create $VNC_DIR/passwd.${Rst}"
 	fi
-	cd ..
 else
-	echo "    ${IRed}error! could not create .vnc dir.${Rst}"
+	echo "    ${IRed}error! could not create $VNC_DIR.${Rst}"
 fi
 
 echo "${Cyan}Installing babeld...${Rst}"
