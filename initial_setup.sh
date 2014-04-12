@@ -160,6 +160,7 @@ fi
 echo "  ${Cyan}making...${Rst}"
 if [ -d wfu-tools ]; then
 	cd wfu-tools
+	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
 	sudo chmod 755 wfu-update.sh
 	./wfu-update.sh
 	sudo wfu-setup -q
