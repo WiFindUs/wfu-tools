@@ -48,7 +48,7 @@ echo "${Cyan}Upgrading distro...${Rst}"
 sudo apt-get -qq dist-upgrade > /dev/null 2>&1
 
 echo "${Cyan}Installing [most] apps...${Rst}"
-sudo apt-get -qq install hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null 2>&1
+sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null 2>&1
 
 echo "${Cyan}Cleaning up...${Rst}"
 sudo apt-get -qq clean > /dev/null 2>&1
