@@ -12,7 +12,6 @@ git clone -q git://github.com/WiFindUs/wfu-tools.git
 
 cd wfu-tools
 git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
-sudo rm -f rebuild_rpi_kernel.sh
 sudo chmod 755 wfu-update.sh
 sudo chmod 755 wfu-relink.sh
 sudo chmod 755 initial_setup.sh
