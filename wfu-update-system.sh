@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #===============================================================
 # File: wfu-update-system.sh
 # Author: Mark Gillard

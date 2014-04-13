@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #===============================================================
 # File: wfu-initial-setup.sh
 # Author: Mark Gillard
@@ -13,7 +13,7 @@
 #===============================================================
 
 PROFILE_CONFIG="$HOME/.profile"
-if [ "${PI_HOME:-unset}" == "unset"]; then
+if [ -z "$PI_HOME" ]; then
 	PI_HOME="/home/pi"
 	export PI_HOME
 	
@@ -26,8 +26,8 @@ if [ "${PI_HOME:-unset}" == "unset"]; then
 		exit 1
 	fi
 
-
-	if  [ `cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"` == "" ]; then	
+	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
+	if  [ "$HAYSTACK" == "" ]; then
 		echo "" >> "$PROFILE_CONFIG"
 		echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
 		echo "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
@@ -38,7 +38,6 @@ if [ "${PI_HOME:-unset}" == "unset"]; then
 		echo "fi" >> "$PROFILE_CONFIG"
 		echo "" >> "$PROFILE_CONFIG"
 	fi
-	
 fi
 
 clear

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #===============================================================
 # File: rpi_build_kernel.sh
 # Author: Mark Gillard
