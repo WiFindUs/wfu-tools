@@ -50,6 +50,12 @@ sudo apt-get -qq dist-upgrade > /dev/null 2>&1
 
 echo "${Cyan}Installing [most] apps...${Rst}"
 sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null 2>&1
+sudo update-rc.d -f hostapd remove > /dev/null 2>&1
+sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+sudo update-rc.d -f udhcpd remove > /dev/null 2>&1
+sudo update-rc.d -f udhcpd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+sudo update-rc.d -f gpsd remove > /dev/null 2>&1
+sudo update-rc.d -f gpsd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 
 echo "${Cyan}Cleaning up...${Rst}"
 sudo apt-get -qq clean > /dev/null 2>&1
@@ -128,6 +134,8 @@ else
 			sudo chmod 755 servald
 			sudo rm -f /usr/bin/servald
 			sudo ln -s "$HOME/src/serval-dna/servald" /usr/bin/servald
+			sudo update-rc.d -f servald remove > /dev/null 2>&1
+			sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 		else
 			echo "    ${IRed}error! servald may not have built.${Rst}"
 		fi
@@ -137,11 +145,18 @@ else
 	fi
 fi
 
-echo "${Cyan}Fetching Atheros firmware...${Rst}"
+echo "${Cyan}Fetching Atheros 9271 firmware...${Rst}"
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]
 	cd "/lib/firmware"
 	sudo wget -q http://linuxwireless.org/download/htc_fw/1.3/htc_9271.fw
+	if [ -f "htc_9271.fw" ]
+		echo "  ${Green}OK!${Rst}"
+	else
+		echo "  ${IRed}error! probably 404.${Rst}"
+	fi
 	cd "$HOME/src"
+else
+	echo "  ${Yellow}already present.${Rst}"
 fi
 
 echo "${Cyan}Fetching wallpapers...${Rst}"
@@ -201,7 +216,7 @@ if [ -d "$VNC_DIR" ]; then
 
 		while [ "$FIRST_PASS" = "" ]
 		do
-			echo -n "${Yellow}Enter a password: ${Rst}"
+			echo -n "  ${Yellow}Enter a password: ${Rst}"
 			stty -echo
 			read FIRST_PASS
 			stty echo
@@ -211,7 +226,7 @@ if [ -d "$VNC_DIR" ]; then
 
 		while [ "$SECOND_PASS" = "" ]
 		do
-			echo -n "${Yellow}Re-enter password: ${Rst}"
+			echo -n "  ${Yellow}Re-enter password: ${Rst}"
 			stty -echo
 			read SECOND_PASS
 			stty echo
@@ -233,19 +248,21 @@ if [ -d "$VNC_DIR" ]; then
 
 	echo "$FIRST_PASS" | vncpasswd -f > "$VNC_DIR/passwd"
 	if [ -f passwd ]; then
-		echo "    ${Green}OK!${Rst}"
+		echo "  ${Green}OK!${Rst}"
 		killall Xtightvnc > /dev/null 2>&1
 		vncserver :1 -geometry 1024x576 > /dev/null 2>&1
 	else
-		echo "    ${IRed}error! could not create $VNC_DIR/passwd.${Rst}"
+		echo "  ${IRed}error! could not create $VNC_DIR/passwd.${Rst}"
 	fi
 else
-	echo "    ${IRed}error! could not create $VNC_DIR.${Rst}"
+	echo "  ${IRed}error! could not create $VNC_DIR.${Rst}"
 fi
 
-echo "${Cyan}Installing babeld...${Rst}"
-echo "  ${Yellow}It may auto-run and halt this script!"
-echo "  You will need to terminate it manually.${Rst}"
-sudo apt-get -qq install babeld > /dev/null 2>&1
+#echo "${Cyan}Installing babeld...${Rst}"
+#echo "  ${Yellow}It may auto-run and halt this script!"
+#echo "  You will need to terminate it manually.${Rst}"
+#sudo apt-get -qq install babeld > /dev/null 2>&1
+#sudo update-rc.d -f babeld remove > /dev/null 2>&1
+#sudo update-rc.d -f babeld stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 
 echo "${Green}Finished :)\n${Yellow}You should reboot now!${Rst}"

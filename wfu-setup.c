@@ -163,18 +163,34 @@ int write_rc_local(int num)
 	}
 	
 	fprintf(file,"#!/bin/sh -e\n");
-	fprintf(file,"sleep 5\n");
+
 
 	fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
+	fprintf(file,"sleep 3\n");
+//	fprintf(file,"sudo iw dev wlan0 del\n");
+	fprintf(file,"sudo iw dev wlan0 interface add mesh0 type mp\n");
+	fprintf(file,"sudo iw dev wlan0 interface add ap0 type managed\n");
 	fprintf(file,"sudo ifconfig wlan0 down\n");
+
+//	fprintf(file,"sudo iw dev mesh0 set channel 1 HT40+\n");
+//	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);
+
+
+
+	/*
 	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc channel 1 rts 250 frag 256\n");
 	fprintf(file,"sudo iwconfig wlan0 essid wifindus_mesh\n");
 	fprintf(file,"sudo iwconfig wlan0 key off\n");
-	//fprintf(file,"sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
+	fprintf(file,"sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
 	fprintf(file,"sudo ifconfig wlan0 192.168.2.%d/24 up\n",num);
+	*/
 	
-	fprintf(file,"sleep 1\n");
-	fprintf(file,"sudo babeld wlan0\n");
+	fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
+	fprintf(file,"sleep 3\n");
+	//fprintf(file,"sudo servald start\n");
+	//fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+	//fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
+	//fprintf(file,"sudo babeld -D wlan0\n");
 
 	fprintf(file,"exit 0\n");
 	
@@ -199,8 +215,9 @@ int write_hostapd(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"interface=wlan1\n");
-	fprintf(file,"driver=rtl871xdrv\n");
+	fprintf(file,"interface=ap0\n");
+//	fprintf(file,"driver=rtl871xdrv\n");
+	fprintf(file,"driver=nl80211\n");
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
 	fprintf(file,"channel=6\n");
@@ -271,21 +288,6 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        gateway 192.168.1.254\n\n");
 
-	/* //shouldn't need this since/etc/rc.local explicitly enables wlan0
-	fprintf(file,"auto wlan0\n");
-	fprintf(file,"iface wlan0 inet static\n");
-	fprintf(file,"        address 192.168.2.%d\n",num);
-	fprintf(file,"        netmask 255.255.255.0\n");
-	*/
-	
-	/* //wlan1 is currently AWOL
-	fprintf(file,"auto wlan1\n");
-	fprintf(file,"iface wlan1 inet static\n");
-	fprintf(file,"        address 192.168.0.1\n");
-	fprintf(file,"        netmask 255.255.255.0\n\n");
-	*/
-	fprintf(file,"iface default inet dhcp\n");
-
 	fclose(file);
 	if (!quietMode)
 		printf(" [ok]\n");
@@ -309,7 +311,7 @@ int write_udhcpd(int num)
 	
 	fprintf(file,"start      192.168.0.2\n");
 	fprintf(file,"end        192.168.0.254\n");
-	fprintf(file,"interface  wlan1\n");
+	fprintf(file,"interface  ap0\n");
 	fprintf(file,"remaining  yes\n");
 	fprintf(file,"opt lease 86400\n");
 	fprintf(file,"opt subnet 255.255.255.0\n");
@@ -336,8 +338,9 @@ int write_servald(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"interfaces.0.match=wlan0\n");
+	fprintf(file,"interfaces.0.match=mesh*\n");
 	fprintf(file,"interfaces.0.type=wifi\n");
+	fprintf(file,"server.respawn_on_crash=true\n");
 	
 	fclose(file);
 	if (!quietMode)
