@@ -83,7 +83,7 @@ read_password ()
 		do
 			echo -n "  ${Yellow}Enter $1 ($2-$3 chars): ${Rst}" >&2
 			stty -echo
-			read PASSWORD
+			read PASS
 			stty echo
 			echo "" >&2
 			PASS=`echo "$PASS" | sed 's/^ *//;s/ *$//'`
