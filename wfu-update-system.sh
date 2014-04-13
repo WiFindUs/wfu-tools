@@ -17,7 +17,7 @@ echo -e "${STYLE_CYAN}Upgrading distro...${STYLE_NONE}"
 sudo apt-get -qq dist-upgrade > /dev/null 2>&1
 
 echo -e "${STYLE_CYAN}Installing apps...${STYLE_NONE}"
-sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd gpsd-clients > /dev/null 2>&1
+sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd > /dev/null 2>&1
 sudo update-rc.d -f hostapd remove > /dev/null 2>&1
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 sudo update-rc.d -f udhcpd remove > /dev/null 2>&1
