@@ -31,7 +31,9 @@ if [ -z "$PI_HOME" ]; then
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
 	if  [ "$HAYSTACK" == "" ]; then
 		echo -e "" >> "$PROFILE_CONFIG"
+		echo -e "" >> "$PROFILE_CONFIG"
 		echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
+		echo -e "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"
 		echo -e "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
 		echo -e "export PI_HOME" >> "$PROFILE_CONFIG"
 		echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
