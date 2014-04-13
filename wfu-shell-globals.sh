@@ -46,11 +46,11 @@ read_plaintext ()
 	VALUE=""
 	while [ $VALID -eq 0 ]
 	do
-		echo -n "  ${STYLE_YELLOW}Enter $1: ${STYLE_NONE}" >&2
+		echo -n -e "  ${STYLE_YELLOW}Enter $1: ${STYLE_NONE}" >&2
 		read VALUE
 	
 		ANSWERED=0
-		echo -n "  You entered ${STYLE_YELLOW}$VALUE${STYLE_NONE}." >&2
+		echo -n -e "  You entered ${STYLE_YELLOW}$VALUE${STYLE_NONE}." >&2
 		while [ $ANSWERED -eq 0 ]
 		do
 			echo -n "  Correct? (y/N):" >&2
@@ -75,13 +75,13 @@ export -f read_plaintext
 
 read_number ()
 {
-	echo -n "  ${STYLE_YELLOW}Enter $1 ($2-$3): ${STYLE_NONE}"
+	echo -n -e "  ${STYLE_YELLOW}Enter $1 ($2-$3): ${STYLE_NONE}"
 	read VALUE
 
 	while [ $VALUE -lt $2 ] || [ $VALUE -gt $3 ]
 	do
-		echo "    ${STYLE_RED}outside range!${STYLE_NONE}"
-		echo -n "  ${STYLE_YELLOW}Enter $1 ($2-$3): ${STYLE_NONE}"
+		echo -e "    ${STYLE_RED}outside range!${STYLE_NONE}"
+		echo -n -e "  ${STYLE_YELLOW}Enter $1 ($2-$3): ${STYLE_NONE}"
 		read VALUE
 	done
 
@@ -101,7 +101,7 @@ read_password ()
 
 		while [ "$PASS" = "" ]
 		do
-			echo -n "  ${STYLE_YELLOW}Enter $1 ($2-$3 chars): ${STYLE_NONE}" >&2
+			echo -n -e "  ${STYLE_YELLOW}Enter $1 ($2-$3 chars): ${STYLE_NONE}" >&2
 			stty -echo
 			read PASS
 			stty echo
@@ -111,7 +111,7 @@ read_password ()
 
 		while [ "$SECONDPASS" = "" ]
 		do
-			echo -n "  ${STYLE_YELLOW}Re-enter password: ${STYLE_NONE}" >&2
+			echo -n -e "  ${STYLE_YELLOW}Re-enter password: ${STYLE_NONE}" >&2
 			stty -echo
 			read SECONDPASS
 			stty echo
@@ -121,14 +121,14 @@ read_password ()
 		
 		VALID=1
 		if [ "$PASS" != "$SECONDPASS" ]; then
-			echo "    ${STYLE_IRED}error! did not match.${STYLE_NONE}" >&2
+			echo -e "    ${STYLE_IRED}error! did not match.${STYLE_NONE}" >&2
 			VALID=0
 		fi
 
 		if [ $VALID -eq 1 ]; then
 			LENGTH=`expr length "$PASS"`
 			if [ $LENGTH -lt $2 ] || [ $LENGTH -gt $3 ]; then
-				echo "    ${STYLE_IRED}outside length range!${STYLE_NONE}" >&2
+				echo -e "    ${STYLE_IRED}outside length range!${STYLE_NONE}" >&2
 				VALID=0
 			fi
 		fi
