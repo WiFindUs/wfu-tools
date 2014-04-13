@@ -149,11 +149,8 @@ else
 	echo -e "    ${STYLE_IRED}error! cloning probably failed.${STYLE_NONE}"
 fi
 
-echo -e "${STYLE_CYAN}Setting Unix passwords for 'pi' and 'root'...${STYLE_NONE}"
+echo -e "${STYLE_CYAN}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
-sudo su > /dev/null 2>&1
-echo -e "$PASSWORD\n$PASSWORD\n" | passwd > /dev/null 2>&1
-exit
 
 echo -e "${STYLE_GREEN}Finished :)\n${STYLE_YELLOW}Thanks! The system will now reboot.${STYLE_NONE}"
 sleep 3
