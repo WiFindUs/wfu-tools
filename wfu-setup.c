@@ -165,13 +165,18 @@ int write_rc_local(int num)
 
 
 	fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
-	fprintf(file,"sleep 3\n");
-//	fprintf(file,"sudo iw dev wlan0 del\n");
-	fprintf(file,"sudo iw dev wlan0 interface add mesh0 type mp\n");
-	fprintf(file,"sudo iw dev wlan0 interface add ap0 type managed\n");
-	fprintf(file,"sudo ifconfig wlan0 down\n");
+//	fprintf(file,"sudo ifconfig wlan0 down\n");
+//	fprintf(file,"sleep 3\n");
 
-//	fprintf(file,"sudo iw dev mesh0 set channel 1 HT40+\n");
+	//mesh0
+	//fprintf(file,"sudo iw dev wlan0 interface add mesh0 type mp\n");
+	//fprintf(file,"sudo iw dev mesh0 set channel 1 HT40+\n");
+
+	//ap0
+	//fprintf(file,"sudo iw dev wlan0 interface add ap0 type managed\n");
+
+
+
 //	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);
 
 
@@ -187,9 +192,8 @@ int write_rc_local(int num)
 	fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
 	fprintf(file,"sleep 3\n");
 	//fprintf(file,"sudo servald start\n");
-	//fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-	//fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
-	//fprintf(file,"sudo babeld -D wlan0\n");
+	fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+	fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
 
 	fprintf(file,"exit 0\n");
 	
@@ -219,7 +223,7 @@ int write_hostapd(int num)
 	fprintf(file,"driver=nl80211\n");
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
-	fprintf(file,"channel=6\n");
+	fprintf(file,"channel=1\n");
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=3\n");
 	fprintf(file,"ignore_broadcast_ssid=0\n");
@@ -233,6 +237,7 @@ int write_hostapd(int num)
 	fprintf(file,"ieee80211h=1\n");
 	fprintf(file,"country_code=AU\n");
 	fprintf(file,"wmm_enabled=1\n");
+	fprintf(file,"ht_capab=HT40+\n");
 	
 	fclose(file);
 	if (!quietMode)
