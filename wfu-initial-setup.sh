@@ -1,6 +1,6 @@
 #!/bin/sh
 #===============================================================
-# File: initial_setup.sh
+# File: wfu-initial-setup.sh
 # Author: Mark Gillard
 # Target environment: Raspbian
 # Description:
