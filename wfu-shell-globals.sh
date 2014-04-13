@@ -40,6 +40,7 @@ WFU_REPOSITORY="git://github.com/WiFindUs/wfu-tools.git"
 export SSH_DIR
 export SRC_DIR
 export WFU_TOOLS_DIR
+export WFU_REPOSITORY
 
 read_plaintext ()
 {
