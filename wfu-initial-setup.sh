@@ -16,36 +16,37 @@ PROFILE_CONFIG="$HOME/.profile"
 if [ -z "$PI_HOME" ]; then
 	PI_HOME="/home/pi"
 	export PI_HOME
+	echo "FUCK"
 	
 	IMPORT_SCRIPT="/home/pi/src/wfu-tools/wfu-shell-globals.sh"
 	if [ -f "$IMPORT_SCRIPT" ]; then
 		sudo chmod 755 "$IMPORT_SCRIPT"
 		"$IMPORT_SCRIPT"
 	else
-		echo "could not find globals for current user. aborting."
+		echo -e "could not find globals for current user. aborting."
 		exit 1
 	fi
 
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
 	if  [ "$HAYSTACK" == "" ]; then
-		echo "" >> "$PROFILE_CONFIG"
-		echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
-		echo "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
-		echo "export PI_HOME" >> "$PROFILE_CONFIG"
-		echo "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
-		echo "	sudo chmod 755 \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
-		echo "	\"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
-		echo "fi" >> "$PROFILE_CONFIG"
-		echo "" >> "$PROFILE_CONFIG"
+		echo -e "" >> "$PROFILE_CONFIG"
+		echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
+		echo -e "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
+		echo -e "export PI_HOME" >> "$PROFILE_CONFIG"
+		echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
+		echo -e "	sudo chmod 755 \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
+		echo -e "	\"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
+		echo -e "fi" >> "$PROFILE_CONFIG"
+		echo -e "" >> "$PROFILE_CONFIG"
 	fi
 fi
 
 clear
-echo "${STYLE_TITLE}WIFINDUS BRAIN INITIAL SETUP"
-echo              "============================${STYLE_NONE}"
-echo "${STYLE_IRED}You are strongly advised to reboot\nthe unit when this has completed!\n${STYLE_NONE}"
-echo ""
-echo "${STYLE_CYAN}Just a bit of information from you to start with...${STYLE_NONE}"
+echo -e "${STYLE_TITLE}WIFINDUS BRAIN INITIAL SETUP"
+echo  -e             "============================${STYLE_NONE}"
+echo -e "${STYLE_IRED}You are strongly advised to reboot\nthe unit when this has completed!\n${STYLE_NONE}"
+echo -e ""
+echo -e "${STYLE_CYAN}Just a bit of information from you to start with...${STYLE_NONE}"
 NAME=`read_plaintext 'your name'`
 EMAIL_ADDRESS=`read_plaintext 'your email address (for github)'`
 read_number "this unit's ID #" 1 254
