@@ -68,6 +68,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/rc.local\n\
     /etc/hostapd/hostapd.conf\n\
     /etc/udhcpd.conf\n\
+	/etc/default/udhcpd\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
     %s/src/wfu-brain-num\n\n",
@@ -165,22 +166,17 @@ int write_rc_local(int num)
 
 
 	fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
-//	fprintf(file,"sudo ifconfig wlan0 down\n");
-//	fprintf(file,"sleep 3\n");
-
-	//mesh0
-	//fprintf(file,"sudo iw dev wlan0 interface add mesh0 type mp\n");
-	//fprintf(file,"sudo iw dev mesh0 set channel 1 HT40+\n");
-
-	//ap0
-	//fprintf(file,"sudo iw dev wlan0 interface add ap0 type managed\n");
-
-
-
-//	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);
-
-
-
+	
+	fprintf(file,"sudo ifconfig wlan0 down\n");
+	fprintf(file,"sudo iw dev wlan0 del\n");
+	fprintf(file,"sudo iw reg set AU\n");
+	fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
+	fprintf(file,"sudo ip link set dev mesh0 address 50:50:50:50:50:50\n");
+	fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
+	fprintf(file,"sudo ip link set dev ap0 address 50:50:50:50:50:50\n");
+	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
+	fprintf(file,"sudo ifconfig ap0 up\n");	
+	
 	/*
 	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc channel 1 rts 250 frag 256\n");
 	fprintf(file,"sudo iwconfig wlan0 essid wifindus_mesh\n");
@@ -219,11 +215,14 @@ int write_hostapd(int num)
 	}
 	
 	fprintf(file,"interface=ap0\n");
-//	fprintf(file,"driver=rtl871xdrv\n");
-	fprintf(file,"driver=nl80211\n");
+	fprintf(file,"country_code=AU\n");
+	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
+	fprintf(file,"ieee80211n=1\n");
 	fprintf(file,"channel=1\n");
+	
+	/*
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=3\n");
 	fprintf(file,"ignore_broadcast_ssid=0\n");
@@ -232,12 +231,11 @@ int write_hostapd(int num)
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
 	fprintf(file,"rsn_pairwise=CCMP\n");
-	fprintf(file,"ieee80211n=1\n");
+
 	fprintf(file,"ieee80211d=1\n");
 	fprintf(file,"ieee80211h=1\n");
-	fprintf(file,"country_code=AU\n");
-	fprintf(file,"wmm_enabled=1\n");
-	fprintf(file,"ht_capab=HT40+\n");
+	*/
+
 	
 	fclose(file);
 	if (!quietMode)
@@ -296,6 +294,29 @@ int write_udhcpd(int num)
 	fprintf(file,"opt lease 86400\n");
 	fprintf(file,"opt subnet 255.255.255.0\n");
 	fprintf(file,"opt router 192.168.0.1\n");
+
+	fclose(file);
+	if (!quietMode)
+		printf(" [ok]\n");
+	
+	return TRUE;
+}
+
+int write_udhcpd_default(int num)
+{
+	FILE* file = NULL;
+	
+	if (!quietMode)
+		printf("Writing /etc/default/udhcpd...");
+	file = fopen("/etc/default/udhcpd","w");
+	if (file == NULL)
+	{
+		if (!quietMode)
+		printf("error. are you root?\n");
+		return FALSE;
+	}
+	
+	fprintf(file,"DHCPD_OPTS=\"-S\"\n");
 
 	fclose(file);
 	if (!quietMode)
@@ -446,6 +467,8 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 6;
 	if (!write_udhcpd(num))
 		return 7;
+	if (!write_udhcpd_default(num))
+		return 8;
 	if (!write_network_interfaces(num))
 		return 9;
 	if (!write_servald(num))
