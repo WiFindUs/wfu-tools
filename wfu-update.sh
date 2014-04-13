@@ -9,7 +9,7 @@
 cd "$SRC_DIR"
 
 sudo rm -f -r wfu-tools
-git clone -q git://github.com/WiFindUs/wfu-tools.git
+git clone -q $WFU_REPOSITORY
 
 cd wfu-tools
 

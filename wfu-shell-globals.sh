@@ -35,6 +35,7 @@ export STYLE_TITLE
 SSH_DIR="$PI_HOME/.ssh"
 SRC_DIR="$PI_HOME/src"
 WFU_TOOLS_DIR="$SRC_DIR/wfu-tools"
+WFU_REPOSITORY="git://github.com/WiFindUs/wfu-tools.git"
 
 export SSH_DIR
 export SRC_DIR

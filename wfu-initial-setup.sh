@@ -134,7 +134,7 @@ echo -e "${STYLE_CYAN}Assembling wfu-tools...${STYLE_NONE}"
 cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
 	echo -e "  ${STYLE_CYAN}cloning...${STYLE_NONE}"
-	git clone -q git://github.com/WiFindUs/wfu-tools.git
+	git clone -q $WFU_REPOSITORY
 fi
 echo -e "  ${STYLE_CYAN}making...${STYLE_NONE}"
 if [ -d wfu-tools ]; then
