@@ -173,21 +173,13 @@ int write_rc_local(int num)
 	fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
 	fprintf(file,"sudo ip link set dev mesh0 address 50:50:50:50:50:50\n");
 	fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-	fprintf(file,"sudo ip link set dev ap0 address 50:50:50:50:50:50\n");
+	fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:60\n");
 	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
 	fprintf(file,"sudo ifconfig ap0 up\n");	
 	
-	/*
-	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc channel 1 rts 250 frag 256\n");
-	fprintf(file,"sudo iwconfig wlan0 essid wifindus_mesh\n");
-	fprintf(file,"sudo iwconfig wlan0 key off\n");
-	fprintf(file,"sudo iwconfig wlan0 key s:PWbDq39QQ8632\n");
-	fprintf(file,"sudo ifconfig wlan0 192.168.2.%d/24 up\n",num);
-	*/
-	
 	fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
 	fprintf(file,"sleep 3\n");
-	//fprintf(file,"sudo servald start\n");
+	fprintf(file,"sudo servald start\n");
 	fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 	fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
 	fprintf(file,"sudo hostapd -B /etc/hostapd/hostapd.conf\n");
