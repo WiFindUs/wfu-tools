@@ -27,7 +27,7 @@ sudo ln -s "$WFU_TOOLS_DIR/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
 sudo rm -f /usr/bin/wfu-purge-system
 sudo ln -s "$WFU_TOOLS_DIR/wfu-purge-system.sh" /usr/bin/wfu-purge-system
 
-sudo rm -f /usr/bin/wfu-update-system.
+sudo rm -f /usr/bin/wfu-update-system
 sudo ln -s "$WFU_TOOLS_DIR/wfu-update-system.sh" /usr/bin/wfu-update-system
 
 sudo rm -f /usr/bin/wfu-update
