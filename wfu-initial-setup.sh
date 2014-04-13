@@ -13,7 +13,7 @@
 #===============================================================
 
 PROFILE_CONFIG="$HOME/.profile"
-if [ "${PI_HOME:+set}" != "set"]; then
+if [ "${PI_HOME:-unset}" == "unset"]; then
 	PI_HOME="/home/pi"
 	export PI_HOME
 	
