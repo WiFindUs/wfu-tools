@@ -34,7 +34,7 @@ sudo rm -rf /usr/games/
 sudo rm -rf python_games
 sudo rm -rf indiecity
 sudo rm -f ocr_pi.png
-sudo apt-get -qq purge scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi > /dev/null 2>&1
+sudo apt-get -qq purge wpasupplicant scratch xpdf idle midori omxplayer dillo netsurf-common netsurf-gtk pistore debian-reference-common debian-reference-en libpoppler19 poppler-utils squeek-plugins-scratch wolfram-engine sonic-pi > /dev/null 2>&1
 
 echo "${Cyan}Removing leftovers...${Rst}"
 sudo apt-get -qq autoremove > /dev/null 2>&1
@@ -48,7 +48,7 @@ sudo apt-get -qq upgrade > /dev/null 2>&1
 echo "${Cyan}Upgrading distro...${Rst}"
 sudo apt-get -qq dist-upgrade > /dev/null 2>&1
 
-echo "${Cyan}Installing [most] apps...${Rst}"
+echo "${Cyan}Installing apps...${Rst}"
 sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd gpsd-clients tightvncserver > /dev/null 2>&1
 sudo update-rc.d -f hostapd remove > /dev/null 2>&1
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
@@ -257,12 +257,5 @@ if [ -d "$VNC_DIR" ]; then
 else
 	echo "  ${IRed}error! could not create $VNC_DIR.${Rst}"
 fi
-
-#echo "${Cyan}Installing babeld...${Rst}"
-#echo "  ${Yellow}It may auto-run and halt this script!"
-#echo "  You will need to terminate it manually.${Rst}"
-#sudo apt-get -qq install babeld > /dev/null 2>&1
-#sudo update-rc.d -f babeld remove > /dev/null 2>&1
-#sudo update-rc.d -f babeld stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 
 echo "${Green}Finished :)\n${Yellow}You should reboot now!${Rst}"

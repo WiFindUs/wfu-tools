@@ -68,7 +68,6 @@ scripts needed to set up the mesh network.\n\n"
     /etc/rc.local\n\
     /etc/hostapd/hostapd.conf\n\
     /etc/udhcpd.conf\n\
-    /etc/wpa_supplicant/wpa_supplicant.conf\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
     %s/src/wfu-brain-num\n\n",
@@ -234,30 +233,6 @@ int write_hostapd(int num)
 	fprintf(file,"ieee80211h=1\n");
 	fprintf(file,"country_code=AU\n");
 	fprintf(file,"wmm_enabled=1\n");
-	
-	fclose(file);
-	if (!quietMode)
-		printf(" [ok]\n");
-	
-	return TRUE;
-}
-
-int write_supplicant(int num)
-{
-	FILE* file = NULL;
-	
-	if (!quietMode)
-		printf("Writing /etc/wpa_supplicant/wpa_supplicant.conf...");
-	file = fopen("/etc/wpa_supplicant/wpa_supplicant.conf","w");
-	if (file == NULL)
-	{
-		if (!quietMode)
-			printf("error. are you root?\n");
-		return FALSE;
-	}
-	
-	fprintf(file,"ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n");
-	fprintf(file,"update_config=1\n\n");
 	
 	fclose(file);
 	if (!quietMode)
@@ -466,8 +441,6 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 6;
 	if (!write_udhcpd(num))
 		return 7;
-	if (!write_supplicant(num))
-		return 8;
 	if (!write_network_interfaces(num))
 		return 9;
 	if (!write_servald(num))
