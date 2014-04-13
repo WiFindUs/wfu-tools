@@ -175,7 +175,7 @@ int write_rc_local(int num)
 	fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 	fprintf(file,"sudo ip link set dev ap0 address 50:50:50:50:50:50\n");
 	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
-	fprintf(file,"sudo ifconfig ap0 up\n");	
+	//fprintf(file,"sudo ifconfig ap0 up\n");	
 	
 	/*
 	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc channel 1 rts 250 frag 256\n");
@@ -190,6 +190,8 @@ int write_rc_local(int num)
 	//fprintf(file,"sudo servald start\n");
 	fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 	fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
+	fprintf(file,"sudo hostapd -B /etc/hostapd/hostapd.conf\n");
+	fprintf(file,"sudo service udhcpd start\n");
 
 	fprintf(file,"exit 0\n");
 	
@@ -221,21 +223,13 @@ int write_hostapd(int num)
 	fprintf(file,"hw_mode=g\n");
 	fprintf(file,"ieee80211n=1\n");
 	fprintf(file,"channel=1\n");
-	
-	/*
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=3\n");
-	fprintf(file,"ignore_broadcast_ssid=0\n");
 	fprintf(file,"wpa=3\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
 	fprintf(file,"rsn_pairwise=CCMP\n");
-
-	fprintf(file,"ieee80211d=1\n");
-	fprintf(file,"ieee80211h=1\n");
-	*/
-
 	
 	fclose(file);
 	if (!quietMode)
