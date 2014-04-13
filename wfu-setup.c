@@ -385,7 +385,6 @@ int main(int argc, char **argv)
 	int autoReboot = FALSE;
 	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
-	int autoWallpaper = TRUE;
 	//end vars
 	
 	strcpy(src_dir,getenv("SRC_DIR"));
@@ -398,8 +397,6 @@ int main(int argc, char **argv)
 			autoHalt = TRUE;
 		else if (strcmp(argv[i],"-h") == 0 || strcmp(argv[i],"--help") == 0)
 			detailedHelpMode = TRUE;
-		else if (strcmp(argv[i],"-w") == 0 || strcmp(argv[i],"--wallpaper") == 0)
-			autoWallpaper = FALSE;
 		else if (strcmp(argv[i],"-q") == 0 || strcmp(argv[i],"--quiet") == 0)
 			quietMode = TRUE;
 		else
@@ -460,21 +457,6 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 10;
 	if (!write_brain_num(num))
 		return 11;
-	if (autoWallpaper)
-	{
-		sprintf(nbuf,"%s/src/wfu-brain-wallpapers/wfu-brain-%d.png",home,num);
-		
-		if (access(nbuf, F_OK) == 0)
-		{
-			sprintf(sbuf,"sudo -u pi pcmanfm --set-wallpaper \"%s\" > /dev/null 2>&1",nbuf);
-			
-			pid_t proc = fork();
-			if (proc == 0)
-				return system(sbuf);
-			else if (proc < 0)
-				return 40;
-		}
-	}
 	if (autoReboot || autoHalt)
 	{
 		pid_t proc = fork();
