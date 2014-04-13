@@ -21,7 +21,7 @@ if [ -z "$PI_HOME" ]; then
 	IMPORT_SCRIPT="/home/pi/src/wfu-tools/wfu-shell-globals.sh"
 	if [ -f "$IMPORT_SCRIPT" ]; then
 		sudo chmod 755 "$IMPORT_SCRIPT"
-		"$IMPORT_SCRIPT"
+		source "$IMPORT_SCRIPT"
 	else
 		echo -e "could not find globals for current user. aborting."
 		exit 1
