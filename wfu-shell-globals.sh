@@ -16,7 +16,7 @@ STYLE_IRED="${STYLE_MARKER}0;91m"
 STYLE_GREEN="${STYLE_MARKER}0;32m"
 STYLE_YELLOW="${STYLE_MARKER}0;33m"
 STYLE_CYAN="${STYLE_MARKER}0;36m"
-STYLE_TITLE="${STYLE_BOLD}${STYLE_CYAN}"
+STYLE_TITLE="${STYLE_MARKER}1;36m"
 
 export STYLE_MARKER
 export STYLE_NONE
@@ -50,10 +50,10 @@ read_plaintext ()
 		read VALUE
 	
 		ANSWERED=0
-		echo -n -e "  You entered ${STYLE_YELLOW}$VALUE${STYLE_NONE}." >&2
+		echo -n -e "  ${STYLE_YELLOW}You entered${STYLE_NONE} $VALUE." >&2
 		while [ $ANSWERED -eq 0 ]
 		do
-			echo -n "  Correct? (y/N):" >&2
+			echo -n -e "  ${STYLE_YELLOW}Correct? (y/N):${STYLE_NONE} " >&2
 			read ANSWER
 			case "$ANSWER" in
 				y|Y) VALID=1

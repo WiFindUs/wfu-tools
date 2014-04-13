@@ -44,7 +44,7 @@ fi
 clear
 echo -e "${STYLE_TITLE}WIFINDUS BRAIN INITIAL SETUP"
 echo  -e             "============================${STYLE_NONE}"
-echo -e "${STYLE_IRED}NOTE: The unit will be rebooted when this has completed.\n${STYLE_NONE}"
+echo -e "${STYLE_IRED}NOTE: The unit will be rebooted\n      when this has completed.${STYLE_NONE}"
 echo -e ""
 echo -e "${STYLE_CYAN}Just a bit of information from you to start with...${STYLE_NONE}"
 NAME=`read_plaintext 'your name'`
@@ -77,11 +77,11 @@ if [ -f id_rsa ]; then
 	sudo rm -f id_rsa
 	sudo rm -f id_rsa.pub
 fi
-echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null 2>&1
+echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD\n" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null 2>&1
 sudo chmod 600 id_rsa > /dev/null 2>&1
 sudo chmod 600 id_rsa.pub > /dev/null 2>&1
 eval $(ssh-agent) > /dev/null 2>&1
-echo "$PASSWORD" | ssh-add id_rsa > /dev/null 2>&1
+echo -e "$PASSWORD\n" | ssh-add id_rsa > /dev/null 2>&1
 
 echo -e "${STYLE_CYAN}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
@@ -150,9 +150,9 @@ else
 fi
 
 echo -e "${STYLE_CYAN}Setting Unix passwords for 'pi' and 'root'...${STYLE_NONE}"
-echo -e "$PASSWORD\n$PASSWORD" | sudo passwd pi > /dev/null 2>&1
+echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
 sudo su > /dev/null 2>&1
-echo -e "$PASSWORD\n$PASSWORD" | passwd > /dev/null 2>&1
+echo -e "$PASSWORD\n$PASSWORD\n" | passwd > /dev/null 2>&1
 exit
 
 echo -e "${STYLE_GREEN}Finished :)\n${STYLE_YELLOW}Thanks! The system will now reboot.${STYLE_NONE}"
