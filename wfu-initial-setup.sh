@@ -16,11 +16,12 @@ PROFILE_CONFIG="$HOME/.profile"
 if [ -z "$PI_HOME" ]; then
 	PI_HOME="/home/pi"
 	export PI_HOME
-	echo "FUCK"
 	
-	IMPORT_SCRIPT="/home/pi/src/wfu-tools/wfu-shell-globals.sh"
+	cd "$PI_HOME/src/wfu-tools"
+	sudo chmod 755 *.sh wfu-setup
+	
+	IMPORT_SCRIPT="$PI_HOME/src/wfu-tools/wfu-shell-globals.sh"
 	if [ -f "$IMPORT_SCRIPT" ]; then
-		sudo chmod 755 "$IMPORT_SCRIPT"
 		source "$IMPORT_SCRIPT"
 	else
 		echo -e "could not find globals for current user. aborting."
@@ -34,7 +35,6 @@ if [ -z "$PI_HOME" ]; then
 		echo -e "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
 		echo -e "export PI_HOME" >> "$PROFILE_CONFIG"
 		echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
-		echo -e "	sudo chmod 755 \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
 		echo -e "	\"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
 		echo -e "fi" >> "$PROFILE_CONFIG"
 		echo -e "" >> "$PROFILE_CONFIG"
@@ -55,14 +55,12 @@ PASSWORD=`read_password "a password for pi and git" 6 12`
 echo -e "  ${STYLE_YELLOW}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}"
 
 if [ -f "$WFU_TOOLS_DIR/wfu-purge-system.sh"  ]; then
-	sudo chmod 755 "$WFU_TOOLS_DIR/wfu-purge-system.sh"
 	"$WFU_TOOLS_DIR/wfu-purge-system.sh"
 else
 	echo -e "${STYLE_RED}Could not purge junk; wfu-purge-system.sh missing!...${STYLE_NONE}"
 fi
 
 if [ -f "$WFU_TOOLS_DIR/wfu-update-system.sh"  ]; then
-	sudo chmod 755 "$WFU_TOOLS_DIR/wfu-update-system.sh"
 	"$WFU_TOOLS_DIR/wfu-update-system.sh"
 else
 	echo -e "${STYLE_RED}Could not update system; wfu-update-system.sh missing!...${STYLE_NONE}"
@@ -140,7 +138,7 @@ echo -e "  ${STYLE_CYAN}making...${STYLE_NONE}"
 if [ -d wfu-tools ]; then
 	cd wfu-tools
 	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
-	sudo chmod 755 wfu-update.sh
+	sudo chmod 755 *.sh wfu-setup
 	./wfu-update.sh
 	
 	echo -e "${STYLE_CYAN}Running wfu-setup...${STYLE_NONE}"
