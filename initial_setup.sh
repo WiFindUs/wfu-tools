@@ -219,10 +219,10 @@ else
 fi
 
 echo "${Cyan}Fetching Atheros 9271 firmware...${Rst}"
-if [ ! -f "/lib/firmware/htc_9271.fw"  ]
+if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
 	cd "/lib/firmware"
 	sudo wget -q http://linuxwireless.org/download/htc_fw/1.3/htc_9271.fw
-	if [ -f "htc_9271.fw" ]
+	if [ -f "htc_9271.fw" ]; then
 		echo "  ${Green}OK!${Rst}"
 	else
 		echo "  ${IRed}error! probably 404.${Rst}"
