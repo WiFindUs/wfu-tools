@@ -54,71 +54,71 @@ Green="\033[0;32m"
 Yellow="\033[0;33m"
 Cyan="\033[0;36m"
 
-echo "${TitleStyle}Raspbian Kernel Rebuilder"
-echo              "=========================${Rst}"
+echo "${STYLE_TITLE}Raspbian Kernel Rebuilder"
+echo              "=========================${STYLE_NONE}"
 
 if [ ! -d "$SRC" ]; then
-	echo "${IRed}Source root doesn't exist.${Rst}"
+	echo "${STYLE_IRED}Source root doesn't exist.${STYLE_NONE}"
 	exit 1
 elif [ ! -d "$RPI" ]; then
-	echo "${IRed}RPI mount doesn't exist.${Rst}"
+	echo "${STYLE_IRED}RPI mount doesn't exist.${STYLE_NONE}"
 	exit 1
 elif [ ! -d "$RPI_BOOT" ]; then
-	echo "${IRed}RPI_BOOT mount doesn't exist.${Rst}"
+	echo "${STYLE_IRED}RPI_BOOT mount doesn't exist.${STYLE_NONE}"
 	exit 1
 elif [ ! -d "$LINUX" ]; then
-	echo "${IRed}Linux clone doesn't exist.${Rst}"
+	echo "${STYLE_IRED}Linux clone doesn't exist.${STYLE_NONE}"
 	exit 1
 elif [ ! -d "$TOOLS" ]; then
-	echo "${IRed}Tools clone doesn't exist.${Rst}"
+	echo "${STYLE_IRED}Tools clone doesn't exist.${STYLE_NONE}"
 	exit 1
 elif [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
-	echo "${IRed}Tools not complete.${Rst}"
+	echo "${STYLE_IRED}Tools not complete.${STYLE_NONE}"
 	exit 1
 fi
 
 cd "$LINUX"
 
-echo "${Yellow}This may take a while, go make a coffee! :)\n${Rst}"
+echo "${STYLE_YELLOW}This may take a while, go make a coffee! :)\n${STYLE_NONE}"
 
-echo "${Cyan}Cleaning build artefacts...${Rst}"
+echo "${STYLE_CYAN}Cleaning build artefacts...${STYLE_NONE}"
 make mrproper
 
-echo "${Cyan}Making config...${Rst}"
+echo "${STYLE_CYAN}Making config...${STYLE_NONE}"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE bcmrpi_defconfig -s -k -j$CORES
 
-echo "${Cyan}Making core...${Rst}"
+echo "${STYLE_CYAN}Making core...${STYLE_NONE}"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE -s -k -j$CORES
 
 if [ ! -f "$KERNEL_OUT" ]; then
-	echo "${IRed}Build complete, but kernel image file not found.\nCheck the script settings.${Rst}"
+	echo "${STYLE_IRED}Build complete, but kernel image file not found.\nCheck the script settings.${STYLE_NONE}"
 	exit 1
 fi
 
-echo "${Cyan}Making modules...${Rst}"
+echo "${STYLE_CYAN}Making modules...${STYLE_NONE}"
 if [ -d "$MODULES" ]; then
 	sudo rm -rf "$MODULES"
 	mkdir -p "$MODULES"
 fi
 make modules_install ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=$MODULES -s -k -j$CORES
 
-echo "${Cyan}Preparing kernel...${Rst}"
+echo "${STYLE_CYAN}Preparing kernel...${STYLE_NONE}"
 cd "$TOOLS/mkimage"
 sudo rm -f kernel.img
 ./imagetool-uncompressed.py "$KERNEL_OUT"
 
-echo "${Cyan}Moving kernel to SD card...${Rst}"
+echo "${STYLE_CYAN}Moving kernel to SD card...${STYLE_NONE}"
 sudo rm -f "$RPI_BOOT/kernel.img"
 sudo mv kernel.img "$RPI_BOOT/"
 
-echo "${Cyan}Removing old modules and firmware...${Rst}"
+echo "${STYLE_CYAN}Removing old modules and firmware...${STYLE_NONE}"
 sudo rm -rf "$RPI/lib/modules"
 sudo rm -rf "$RPI/lib/firmware"
 
-echo "${Cyan}Copying new modules and firmware...${Rst}"
+echo "${STYLE_CYAN}Copying new modules and firmware...${STYLE_NONE}"
 cd "$MODULES"
 sudo cp -a lib/modules/ "$RPI/lib/"
 sudo cp -a lib/firmware/ "$RPI/lib/"
 sync
 
-echo "${Green}Finished!\nEject the card and stick it in a RPi.${Rst}"
+echo "${STYLE_GREEN}Finished!\nEject the card and stick it in a RPi.${STYLE_NONE}"
