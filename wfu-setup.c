@@ -175,7 +175,7 @@ int write_rc_local(int num)
 	fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 	fprintf(file,"sudo ip link set dev ap0 address 50:50:50:50:50:50\n");
 	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
-	//fprintf(file,"sudo ifconfig ap0 up\n");	
+	fprintf(file,"sudo ifconfig ap0 up\n");	
 	
 	/*
 	fprintf(file,"sudo iwconfig wlan0 mode Ad-Hoc channel 1 rts 250 frag 256\n");
@@ -333,7 +333,7 @@ int write_servald(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"interfaces.0.match=mesh*\n");
+	fprintf(file,"interfaces.0.match=mesh*,ap*\n");
 	fprintf(file,"interfaces.0.type=wifi\n");
 	fprintf(file,"server.respawn_on_crash=true\n");
 	
