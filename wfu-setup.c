@@ -23,7 +23,7 @@
 #define VERSION_STR "v1.1" 
 #endif
 int quietMode = FALSE;
-char home[256], sbuf[256], nbuf[256];
+char src_dir[256], sbuf[256], nbuf[256];
 
 int min(int a, int b)
 {
@@ -41,12 +41,11 @@ void print_usage(char * argv0)
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -r or --reboot: auto reboot after completion.\n");
 	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
-	fprintf(stderr, "  -w or --wallpaper: do not automatically change wallpaper.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
 	fprintf(stderr, "Remarks:\n");
-	fprintf(stderr, "  If the number is omitted the value stored in %s/src/wfu-brain-num\
-will be used (if it exists).\n",home);
+	fprintf(stderr, "  If the number is omitted the value stored in %s/wfu-brain-num\
+will be used (if it exists).\n",src_dir);
 }
 
 void print_detailed_help()
@@ -71,8 +70,8 @@ scripts needed to set up the mesh network.\n\n"
 	/etc/default/udhcpd\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-    %s/src/wfu-brain-num\n\n",
-	home
+    %s/wfu-brain-num\n\n",
+	src_dir
 	);
 		
 	printf(
@@ -341,8 +340,8 @@ int write_brain_num(int num)
 	FILE* file = NULL;
 	
 	if (!quietMode)
-		printf("Writing %s/src/wfu-brain-num...",home);
-	sprintf(nbuf,"%s/src/wfu-brain-num",home);
+		printf("Writing %s/wfu-brain-num...",src_dir);
+	sprintf(nbuf,"%s/wfu-brain-num",src_dir);
 	file = fopen(nbuf,"w");
 	if (file == NULL)
 	{
@@ -365,7 +364,7 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	sprintf(nbuf,"%s/src/wfu-brain-num",home);
+	sprintf(nbuf,"%s/wfu-brain-num",src_dir);
 	file = fopen(nbuf,"r");
 	if (file == NULL)
 		return FALSE;
@@ -389,7 +388,7 @@ int main(int argc, char **argv)
 	int autoWallpaper = TRUE;
 	//end vars
 	
-	strcpy(home,"/home/pi");//getenv("HOME"));
+	strcpy(src_dir,getenv("SRC_DIR"));
 
 	for (i = 1; i < argc; i++)
 	{

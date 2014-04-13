@@ -28,8 +28,12 @@ export STYLE_CYAN
 export STYLE_YELLOW
 export STYLE_TITLE
 
-SSH_DIR="$HOME/.ssh"
-SRC_DIR="$HOME/src"
+#needs to go in ~/.profile:
+	#PI_HOME="$HOME"
+#needs to go in ~root/.profile:
+	#PI_HOME="/home/pi"
+SSH_DIR="$PI_HOME/.ssh"
+SRC_DIR="$PI_HOME/src"
 WFU_TOOLS_DIR="$SRC_DIR/wfu-tools"
 
 export SSH_DIR

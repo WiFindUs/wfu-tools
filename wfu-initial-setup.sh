@@ -43,15 +43,16 @@ echo "${STYLE_CYAN}Initializing SSH/Git...${STYLE_NONE}"
 git config --global user.name "$NAME" > /dev/null 2>&1
 git config --global user.email "$EMAIL_ADDRESS" > /dev/null 2>&1
 mkdir -p "$SSH_DIR"
-if [ -f "$SSH_DIR/id_rsa" ]; then
-	sudo rm -f "$SSH_DIR/id_rsa"
-	sudo rm -f "$SSH_DIR/id_rsa.pub"
+cd "$SSH_DIR"
+if [ -f id_rsa ]; then
+	sudo rm -f id_rsa
+	sudo rm -f id_rsa.pub
 fi
 echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null 2>&1
-sudo chmod 600 "$SSH_DIR/id_rsa" > /dev/null 2>&1
-sudo chmod 600 "$SSH_DIR/id_rsa.pub" > /dev/null 2>&1
+sudo chmod 600 id_rsa > /dev/null 2>&1
+sudo chmod 600 id_rsa.pub > /dev/null 2>&1
 eval $(ssh-agent) > /dev/null 2>&1
-echo "$PASSWORD" | ssh-add "$SSH_DIR/id_rsa" > /dev/null 2>&1
+echo "$PASSWORD" | ssh-add id_rsa > /dev/null 2>&1
 
 echo "${STYLE_CYAN}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
@@ -62,7 +63,6 @@ if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
 	else
 		echo "  ${STYLE_IRED}error! probably 404.${STYLE_NONE}"
 	fi
-	cd "$HOME"
 else
 	echo "  ${STYLE_YELLOW}already present.${STYLE_NONE}"
 fi
@@ -96,13 +96,13 @@ else
 		else
 			echo "    ${STYLE_IRED}error! servald may not have built.${STYLE_NONE}"
 		fi
-		cd ..
 	else
 		echo "    ${STYLE_IRED}error! cloning probably failed.${STYLE_NONE}"
 	fi
 fi
 
 echo "${STYLE_CYAN}Assembling wfu-tools...${STYLE_NONE}"
+cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
 	echo "  ${STYLE_CYAN}cloning...${STYLE_NONE}"
 	git clone -q git://github.com/WiFindUs/wfu-tools.git
@@ -116,13 +116,14 @@ if [ -d wfu-tools ]; then
 	
 	echo "${STYLE_CYAN}Running wfu-setup...${STYLE_NONE}"
 	sudo wfu-setup $ID_NUMBER -q
-	cd ..
 else
 	echo "    ${STYLE_IRED}error! cloning probably failed.${STYLE_NONE}"
 fi
-cd ..
 
-echo "${STYLE_CYAN}Setting Unix password (for user 'pi')...${STYLE_NONE}"
+echo "${STYLE_CYAN}Setting Unix passwords for 'pi' and 'root'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD" | sudo passwd pi > /dev/null 2>&1
+sudo su > /dev/null 2>&1
+echo -e "$PASSWORD\n$PASSWORD" | passwd > /dev/null 2>&1
+exit
 
 echo "${STYLE_GREEN}Finished :)\n${STYLE_YELLOW}You should reboot now!${STYLE_NONE}"
