@@ -7,12 +7,41 @@
 #   Sets up a fresh Rasbian install for use as a wfu-brain unit.
 #
 # Remarks:
-#   This script is intended to be the first thing
-#   you run on a new build of Raspbian that DOES NOT
-#   already have any WFU stuff.
+#   This script is intended to be the very next thing
+#   you do on a fresh install of Raspbian after cloning
+#	wfu-tools to /home/pi/src/wfu-tools.
 #===============================================================
-clear
 
+PROFILE_CONFIG="$HOME/.profile"
+if [ "${PI_HOME:+set}" != "set"]; then
+	PI_HOME="/home/pi"
+	export PI_HOME
+	
+	IMPORT_SCRIPT="/home/pi/src/wfu-tools/wfu-shell-globals.sh"
+	if [ -f "$IMPORT_SCRIPT" ]; then
+		sudo chmod 755 "$IMPORT_SCRIPT"
+		"$IMPORT_SCRIPT"
+	else
+		echo "could not find globals for current user. aborting."
+		exit 1
+	fi
+
+
+	if  [ `cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"` == "" ]; then	
+		echo "" >> "$PROFILE_CONFIG"
+		echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
+		echo "PI_HOME=\"/home/pi\"" >> "$PROFILE_CONFIG"
+		echo "export PI_HOME" >> "$PROFILE_CONFIG"
+		echo "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
+		echo "	sudo chmod 755 \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
+		echo "	\"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
+		echo "fi" >> "$PROFILE_CONFIG"
+		echo "" >> "$PROFILE_CONFIG"
+	fi
+	
+fi
+
+clear
 echo "${STYLE_TITLE}WIFINDUS BRAIN INITIAL SETUP"
 echo              "============================${STYLE_NONE}"
 echo "${STYLE_IRED}You are strongly advised to reboot\nthe unit when this has completed!\n${STYLE_NONE}"
