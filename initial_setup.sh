@@ -232,45 +232,20 @@ else
 	echo "  ${Yellow}already present.${Rst}"
 fi
 
-echo "${Cyan}Fetching wallpapers...${Rst}"
-if [ ! -d wfu-brain-wallpapers ]; then
-	mkdir -p wfu-brain-wallpapers
-fi
-cd wfu-brain-wallpapers
-echo -n "  [${Red}"
-ONE_THIRD=`expr 254 / 3`
-TWO_THIRDS=`expr 2 \* 254 / 3`
-for i in `seq 1 254`; do
-	if [ ! -f wfu-brain-$i.png ]; then
-		wget -q http://www.wifindus.com/downloads/wfu-brain-wallpapers/wfu-brain-$i.png
-	fi
-	
-	if [ $i -eq $ONE_THIRD ]; then
-		echo -n "${Yellow}"
-	elif [ $i -eq $TWO_THIRDS ]; then
-		echo -n "${Green}"
-	fi
-	
-	ticker=`expr $i % 5`
-	if [ $ticker -eq 0 ]; then
-		echo -n "="
-	fi
-done
-echo "${Rst}]"
-cd ..
-
 echo "${Cyan}Assembling wfu-tools...${Rst}"
 if [ ! -d wfu-tools ]; then
 	echo "  ${Cyan}cloning...${Rst}"
 	git clone -q git://github.com/WiFindUs/wfu-tools.git
 fi
-
 echo "  ${Cyan}making...${Rst}"
 if [ -d wfu-tools ]; then
 	cd wfu-tools
 	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
 	sudo chmod 755 wfu-update.sh
 	./wfu-update.sh
+	./wfu-refresh-wallpapers.sh
+	
+	echo "${Cyan}Running wfu-setup...${Rst}"
 	sudo wfu-setup $ID_NUMBER -q
 	cd ..
 else
