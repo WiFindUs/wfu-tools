@@ -42,9 +42,9 @@ echo "${Rst}]"
 cd ..
 
 if [ -f "$HOME/src/wfu-brain-num" ]; then
-	$BRAIN_NUM=`cat "$HOME/src/wfu-brain-num"`
-	$WALLPAPER_FILE="$HOME/src/wfu-brain-wallpapers/wfu-brain-$BRAIN_NUM.png"
+	BRAIN_NUM=`cat "$HOME/src/wfu-brain-num"`
+	WALLPAPER_FILE="$HOME/src/wfu-brain-wallpapers/wfu-brain-$BRAIN_NUM.png"
 	if [ -f "$WALLPAPER_FILE" ]; then
-		sudo -u pi pcmanfm --set-wallpaper "$HOME/src/wfu-brain-wallpapers/wfu-brain-$BRAIN_NUM.png" > /dev/null 2>&1
+		sudo -u pi pcmanfm --set-wallpaper "$WALLPAPER_FILE" > /dev/null 2>&1
 	fi
 fi
