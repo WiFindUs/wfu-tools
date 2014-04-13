@@ -170,7 +170,7 @@ int write_rc_local(int num)
 	fprintf(file,"sudo iw dev wlan0 del\n");
 	fprintf(file,"sudo iw reg set AU\n");
 	fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
-	fprintf(file,"sudo ip link set dev mesh0 address 50:50:50:50:50:50\n");
+	//fprintf(file,"sudo ip link set dev mesh0 address 50:50:50:50:50:50\n");
 	fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 	fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:60\n");
 	fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
@@ -180,7 +180,6 @@ int write_rc_local(int num)
 	fprintf(file,"sleep 3\n");
 	fprintf(file,"sudo servald start\n");
 	fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-	fprintf(file,"su pi -c 'vncserver :1 -geometry 1024x576'\n");
 	fprintf(file,"sudo hostapd -B /etc/hostapd/hostapd.conf\n");
 	fprintf(file,"sudo service udhcpd start\n");
 
@@ -387,7 +386,7 @@ int main(int argc, char **argv)
 	int detailedHelpMode = FALSE;
 	//end vars
 	
-	strcpy(src_dir,getenv("SRC_DIR"));
+	strcpy(src_dir,"/home/pi/src");//getenv("SRC_DIR"));
 
 	for (i = 1; i < argc; i++)
 	{
