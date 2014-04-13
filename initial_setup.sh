@@ -23,11 +23,112 @@ Red="${SMK}0;31m"
 Green="${SMK}0;32m"
 Yellow="${SMK}0;33m"
 Cyan="${SMK}0;36m"
+
+read_plaintext ()
+{
+	VALID=0
+	VALUE=""
+	while [ $VALID -eq 0 ]
+	do
+		echo -n "  ${Yellow}Enter $1: ${Rst}" >&2
+		read VALUE
+	
+		ANSWERED=0
+		echo -n "  You entered ${Yellow}$VALUE${Rst}." >&2
+		while [ $ANSWERED -eq 0 ]
+		do
+			echo -n "  Correct? (y/N):" >&2
+			read ANSWER
+			case "$ANSWER" in
+				y|Y) VALID=1
+				ANSWERED=1
+				;;
+
+				n|N) VALID=0
+				ANSWERED=1
+				;;
+		
+				*) ;;
+			esac
+		done
+	done
+	echo $VALUE
+}
+
+read_number ()
+{
+	echo -n "  ${Yellow}Enter $1 ($2-$3): ${Rst}"
+	read VALUE
+
+	while [ $VALUE -lt $2 ] || [ $VALUE -gt $3 ]
+	do
+		echo "    ${Red}outside range!${Rst}"
+		echo -n "  ${Yellow}Enter $1 ($2-$3): ${Rst}"
+		read VALUE
+	done
+
+	return $VALUE
+}
+
+read_password ()
+{
+	PASS=""
+	VALID=0
+	while [ $VALID -eq 0 ]
+	do
+		PASS=""
+		SECONDPASS=""
+
+		while [ "$PASS" = "" ]
+		do
+			echo -n "  ${Yellow}Enter $1 ($2-$3 chars): ${Rst}" >&2
+			stty -echo
+			read PASSWORD
+			stty echo
+			echo "" >&2
+			PASS=`echo "$PASS" | sed 's/^ *//;s/ *$//'`
+		done
+
+		while [ "$SECONDPASS" = "" ]
+		do
+			echo -n "  ${Yellow}Re-enter password: ${Rst}" >&2
+			stty -echo
+			read SECONDPASS
+			stty echo
+			echo "" >&2
+			SECONDPASS=`echo "$SECONDPASS" | sed 's/^ *//;s/ *$//'`
+		done
+		
+		VALID=1
+		if [ "$PASS" != "$SECONDPASS" ]; then
+			echo "    ${IRed}error! did not match.${Rst}" >&2
+			VALID=0
+		fi
+
+		if [ $VALID -eq 1 ]; then
+			LENGTH=`expr length "$PASS"`
+			if [ $LENGTH -lt $2 ] || [ $LENGTH -gt $3 ]; then
+				echo "    ${IRed}outside length range!${Rst}" >&2
+				VALID=0
+			fi
+		fi
+	done
+	echo $PASS
+}
+
 cd "$HOME"
 
 echo "${TitleStyle}WIFINDUS BRAIN INITIAL SETUP"
 echo              "============================${Rst}"
 echo "${IRed}You are strongly advised to reboot\nthe unit when this has completed!\n${Rst}"
+echo ""
+echo "${Cyan}Just a bit of information from you to start with...${Rst}"
+NAME=`read_plaintext 'your name'`
+EMAIL_ADDRESS=`read_plaintext 'your email address (for github)'`
+read_number "this unit's ID #" 1 254
+ID_NUMBER=$?
+PASSWORD=`read_password "a password for pi, vnc and git" 6 12`
+echo "  ${Yellow}...that's all I need for now. The script will take a few minutes.${Rst}"
 
 echo "${Cyan}Purging junk...${Rst}"
 sudo rm -rf /usr/games/
@@ -62,52 +163,24 @@ sudo apt-get -qq clean > /dev/null 2>&1
 sudo apt-get -qq autoclean > /dev/null 2>&1
 
 echo "${Cyan}Initializing SSH/Git...${Rst}"
+git config --global user.name "$NAME" > /dev/null 2>&1
+git config --global user.email "$EMAIL_ADDRESS" > /dev/null 2>&1
 mkdir -p "$SSH_DIR"
 if [ -f "$SSH_DIR/id_rsa" ]; then
 	sudo rm -f "$SSH_DIR/id_rsa"
 	sudo rm -f "$SSH_DIR/id_rsa.pub"
 fi
-VALID=0
-NAME=""
-EMAIL=""
-PASSPHRASE=""
-while [ $VALID -eq 0 ]
-do
-	echo -n "${Yellow}Enter your full name: ${Rst}"
-	read NAME
-	echo -n "${Yellow}Enter your email address: ${Rst}"
-	read EMAIL
-	echo -n "${Yellow}Enter a passphrase: ${Rst}"
-	read PASSPHRASE
-	
-	ANSWERED=0
-	echo -n "You entered ${Yellow}$NAME${Rst}, ${Yellow}$EMAIL${Rst}, ${Yellow}$PASSPHRASE${Rst}. "
-	while [ $ANSWERED -eq 0 ]
-	do
-		echo -n "Correct? (y/N):"
-		read ANSWER
-		case "$ANSWER" in
-			y|Y) VALID=1
-			ANSWERED=1
-			;;
-
-			n|N) VALID=0
-			ANSWERED=1
-			;;
-		
-			*) ;;
-		esac
-	done
-done
-echo "$SSH_DIR/id_rsa\n$PASSPHRASE\n$PASSPHRASE" | ssh-keygen -t rsa -C "$EMAIL" > /dev/null 2>&1
+echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null 2>&1
 sudo chmod 600 "$SSH_DIR/id_rsa" > /dev/null 2>&1
 sudo chmod 600 "$SSH_DIR/id_rsa.pub" > /dev/null 2>&1
 eval $(ssh-agent) > /dev/null 2>&1
-echo "$PASSPHRASE" | ssh-add "$SSH_DIR/id_rsa" > /dev/null 2>&1
+echo "$PASSWORD" | ssh-add "$SSH_DIR/id_rsa" > /dev/null 2>&1
 
+echo "${Cyan}Creating src dir...${Rst}"
 if [ ! -d src ]; then
-	echo "${Cyan}Creating src dir...${Rst}"
 	mkdir -p src
+else
+	echo "  ${Yellow}already present.${Rst}"
 fi
 cd src
 
@@ -198,7 +271,7 @@ if [ -d wfu-tools ]; then
 	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
 	sudo chmod 755 wfu-update.sh
 	./wfu-update.sh
-	sudo wfu-setup -q
+	sudo wfu-setup $ID_NUMBER -q
 	cd ..
 else
 	echo "    ${IRed}error! cloning probably failed.${Rst}"
@@ -208,45 +281,7 @@ cd ..
 echo "${Cyan}Setting VNC password...${Rst}"
 mkdir -p "$VNC_DIR"
 if [ -d "$VNC_DIR" ]; then
-	VALID=0
-	while [ $VALID -eq 0 ]
-	do
-		FIRST_PASS=""
-		SECOND_PASS=""
-
-		while [ "$FIRST_PASS" = "" ]
-		do
-			echo -n "  ${Yellow}Enter a password: ${Rst}"
-			stty -echo
-			read FIRST_PASS
-			stty echo
-			echo ""
-			FIRST_PASS=`echo "$FIRST_PASS" | sed 's/^ *//;s/ *$//'`
-		done
-
-		while [ "$SECOND_PASS" = "" ]
-		do
-			echo -n "  ${Yellow}Re-enter password: ${Rst}"
-			stty -echo
-			read SECOND_PASS
-			stty echo
-			echo ""
-			SECOND_PASS=`echo "$SECOND_PASS" | sed 's/^ *//;s/ *$//'`
-		done
-		
-		VALID=1
-		if [ "$FIRST_PASS" != "$SECOND_PASS" ]; then
-			echo "    ${IRed}error! did not match.${Rst}"
-			VALID=0
-		fi
-
-		if [ $VALID -eq 1 ] && [ `expr length "$FIRST_PASS"` -lt 5 ]; then
-			echo "    ${IRed}error! too short (min 5 chars).${Rst}"
-			VALID=0
-		fi
-	done
-
-	echo "$FIRST_PASS" | vncpasswd -f > "$VNC_DIR/passwd"
+	echo "$PASSWORD" | vncpasswd -f > "$VNC_DIR/passwd"
 	if [ -f passwd ]; then
 		echo "  ${Green}OK!${Rst}"
 		killall Xtightvnc > /dev/null 2>&1
@@ -257,5 +292,8 @@ if [ -d "$VNC_DIR" ]; then
 else
 	echo "  ${IRed}error! could not create $VNC_DIR.${Rst}"
 fi
+
+echo "${Cyan}Setting Unix password (for user 'pi')...${Rst}"
+echo -e "$PASSWORD\n$PASSWORD" | sudo passwd pi > /dev/null 2>&1
 
 echo "${Green}Finished :)\n${Yellow}You should reboot now!${Rst}"
