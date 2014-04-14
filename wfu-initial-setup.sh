@@ -85,7 +85,7 @@ if [ -d serval-dna ]; then
 	echo -e "  To rebuild, rm src/serval-dna and re-run this script.${STYLE_NONE}"
 else
 	echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
-	git clone --depth 1 -q git://github.com/servalproject/serval-dna.git
+	git clone --depth 1 --branch development --single-branch --mirror -q git://github.com/servalproject/serval-dna.git
 
 	echo -e "  ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
 	if [ -d serval-dna ]; then
@@ -118,7 +118,7 @@ echo -e "${STYLE_HEADING}Assembling wfu-tools...${STYLE_NONE}"
 cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
 	echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
-	git clone --depth 1 -q $WFU_REPOSITORY
+	git clone --depth 1 --branch master --single-branch --mirror -q $WFU_REPOSITORY
 fi
 echo -e "  ${STYLE_HEADING}making...${STYLE_NONE}"
 if [ -d wfu-tools ]; then

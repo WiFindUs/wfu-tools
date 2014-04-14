@@ -24,7 +24,7 @@ Setting the unit up from scratch is not really that much harder than using an im
 ```Shell
     mkdir -p /home/pi/src  
 	cd /home/pi/src  
-	git clone git://github.com/WiFindUs/wfu-tools  
+	git clone --depth 1 --branch master --single-branch --mirror git://github.com/WiFindUs/wfu-tools  
 	sudo chmod 755 wfu-tools/*.sh  
 	wfu-tools/wfu-initial-setup.sh  
 ```
