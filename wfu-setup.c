@@ -78,7 +78,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
     %s/wfu-brain-num\n\n",
-	srcDir
+	SRC_DIR
 	);
 		
 	printf(
