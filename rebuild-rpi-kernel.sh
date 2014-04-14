@@ -1,6 +1,6 @@
 #!/bin/bash
 #===============================================================
-# File: rpi-build-kernel.sh
+# File: rebuild-rpi-kernel
 # Author: Mark Gillard
 # Target environment: Debian/Unix
 # Description:
@@ -26,8 +26,8 @@ RPI="/media/fc254b57-8fff-4f96-9609-ea202d871acf"
 #path to boot partition of locally-mounted SD card with Raspbian
 RPI_BOOT="/media/boot"
 
-#path to your src directory
-SRC_DIR="/home/marzer/src"
+#path to your src directory (where you clone repositories to)
+SRC_DIR="$HOME/src"
 
 ##### END SETTINGS ####
 
@@ -45,7 +45,7 @@ if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS_DIR/wfu-shell-styles.sh"
 fi
 
-echo -e "${STYLE_TITLE}          WFU_RASPBIAN KERNEL BUILDER           ${STYLE_NONE}"
+echo -e "${STYLE_TITLE}          WFU-RASPBIAN KERNEL BUILDER           ${STYLE_NONE}"
 if [ ! -d "$RPI" ]; then
 	echo -e "${STYLE_ERROR}RPI mount doesn't exist.\nedit RPI in the script and try again.${STYLE_NONE}\n"
 	exit 1
@@ -63,11 +63,9 @@ if [ ! -d "$TOOLS" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
 	fi
-else
-	[ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
-		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
-		exit 3
-	fi
+elif [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
+	echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
+	exit 3
 fi
 
 if [ ! -d "$LINUX" ]; then
@@ -82,21 +80,21 @@ fi
 cd "$LINUX"
 echo -e "${STYLE_HEADING}Building Linux...${STYLE_NONE}"
 
-echo -e "${STYLE_HEADING}  cleaning build artefacts...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}cleaning build artefacts...${STYLE_NONE}"
 make mrproper
 
-echo -e "${STYLE_HEADING}  caking config...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}making config...${STYLE_NONE}"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE bcmrpi_defconfig -s -k -j$CORES
 
-echo -e "${STYLE_HEADING}  Making core...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}Making core...${STYLE_NONE}"
 make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE -s -k -j$CORES
 
 if [ ! -f "$KERNEL_OUT" ]; then
-	echo -e "${STYLE_ERROR}    build complete, but kernel image file not found.\ncheck the script settings.${STYLE_NONE}"
+	echo -e "    ${STYLE_ERROR}build complete, but kernel image file not found.\ncheck the script settings.${STYLE_NONE}"
 	exit 1
 fi
 
-echo -e "${STYLE_HEADING}  making modules...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}making modules...${STYLE_NONE}"
 if [ -d "$MODULES" ]; then
 	sudo rm -rf "$MODULES"
 	mkdir -p "$MODULES"
