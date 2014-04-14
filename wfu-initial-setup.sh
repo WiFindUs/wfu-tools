@@ -69,19 +69,19 @@ else
 fi
 
 echo -e "${STYLE_CYAN}Initializing SSH/Git...${STYLE_NONE}"
-git config --global user.name "$NAME" > /dev/null 2>&1
-git config --global user.email "$EMAIL_ADDRESS" > /dev/null 2>&1
+git config --global user.name "$NAME" > /dev/null
+git config --global user.email "$EMAIL_ADDRESS" > /dev/null
 mkdir -p "$SSH_DIR"
 cd "$SSH_DIR"
 if [ -f id_rsa ]; then
 	sudo rm -f id_rsa
 	sudo rm -f id_rsa.pub
 fi
-echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD\n" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null 2>&1
-sudo chmod 600 id_rsa > /dev/null 2>&1
-sudo chmod 600 id_rsa.pub > /dev/null 2>&1
-eval $(ssh-agent) > /dev/null 2>&1
-echo -e "$PASSWORD\n" | ssh-add id_rsa > /dev/null 2>&1
+echo -e "$SSH_DIR/id_rsa\n$PASSWORD\n$PASSWORD\n" | ssh-keygen -t rsa -C "$EMAIL_ADDRESS" > /dev/null
+sudo chmod 600 id_rsa > /dev/null
+sudo chmod 600 id_rsa.pub > /dev/null
+eval $(ssh-agent) > /dev/null
+echo -e "$PASSWORD\n" | ssh-add id_rsa > /dev/null
 
 echo -e "${STYLE_CYAN}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
@@ -120,8 +120,8 @@ else
 			sudo chmod 755 servald
 			sudo rm -f /usr/bin/servald
 			sudo ln -s "$SRC_DIR/serval-dna/servald" /usr/bin/servald
-			sudo update-rc.d -f servald remove > /dev/null 2>&1
-			sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+			sudo update-rc.d -f servald remove > /dev/null
+			sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null
 			ls -A | grep -v -E "servald|directory_service|libmonitorclient\\.(a|so)" | xargs sudo rm -rf
 		else
 			echo -e "    ${STYLE_IRED}error! servald may not have built.${STYLE_NONE}"
@@ -140,7 +140,7 @@ fi
 echo -e "  ${STYLE_CYAN}making...${STYLE_NONE}"
 if [ -d wfu-tools ]; then
 	cd wfu-tools
-	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
+	git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null
 	sudo chmod 755 *.sh wfu-setup
 	./wfu-update.sh
 	
@@ -151,8 +151,8 @@ else
 fi
 
 echo -e "${STYLE_CYAN}Setting Unix password for 'pi'...${STYLE_NONE}"
-echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
+echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null
 
 echo -e "${STYLE_GREEN}Finished :)\n${STYLE_YELLOW}Thanks! The system will now reboot.${STYLE_NONE}"
 sleep 3
-sudo shutdown -r now > /dev/null 2>&1
+sudo shutdown -r now > /dev/null

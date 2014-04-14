@@ -462,9 +462,9 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		if (proc == 0)
 		{
 			if (autoHalt)
-				sprintf(sbuf,"shutdown -h now > /dev/null 2>&1");
+				sprintf(sbuf,"shutdown -h now > /dev/null");
 			else
-				sprintf(sbuf,"shutdown -r now > /dev/null 2>&1");
+				sprintf(sbuf,"shutdown -r now > /dev/null");
 			return system(sbuf);
 		}
 		else if (proc < 0)

@@ -13,7 +13,7 @@ git clone -q $WFU_REPOSITORY
 
 cd wfu-tools
 
-git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null 2>&1
+git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null
 
 sudo chmod 755 *.sh
 

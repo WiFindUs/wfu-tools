@@ -21,13 +21,13 @@ sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
 	penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 	idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
-	raspberrypi-artwork gnome-themes-standard-data plymouth > /dev/null 2>&1
+	raspberrypi-artwork gnome-themes-standard-data plymouth > /dev/null
 	
 echo -e "${STYLE_CYAN}Removing leftovers...${STYLE_NONE}"
-sudo apt-get -qq autoremove > /dev/null 2>&1
-sudo apt-get -qq clean > /dev/null 2>&1
-sudo apt-get -qq autoclean > /dev/null 2>&1
-dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null 2>&1
+sudo apt-get -qq autoremove > /dev/null
+sudo apt-get -qq clean > /dev/null
+sudo apt-get -qq autoclean > /dev/null
+dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
 
 sudo rm -f ocr_pi.png
 sudo rm -f /boot.bak
