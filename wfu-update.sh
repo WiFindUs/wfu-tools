@@ -29,6 +29,12 @@ sudo ln -s "$WFU_TOOLS_DIR/wfu-update-system.sh" /usr/bin/wfu-update-system
 sudo rm -f /usr/bin/wfu-update
 sudo ln -s "$WFU_TOOLS_DIR/wfu-update.sh" /usr/bin/wfu-update
 
+sudo rm -f /usr/bin/wfu-remove-all
+sudo ln -s "$WFU_TOOLS_DIR/wfu-remove-all.sh" /usr/bin/wfu-remove-all
+
+sudo rm -f /usr/bin/wfu-preimage-purge
+sudo ln -s "$WFU_TOOLS_DIR/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
+
 make -s -k
 sudo chmod 755 wfu-setup
 sudo rm -f /usr/bin/wfu-setup
