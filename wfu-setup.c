@@ -44,8 +44,8 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
 	fprintf(stderr, "Remarks:\n");
-	fprintf(stderr, "  If the number is omitted the value stored in %s/wfu-brain-num\
-will be used (if it exists).\n",src_dir);
+	fprintf(stderr, "  If the number is omitted, the value stored in %s/wfu-brain-num \
+will be used (if it exists; otherwise 1 is used as default).\n",src_dir);
 }
 
 void print_detailed_help()
@@ -105,7 +105,7 @@ int write_hosts(int num)
 	
 	fprintf(file,"192.168.1.2 m-beast\n");
 	fprintf(file,"192.168.1.1 m-server\n\n");
-	
+	fprintf(file,"192.168.2.254 m-beast-mesh\n\n");
 	
 	fprintf(file,"192.168.2.255 brains-broadcast\n");
 	fprintf(file,"192.168.0.255 clients-broadcast\n\n");
