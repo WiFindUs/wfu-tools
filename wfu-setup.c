@@ -27,7 +27,7 @@
 #endif
 
 int quietMode = FALSE;
-int uninstallMode = FALSE:
+int uninstallMode = FALSE;
 char sbuf[256], nbuf[256], opString[50];
 
 int min(int a, int b)
