@@ -122,6 +122,7 @@ else
 			sudo ln -s "$SRC_DIR/serval-dna/servald" /usr/bin/servald
 			sudo update-rc.d -f servald remove > /dev/null 2>&1
 			sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+			ls -A | grep -v -E "servald|directory_service|libmonitorclient\\.(a|so)" | xargs sudo rm -rf
 		else
 			echo -e "    ${STYLE_IRED}error! servald may not have built.${STYLE_NONE}"
 		fi
