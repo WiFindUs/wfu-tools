@@ -27,14 +27,17 @@ read_plaintext ()
 	VALUE=""
 	while [ $VALID -eq 0 ]
 	do
-		echo -n -e "  ${STYLE_PROMPT}Enter $1:${STYLE_NONE} " >&2
-		read VALUE
+		while [ "$VALUE" = "" ]
+		do
+			echo -n -e "  ${STYLE_PROMPT}Enter $1:${STYLE_NONE} " >&2
+			read VALUE
+		done
 	
 		ANSWERED=0
 		echo -n -e "  You entered ${STYLE_INFO}$VALUE.${STYLE_NONE}" >&2
 		while [ $ANSWERED -eq 0 ]
 		do
-			echo -n -e "  ${STYLE_PROMPT}Correct? (y/N):${STYLE_NONE} " >&2
+			echo -n -e "  ${STYLE_PROMPT}Correct? (y/n):${STYLE_NONE} " >&2
 			read ANSWER
 			case "$ANSWER" in
 				y|Y) VALID=1
@@ -56,14 +59,19 @@ export -f read_plaintext
 
 read_number ()
 {
-	echo -n -e "  ${STYLE_PROMPT}Enter $1 ($2-$3):${STYLE_NONE} "
-	read VALUE
-
-	while [ $VALUE -lt $2 ] || [ $VALUE -gt $3 ]
+	VALUE=""
+	while [ "$VALUE" = "" ]
 	do
-		echo -e "    ${STYLE_ERROR}outside range!${STYLE_NONE}"
 		echo -n -e "  ${STYLE_PROMPT}Enter $1 ($2-$3):${STYLE_NONE} "
 		read VALUE
+
+		if [ "$VALUE" != "" ]; then
+			while [ $VALUE -lt $2 ] || [ $VALUE -gt $3 ]
+			do
+				echo -e "    ${STYLE_ERROR}outside range!${STYLE_NONE}"
+				VALUE=""
+			done
+		fi
 	done
 
 	return $VALUE
