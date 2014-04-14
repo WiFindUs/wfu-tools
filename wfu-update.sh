@@ -8,14 +8,25 @@
 #===============================================================
 cd "$SRC_DIR"
 
+echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
+
+echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
 sudo rm -f -r wfu-tools
-git clone -q $WFU_REPOSITORY
+git clone --depth 1 -q $WFU_REPOSITORY
 
 cd wfu-tools
 
-git remote set-url origin git@github.com:WiFindUs/wfu-tools.git > /dev/null
+echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
+sudo rm -rf .git
+sudo rm -f .gitattributes
+sudo rm -f .gitignore
 
+echo -e "  ${STYLE_HEADING}making wfu-setup...${STYLE_NONE}"
+make -s -k
+
+echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
 sudo chmod 755 *.sh
+sudo chmod 755 wfu-setup
 
 sudo rm -f /usr/bin/wfu-initial-setup
 sudo ln -s "$WFU_TOOLS_DIR/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
@@ -35,7 +46,7 @@ sudo ln -s "$WFU_TOOLS_DIR/wfu-remove-all.sh" /usr/bin/wfu-remove-all
 sudo rm -f /usr/bin/wfu-preimage-purge
 sudo ln -s "$WFU_TOOLS_DIR/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
 
-make -s -k
-sudo chmod 755 wfu-setup
 sudo rm -f /usr/bin/wfu-setup
 sudo ln -s "$WFU_TOOLS_DIR/wfu-setup" /usr/bin/wfu-setup
+
+echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}"

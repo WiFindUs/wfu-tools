@@ -8,7 +8,8 @@
 #===============================================================
 cd "$PI_HOME"
 
-echo -e "${STYLE_CYAN}Purging junk...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Purging system of non-WFU content...${STYLE_NONE}"
+echo -e "$  {STYLE_HEADING}uninstalling unnecessary Raspbian packages...${STYLE_NONE}"
 sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
 	wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
 	pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
@@ -22,17 +23,19 @@ sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
 	idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 	raspberrypi-artwork gnome-themes-standard-data plymouth > /dev/null
+
+echo -e "  ${STYLE_HEADING}removing config-only apt entries...${STYLE_NONE}"
+dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
 	
-echo -e "${STYLE_CYAN}Removing leftovers...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}cleaning up...${STYLE_NONE}"
 sudo apt-get -qq autoremove > /dev/null
 sudo apt-get -qq clean > /dev/null
 sudo apt-get -qq autoclean > /dev/null
-dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
 
+echo -e "  ${STYLE_HEADING}deleting GUI-related files and folders...${STYLE_NONE}"
 sudo rm -f ocr_pi.png
 sudo rm -f /boot.bak
 sudo rm -f /lib/modules.bak
-
 sudo rm -rf /var/lib/apt/list
 sudo rm -rf /var/cache/apt
 sudo rm -rf /opt
@@ -46,3 +49,5 @@ sudo rm -rf /usr/lib/xorg
 sudo rm -rf /usr/share/icons
 sudo rm -rf /usr/share/applications
 sudo rm -rf /etc/console-setup
+
+echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}"
