@@ -83,8 +83,7 @@ if [ ! -f "$SERVALD_OUT" ]; then
 fi
 
 echo -e "  ${STYLE_HEADING}moving to $SRC_DIR...${STYLE_NONE}"
-sudo mv $SERVALD_OUT "$SRC_DIR/"
 sudo chmod 755 $SERVALD_OUT
-
+sudo mv $SERVALD_OUT "$SRC_DIR/"
 
 echo -e "${STYLE_SUCCESS}Finished!${STYLE_NONE}"
