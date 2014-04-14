@@ -49,4 +49,4 @@ sudo ln -s "$WFU_TOOLS_DIR/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
 sudo rm -f /usr/bin/wfu-setup
 sudo ln -s "$WFU_TOOLS_DIR/wfu-setup" /usr/bin/wfu-setup
 
-echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}"
+echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"

@@ -9,7 +9,7 @@
 cd "$PI_HOME"
 
 echo -e "${STYLE_HEADING}Purging system of non-WFU content...${STYLE_NONE}"
-echo -e "$  {STYLE_HEADING}uninstalling unnecessary Raspbian packages...${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}uninstalling unnecessary Raspbian packages...${STYLE_NONE}"
 sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
 	wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
 	pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
@@ -50,4 +50,4 @@ sudo rm -rf /usr/share/icons
 sudo rm -rf /usr/share/applications
 sudo rm -rf /etc/console-setup
 
-echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}"
+echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"

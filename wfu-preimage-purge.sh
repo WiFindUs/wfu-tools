@@ -36,5 +36,7 @@ sudo swapon -a
 
 echo -e "  ${STYLE_HEADING}deleting logs...${STYLE_NONE}"
 sudo rm `find /var/log -type f`
-
-echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}"
+if [ -d "/usr/local/var/log/serval" ]
+	sudo rm -f "/usr/local/var/log/serval/*.log"
+fi
+echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"

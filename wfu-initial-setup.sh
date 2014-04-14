@@ -44,14 +44,14 @@ fi
 
 clear
 echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_NONE}"
-echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted\n      when this has completed.${STYLE_NONE}\n"
+echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
 NAME=`read_plaintext 'your name'`
-EMAIL_ADDRESS=`read_plaintext 'your email address (for github)'`
+EMAIL_ADDRESS=`read_plaintext 'your email address'`
 read_number "this unit's ID #" 1 254
 ID_NUMBER=$?
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
-echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}"
+echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
 if [ -f "$WFU_TOOLS_DIR/wfu-purge-system.sh"  ]; then
 	"$WFU_TOOLS_DIR/wfu-purge-system.sh"
@@ -78,39 +78,46 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
-echo -e "${STYLE_HEADING}Assembling serval-dna...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 cd "$SRC_DIR"
-if [ -d serval-dna ]; then
+if [ -f "/usr/bin/servald" ]; then
 	echo -e "  ${STYLE_WARNING}already present."
-	echo -e "  To rebuild, rm src/serval-dna and re-run this script.${STYLE_NONE}"
+	echo -e "  To rebuild, rm /usr/bin/servald and re-run this script.${STYLE_NONE}"
 else
-	echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
-	git clone --depth 1 --branch development --single-branch -q git://github.com/servalproject/serval-dna.git
-
-	echo -e "  ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
-	if [ -d serval-dna ]; then
-		cd serval-dna
-		autoreconf -f -i  > /dev/null
-		./configure  > /dev/null
-		make clean -s -k
-		make -s -k
-
-		echo -e "  ${STYLE_HEADING}installing...${STYLE_NONE}"
-		if [ -f servald ]; then
-			sudo mkdir -p /usr/local/var/log/serval
-			sudo mkdir -p /usr/local/etc/serval
-			sudo chmod 755 servald
-			killall servald > /dev/null
-			sudo mv -f servald /usr/bin/
-			sudo update-rc.d -f servald remove > /dev/null
-			sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null
-		else
-			echo -e "    ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
-		fi
-		cd ..
-		sudo rm -rf serval-dna
+	cd "/usr/bin"
+	sudo wget -q http://www.wifindus.com/downloads/servald
+	if [ -f servald ]; then
+		echo -e "  ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
 	else
-		echo -e "    ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
+		echo -e "  ${STYLE_WARNING}download from wifindus.com failed!\n  trying to clone from github...${STYLE_NONE}"
+		cd "$SRC_DIR"
+		git clone --depth 1 --branch development --single-branch -q git://github.com/servalproject/serval-dna.git
+
+		if [ -d serval-dna ]; then
+			echo -e "  ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
+			cd serval-dna
+			autoreconf -f -i  > /dev/null
+			./configure  > /dev/null
+			make clean -s -k
+			make -s -k
+
+			echo -e "  ${STYLE_HEADING}installing...${STYLE_NONE}"
+			if [ -f servald ]; then
+				sudo mkdir -p /usr/local/var/log/serval
+				sudo mkdir -p /usr/local/etc/serval
+				sudo chmod 755 servald
+				killall servald > /dev/null
+				sudo mv -f servald /usr/bin/
+				sudo update-rc.d -f servald remove > /dev/null
+				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null
+			else
+				echo -e "    ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
+			fi
+			cd ..
+			sudo rm -rf serval-dna
+		else
+			echo -e "    ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
+		fi
 	fi
 fi
 
@@ -120,8 +127,8 @@ if [ ! -d wfu-tools ]; then
 	echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
 	git clone --depth 1 --branch master --single-branch -q $WFU_REPOSITORY
 fi
-echo -e "  ${STYLE_HEADING}making...${STYLE_NONE}"
 if [ -d wfu-tools ]; then
+	echo -e "  ${STYLE_HEADING}making...${STYLE_NONE}"
 	cd wfu-tools
 	sudo rm -rf .git
 	sudo rm -f .gitattributes

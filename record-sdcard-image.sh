@@ -35,7 +35,7 @@ if [ -z "$STYLE_MARKER" ]; then
 fi
 
 echo -e "${STYLE_TITLE}          WFU-RASPBIAN IMAGE RECORDER           ${STYLE_NONE}"
-echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)\n${STYLE_NONE}"
+echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)${STYLE_NONE}\n"
 
 cd "$SRC_DIR"
 echo -e "${STYLE_TITLE}Recording image...${STYLE_NONE}"
@@ -48,4 +48,4 @@ zip -9 -j wfu-raspbian.zip "$WFU_TOOLS_DIR/README.md" wfu-raspbian.img image_gen
 rm -f wfu-raspbian.img
 rm -f image_generated.img
 
-echo -e "${STYLE_SUCCESS}Finished!${STYLE_NONE}"
+echo -e "${STYLE_SUCCESS}Finished!${STYLE_NONE}\n"

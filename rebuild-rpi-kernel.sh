@@ -47,13 +47,13 @@ fi
 
 echo -e "${STYLE_TITLE}          WFU_RASPBIAN KERNEL BUILDER           ${STYLE_NONE}"
 if [ ! -d "$RPI" ]; then
-	echo -e "${STYLE_ERROR}RPI mount doesn't exist.\nedit RPI in the script and try again.${STYLE_NONE}"
+	echo -e "${STYLE_ERROR}RPI mount doesn't exist.\nedit RPI in the script and try again.${STYLE_NONE}\n"
 	exit 1
 elif [ ! -d "$RPI_BOOT" ]; then
-	echo -e "${STYLE_ERROR}RPI_BOOT mount doesn't exist.\nedit RPI_BOOT in the script and try again.${STYLE_NONE}"
+	echo -e "${STYLE_ERROR}RPI_BOOT mount doesn't exist.\nedit RPI_BOOT in the script and try again.${STYLE_NONE}\n"
 	exit 2
 fi
-echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)\n${STYLE_NONE}"
+echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)${STYLE_NONE}\n"
 	
 
 if [ ! -d "$TOOLS" ]; then

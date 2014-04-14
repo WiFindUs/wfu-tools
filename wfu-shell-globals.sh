@@ -31,7 +31,7 @@ read_plaintext ()
 		read VALUE
 	
 		ANSWERED=0
-		echo -n -e "  ${STYLE_INFO}You entered${STYLE_NONE} $VALUE." >&2
+		echo -n -e "  You entered ${STYLE_INFO}$VALUE.${STYLE_NONE}" >&2
 		while [ $ANSWERED -eq 0 ]
 		do
 			echo -n -e "  ${STYLE_PROMPT}Correct? (y/N):${STYLE_NONE} " >&2
