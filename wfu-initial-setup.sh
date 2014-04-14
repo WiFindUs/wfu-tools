@@ -106,10 +106,10 @@ else
 				sudo mkdir -p /usr/local/var/log/serval
 				sudo mkdir -p /usr/local/etc/serval
 				sudo chmod 755 servald
-				killall servald > /dev/null
+				killall servald > /dev/null 2>&1
 				sudo mv -f servald /usr/bin/
-				sudo update-rc.d -f servald remove > /dev/null
-				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null
+				sudo update-rc.d -f servald remove > /dev/null 2>&1
+				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 			else
 				echo -e "    ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
 			fi
@@ -133,17 +133,17 @@ if [ -d wfu-tools ]; then
 	sudo rm -rf .git
 	sudo rm -f .gitattributes
 	sudo rm -f .gitignore
-	sudo chmod 755 *.sh wfu-setup
+	sudo chmod 755 *.sh
 	./wfu-update.sh
 	
 	echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
-	sudo ./wfu-setup $ID_NUMBER -q
+	sudo wfu-setup $ID_NUMBER -q
 else
 	echo -e "    ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
 
 echo -e "${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
-echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null
+echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
 
 echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}Thanks! The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5

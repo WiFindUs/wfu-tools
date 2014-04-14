@@ -9,6 +9,8 @@
 cd "$PI_HOME"
 
 echo -e "${STYLE_HEADING}Purging system of non-WFU content...${STYLE_NONE}"
+sudo mkdir -p /var/cache/apt/archives/partial
+sudo mkdir -p /var/lib/apt/list/partial
 echo -e "  ${STYLE_HEADING}uninstalling unnecessary Raspbian packages...${STYLE_NONE}"
 sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
 	wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
