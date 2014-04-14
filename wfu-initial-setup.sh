@@ -107,9 +107,9 @@ else
 			if [ -f servald ]; then
 				sudo mkdir -p /usr/local/var/log/serval
 				sudo mkdir -p /usr/local/etc/serval
-				sudo chmod 755 servald
 				killall servald > /dev/null 2>&1
 				sudo mv -f servald /usr/bin/
+				sudo chmod 755 /usr/bin/servald
 				sudo update-rc.d -f servald remove > /dev/null 2>&1
 				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 			else
