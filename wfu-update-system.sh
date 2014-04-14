@@ -7,8 +7,8 @@
 #   Updates a Raspbian system with all the required packages etc.
 #===============================================================
 echo -e "${STYLE_HEADING}Updating system components...${STYLE_NONE}"
-sudo -p mkdir /var/cache/apt/archives/partial
-sudo -p mkdir /var/lib/apt/list/partial
+sudo mkdir -p /var/cache/apt/archives/partial
+sudo mkdir -p /var/lib/apt/list/partial
 
 echo -e "  ${STYLE_HEADING}updating apt-get list...${STYLE_NONE}"
 sudo apt-get -qq update > /dev/null
