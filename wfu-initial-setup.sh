@@ -94,7 +94,7 @@ else
 		echo -e "    ${STYLE_ERROR}download failed!${STYLE_NONE}"
 		echo -e "  ${STYLE_HEADING}trying to clone from github...${STYLE_NONE}"
 		cd "$SRC_DIR"
-		git clone --depth 1 --branch development --single-branch -q git://github.com/servalproject/serval-dna.git
+		git clone --depth 1 -q git://github.com/servalproject/serval-dna.git
 
 		if [ -d serval-dna ]; then
 			echo -e "    ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
@@ -128,7 +128,7 @@ echo ""
 cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
 	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch -q $WFU_REPOSITORY
+	git clone --depth 1 -q $WFU_REPOSITORY
 fi
 if [ -d wfu-tools ]; then
 	cd wfu-tools

@@ -43,7 +43,7 @@ echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)${STYLE_NONE
 
 if [ ! -d "$TOOLS" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/tools...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch -q git://github.com/raspberrypi/tools.git
+	git clone --depth 1 -q git://github.com/raspberrypi/tools.git
 	if [ ! -d "$TOOLS" ] || [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
@@ -55,7 +55,7 @@ fi
 
 if [ ! -d "$SERVALD_DIR" ]; then
 	echo -e "${STYLE_HEADING}Cloning serval-dna...${STYLE_NONE}"
-	git clone --depth 1 --branch development --single-branch -q git://github.com/servalproject/serval-dna.git
+	git clone --depth 1 -q git://github.com/servalproject/serval-dna.git
 	if [ ! -d "$SERVALD_DIR" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 4

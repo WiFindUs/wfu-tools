@@ -29,6 +29,9 @@ RPI_BOOT="/media/boot"
 #path to your src directory (where you clone repositories to)
 SRC_DIR="$HOME/src"
 
+#the name of the current kernel branch to clone
+KERNEL_VER="rpi-3.14.y"
+
 ##### END SETTINGS ####
 
 WFU_TOOLS_DIR="${SRC_DIR}/wfu-tools"
@@ -58,7 +61,7 @@ echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)${STYLE_NONE
 
 if [ ! -d "$TOOLS" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/tools...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch -q git://github.com/raspberrypi/tools.git
+	git clone --depth 1 -q git://github.com/raspberrypi/tools.git
 	if [ ! -d "$TOOLS" ] || [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
@@ -70,7 +73,7 @@ fi
 
 if [ ! -d "$LINUX" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/linux...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch -q git://github.com/raspberrypi/linux.git
+	git clone --depth 1 --branch $KERNEL_VER -q git://github.com/raspberrypi/linux.git
 	if [ ! -d "$LINUX" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 4
