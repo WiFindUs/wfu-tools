@@ -128,7 +128,7 @@ int write_hosts(int num)
 		}
 	}
 	else
-		fprintf(file,"127.0.1.1 wfu-brain-%d\n",i);
+		fprintf(file,"127.0.1.1 wfu-brain-%d\n",num);
 	
 	fclose(file);
 	if (!quietMode)
@@ -212,7 +212,7 @@ int write_hostapd(int num)
 	sprintf(nbuf,"/etc/hostapd/hostapd.conf");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
-	if ((uninstallMode || remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
@@ -277,7 +277,7 @@ int write_udhcpd(int num)
 	sprintf(nbuf,"/etc/udhcpd.conf");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
-	if ((uninstallMode || remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
@@ -332,7 +332,7 @@ int write_servald(int num)
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
 	
-	if ((uninstallMode || remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
@@ -421,10 +421,7 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	if (uninstallMode)
-		strcpy(opString,"Reverting");
-	else
-		strcpy(opString,"Writing");
+	strcpy(opString,uninstallMode ? "Reverting" : "Writing");
 	
 	if (detailedHelpMode)
 	{
@@ -482,10 +479,7 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		pid_t proc = fork();
 		if (proc == 0)
 		{
-			if (autoHalt)
-				sprintf(sbuf,"shutdown -h now > /dev/null");
-			else
-				sprintf(sbuf,"shutdown -r now > /dev/null");
+			sprintf(sbuf,"shutdown -%s now > /dev/null", autoHalt ? "h" : "r");
 			return system(sbuf);
 		}
 		else if (proc < 0)
