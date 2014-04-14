@@ -58,7 +58,7 @@ echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)\n${STYLE_NO
 
 if [ ! -d "$TOOLS" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/tools...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch --mirror -q git://github.com/raspberrypi/tools.git
+	git clone --depth 1 --branch master --single-branch -q git://github.com/raspberrypi/tools.git
 	if [ ! -d "$TOOLS" ] || [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
@@ -72,7 +72,7 @@ fi
 
 if [ ! -d "$LINUX" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/linux...${STYLE_NONE}"
-	git clone --depth 1 --branch master --single-branch --mirror -q git://github.com/raspberrypi/linux.git
+	git clone --depth 1 --branch master --single-branch -q git://github.com/raspberrypi/linux.git
 	if [ ! -d "$LINUX" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 4

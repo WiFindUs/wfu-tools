@@ -12,7 +12,7 @@ echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
 
 echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
 sudo rm -f -r wfu-tools
-git clone --depth 1 --branch master --single-branch --mirror -q $WFU_REPOSITORY
+git clone --depth 1 --branch master --single-branch -q $WFU_REPOSITORY
 
 cd wfu-tools
 
