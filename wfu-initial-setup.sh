@@ -78,30 +78,32 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
-echo -e "${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
+echo -e "$\n{STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 cd "$SRC_DIR"
 if [ -f "/usr/bin/servald" ]; then
 	echo -e "  ${STYLE_WARNING}already present."
 	echo -e "  To rebuild, rm /usr/bin/servald and re-run this script.${STYLE_NONE}"
 else
+	echo -e "  ${STYLE_HEADING}downloading from wifindus.com...${STYLE_NONE}"
 	cd "/usr/bin"
 	sudo wget -q http://www.wifindus.com/downloads/servald
 	if [ -f servald ]; then
-		echo -e "  ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
+		echo -e "    ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
 	else
-		echo -e "  ${STYLE_WARNING}download from wifindus.com failed!\n  trying to clone from github...${STYLE_NONE}"
+		echo -e "    ${STYLE_ERROR}download failed!${STYLE_NONE}"
+		echo -e "  ${STYLE_HEADING}trying to clone from github...${STYLE_NONE}"
 		cd "$SRC_DIR"
 		git clone --depth 1 --branch development --single-branch -q git://github.com/servalproject/serval-dna.git
 
 		if [ -d serval-dna ]; then
-			echo -e "  ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
+			echo -e "    ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
 			cd serval-dna
 			autoreconf -f -i  > /dev/null
 			./configure  > /dev/null
 			make clean -s -k
 			make -s -k
 
-			echo -e "  ${STYLE_HEADING}installing...${STYLE_NONE}"
+			echo -e "    ${STYLE_HEADING}installing...${STYLE_NONE}"
 			if [ -f servald ]; then
 				sudo mkdir -p /usr/local/var/log/serval
 				sudo mkdir -p /usr/local/etc/serval
@@ -111,24 +113,23 @@ else
 				sudo update-rc.d -f servald remove > /dev/null 2>&1
 				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 			else
-				echo -e "    ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
+				echo -e "      ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
 			fi
 			cd ..
 			sudo rm -rf serval-dna
 		else
-			echo -e "    ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
+			echo -e "      ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 		fi
 	fi
 fi
 
-echo -e "${STYLE_HEADING}Assembling wfu-tools...${STYLE_NONE}"
+echo ""
 cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
-	echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
+	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
 	git clone --depth 1 --branch master --single-branch -q $WFU_REPOSITORY
 fi
 if [ -d wfu-tools ]; then
-	echo -e "  ${STYLE_HEADING}making...${STYLE_NONE}"
 	cd wfu-tools
 	sudo rm -rf .git
 	sudo rm -f .gitattributes
@@ -139,12 +140,12 @@ if [ -d wfu-tools ]; then
 	echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 	sudo wfu-setup $ID_NUMBER -q
 else
-	echo -e "    ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
+	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
 
-echo -e "${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
+echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
 
-echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}Thanks! The system will reboot in 5 seconds.${STYLE_NONE}"
+echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
 sudo shutdown -r now > /dev/null
