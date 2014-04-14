@@ -63,6 +63,11 @@ if [ ! -d "$TOOLS" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
 	fi
+else
+	[ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
+		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
+		exit 3
+	fi
 fi
 
 if [ ! -d "$LINUX" ]; then
