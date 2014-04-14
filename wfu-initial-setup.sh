@@ -81,14 +81,15 @@ fi
 echo -e "$\n{STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
 cd "$SRC_DIR"
-if [ -f "/usr/bin/servald" ]; then
+if [ -f "/usr/sbin/servald" ]; then
 	echo -e "  ${STYLE_WARNING}already present."
-	echo -e "  To rebuild, rm /usr/bin/servald and re-run this script.${STYLE_NONE}"
+	echo -e "  To rebuild, rm /usr/sbin/servald and re-run this script.${STYLE_NONE}"
 else
 	echo -e "  ${STYLE_HEADING}downloading from wifindus.com...${STYLE_NONE}"
-	cd "/usr/bin"
+	cd "/usr/sbin"
 	sudo wget -q http://www.wifindus.com/downloads/servald
 	if [ -f servald ]; then
+		sudo chmod 755 servald
 		echo -e "    ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
 	else
 		echo -e "    ${STYLE_ERROR}download failed!${STYLE_NONE}"
@@ -109,8 +110,9 @@ else
 				sudo mkdir -p /usr/local/var/log/serval
 				sudo mkdir -p /usr/local/etc/serval
 				killall servald > /dev/null 2>&1
-				sudo mv -f servald /usr/bin/
-				sudo chmod 755 /usr/bin/servald
+				sudo rm -f /usr/sbin/servald
+				make install -s -k
+				sudo chmod 755 /usr/sbin/servald
 				sudo update-rc.d -f servald remove > /dev/null 2>&1
 				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 			else
