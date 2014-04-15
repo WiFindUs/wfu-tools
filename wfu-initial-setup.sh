@@ -78,7 +78,7 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
-echo -e "$\n{STYLE_HEADING}Assembling servald...${STYLE_NONE}"
+echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
 cd "$SRC_DIR"
 if [ -f "/usr/local/sbin/servald" ]; then

@@ -28,10 +28,16 @@ SRC_DIR="$HOME/src"
 SERVALD_DIR="${SRC_DIR}/serval-dna"
 WFU_TOOLS_DIR="${SRC_DIR}/wfu-tools"
 TOOLS="${SRC_DIR}/tools"
-CROSS_COMPILE="${TOOLS}/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-"
 CORES=`nproc`
 ARCH="arm"
 SERVALD_OUT="${SERVALD_DIR}/servald"
+BIN_DIR="${TOOLS}/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin"
+PATH=$PATH:${BIN_DIR}
+CROSS_COMPILE=arm-bcm2708hardfp-linux-gnueabi
+CC=${CROSS_COMPILE}-gcc
+export path
+export CROSS_COMPILE
+export CC
 
 cd "$SRC_DIR"
 if [ -z "$STYLE_MARKER" ]; then
@@ -44,11 +50,11 @@ echo -e "${STYLE_WARNING}This may take a while, go make a coffee! :)${STYLE_NONE
 if [ ! -d "$TOOLS" ]; then
 	echo -e "${STYLE_HEADING}Cloning rpi/tools...${STYLE_NONE}"
 	git clone --depth 1 -q git://github.com/raspberrypi/tools.git
-	if [ ! -d "$TOOLS" ] || [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
+	if [ ! -d "$TOOLS" ] || [ ! -f "${BIN_DIR}/${CC}" ]; then
 		echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 		exit 3
 	fi
-elif [ ! -f "${CROSS_COMPILE}gcc" ] || [ ! -f "${CROSS_COMPILE}g++" ]; then
+elif [ ! -f "${BIN_DIR}/${CC}" ]; then
 	echo -e "  ${STYLE_ERROR}clone not complete. exiting...${STYLE_NONE}"
 	exit 3
 fi
@@ -66,16 +72,16 @@ cd "$SERVALD_DIR"
 echo -e "${STYLE_HEADING}Building servald...${STYLE_NONE}"
 
 echo -e "  ${STYLE_HEADING}autoreconf...${STYLE_NONE}"
-autoreconf -f -i > /dev/null
+autoreconf -f -i
 	
 echo -e "  ${STYLE_HEADING}.configure...${STYLE_NONE}"
-./configure > /dev/null
+./configure --host=${CROSS_COMPILE}
 
 echo -e "  ${STYLE_HEADING}cleaning build artefacts...${STYLE_NONE}"
-make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE clean -s -k -j$CORES
+make clean -s -k -j$CORES
 
 echo -e "  ${STYLE_HEADING}making...${STYLE_NONE}"
-make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE -s -k -j$CORES
+make -s -k -j$CORES
 
 if [ ! -f "$SERVALD_OUT" ]; then
 	echo -e "    ${STYLE_ERROR}build complete, but servald executable not found.\ncheck the script settings.${STYLE_NONE}"
