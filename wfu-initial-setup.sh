@@ -46,8 +46,6 @@ clear
 echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_NONE}"
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
-NAME=`read_plaintext 'your name'`
-EMAIL_ADDRESS=`read_plaintext 'your email address'`
 read_number "this unit's ID #" 1 254
 ID_NUMBER=$?
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
@@ -111,7 +109,7 @@ else
 				sudo mkdir -p /usr/local/etc/serval
 				killall servald > /dev/null 2>&1
 				sudo rm -f /usr/local/sbin/servald
-				make install -s -k
+				sudo make install -s -k
 				sudo chmod 755 /usr/local/sbin/servald
 				sudo update-rc.d -f servald remove > /dev/null 2>&1
 				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
