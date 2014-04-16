@@ -10,7 +10,7 @@ cd "$PI_HOME"
 
 echo -e "${STYLE_HEADING}Purging system of non-WFU content...${STYLE_NONE}"
 
-if [ ! -d "/var/cache/apt/archives/partial"]; then
+if [ ! -d "/var/cache/apt/archives/partial" ]; then
 	echo -e "  ${STYLE_HEADING}updating apt-get list...${STYLE_NONE}"
 	sudo mkdir -p /var/cache/apt/archives/partial
 	sudo mkdir -p /var/lib/apt/list/partial
@@ -30,9 +30,8 @@ rpi-update poppler* ^python* parted libvorbis* libv41* libsamplerate* \
 penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
-raspberrypi-artwork gnome-themes-standard-data plymouth \
-udhcpd xdg-utils libfreetype* bash-completion ncurses-term \
-netcat-* > /dev/null
+raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
+udhcpd xdg-utils libfreetype* bash-completion ncurses-term > /dev/null
 
 echo -e "  ${STYLE_HEADING}removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
