@@ -172,7 +172,7 @@ int write_rc_local(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"#!/bin/sh -e\n");
+	fprintf(file,"#! /bin/sh -e\n");
 
 	if (!uninstallMode)
 	{
@@ -190,12 +190,12 @@ int write_rc_local(int num)
 		fprintf(file,"sleep 3\n");
 		fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
 		fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
-		fprintf(file,"if [ $GPS_MODULE != \"\" ]; then \n");
+		fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
 		fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 		fprintf(file,"fi\n");
 		
 		fprintf(file,"AP_MODULE=`ifconfig | grep -i -E \"ap0\"`\n");
-		fprintf(file,"if [ $AP_MODULE != \"\" ]; then \n");
+		fprintf(file,"if [ \"$AP_MODULE\" != \"\" ]; then \n");
 		fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
 		fprintf(file,"	sleep 1\n");
 		fprintf(file,"	sudo dhcpd\n");
