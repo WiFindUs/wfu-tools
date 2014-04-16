@@ -296,17 +296,17 @@ int write_dhcpd(int num)
 	if (uninstallMode)
 		return TRUE;
 		
-	fprintf(file,"ddns-update-style none;\n")
-	fprintf(file,"option domain-name \"wfu-brain-%d.local\";\n",num)
-	fprintf(file,"default-lease-time 86400;\n")
-	fprintf(file,"max-lease-time 604800;\n")
-	fprintf(file,"authoritative;\n")
-	fprintf(file,"log-facility local7;\n")
-	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n")
-	fprintf(file,"  range 192.168.0.11 192.168.0.254;\n")
-	fprintf(file,"  option subnet-mask 255.255.255.0;\n")
-	fprintf(file,"  option broadcast-address 192.168.0.255;\n")
-	fprintf(file,"}\n")
+	fprintf(file,"ddns-update-style none;\n");
+	fprintf(file,"option domain-name \"wfu-brain-%d.local\";\n",num);
+	fprintf(file,"default-lease-time 86400;\n");
+	fprintf(file,"max-lease-time 604800;\n");
+	fprintf(file,"authoritative;\n");
+	fprintf(file,"log-facility local7;\n");
+	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n");
+	fprintf(file,"  range 192.168.0.11 192.168.0.254;\n");
+	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
+	fprintf(file,"  option broadcast-address 192.168.0.255;\n");
+	fprintf(file,"}\n");
 
 
 	fclose(file);
