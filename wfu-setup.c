@@ -218,6 +218,8 @@ int write_hostapd(int num)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
+	if (uninstallMode)
+		return TRUE;
 	
 	fprintf(file,"interface=ap0\n");
 	fprintf(file,"country_code=AU\n");
@@ -283,6 +285,8 @@ int write_udhcpd(int num)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
+	if (uninstallMode)
+		return TRUE;
 	
 	fprintf(file,"start      192.168.0.2\n");
 	fprintf(file,"end        192.168.0.254\n");
@@ -338,6 +342,8 @@ int write_servald(int num)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
+	if (uninstallMode)
+		return TRUE;
 	
 	fprintf(file,"interfaces.0.match=mesh*,ap*\n");
 	fprintf(file,"interfaces.0.type=wifi\n");
