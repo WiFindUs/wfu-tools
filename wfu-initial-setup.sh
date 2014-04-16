@@ -82,8 +82,7 @@ sudo mkdir -p /usr/local/var/run/serval
 sudo mkdir -p /usr/local/var/log/serval
 cd "$SRC_DIR"
 if [ -f "/usr/local/sbin/servald" ]; then
-	echo -e "  ${STYLE_WARNING}already present."
-	echo -e "  To rebuild, rm /usr/sbin/servald and re-run this script.${STYLE_NONE}"
+	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 else
 	echo -e "  ${STYLE_HEADING}downloading from wifindus.com...${STYLE_NONE}"
 	cd "/usr/local/sbin"
