@@ -12,6 +12,7 @@ echo -e "${STYLE_WARNING}This will completely remove WFU and servald from the sy
 echo -e "${STYLE_ERROR}Are you absolutely sure? Press CTRL-C to abort. You have 10 SECONDS.${STYLE_NONE}\n"
 sleep 10;
 echo -e "${STYLE_WARNING}Alright then, off we go! The unit will be rebooted when this has completed.${STYLE_NONE}\n"
+sudo killall servald
 sudo wfu-setup -u
 sudo find / -name "wfu*" | xargs sudo rm -rf 
 sudo find / -name "*serval*" | xargs sudo rm -rf 
