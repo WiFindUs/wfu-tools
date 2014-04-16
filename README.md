@@ -11,7 +11,7 @@ SD Card Setup - From an image
 4. Ensure the GPS and Wireless dongles are connected to the Pi.  
 5. Stick the card in an' turn 'er on.  
 6. Connect the Pi's ethernet port to a router or switch with internet connectivity.  
-7. Enter the command `wfu-update && wfu-setup -r`.  
+7. Enter the command `wfu-update && sudo wfu-setup <1-254> -r`.  
 
 
 SD Card Setup - GOING IN DRY
