@@ -16,6 +16,7 @@ git clone --depth 1 -q $WFU_REPOSITORY
 cd wfu-tools
 sudo rm -f rebuild-rpi-servald.sh
 sudo rm -f rebuild-rpi-kernel.sh
+sudo rm -f record-sdcard-image.sh
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
 sudo rm -rf .git
