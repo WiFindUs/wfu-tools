@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #===============================================================
 # File: wfu-shell-styles.sh
 # Author: Mark Gillard

@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #===============================================================
 # File: record-sdcard-image.sh
 # Author: Mark Gillard

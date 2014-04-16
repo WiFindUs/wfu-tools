@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #===============================================================
 # File: wfu-preimage-purge.sh
 # Author: Mark Gillard

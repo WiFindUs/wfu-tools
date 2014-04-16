@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #===============================================================
 # File: rebuild-rpi-servald
 # Author: Mark Gillard
