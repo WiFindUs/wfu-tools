@@ -20,11 +20,11 @@ echo -e "  ${STYLE_HEADING}upgrading distro...${STYLE_NONE}"
 sudo apt-get -qq dist-upgrade > /dev/null
 
 echo -e "  ${STYLE_HEADING}installing apps required by WFU...${STYLE_NONE}"
-sudo apt-get -qq install haveged hostapd udhcpd iw git autoconf gpsd > /dev/null
+sudo apt-get -qq install haveged hostapd iw git autoconf gpsd secure-delete isc-dhcp-server > /dev/null
 sudo update-rc.d -f hostapd remove > /dev/null 2>&1
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
-sudo update-rc.d -f udhcpd remove > /dev/null 2>&1
-sudo update-rc.d -f udhcpd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+sudo update-rc.d -f isc-dhcp-server remove > /dev/null 2>&1
+sudo update-rc.d -f isc-dhcp-server stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 sudo update-rc.d -f gpsd remove > /dev/null 2>&1
 sudo update-rc.d -f gpsd stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
 

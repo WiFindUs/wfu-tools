@@ -17,6 +17,7 @@ cd wfu-tools
 sudo rm -f rebuild-rpi-servald.sh
 sudo rm -f rebuild-rpi-kernel.sh
 sudo rm -f record-sdcard-image.sh
+sudo rm -f README.md
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
 sudo rm -rf .git

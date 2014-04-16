@@ -11,12 +11,11 @@ SD Card Setup - From an image
 4. Ensure the GPS and Wireless dongles are connected to the Pi.  
 5. Stick the card in an' turn 'er on.  
 6. Connect the Pi's ethernet port to a router or switch with internet connectivity.  
-7. Enter the command `wfu-update`.  
+7. Enter the command `wfu-update && wfu-setup -r`.  
 
 
 SD Card Setup - GOING IN DRY
 ----------------------------
-Setting the unit up from scratch is not really that much harder than using an image.  
 1. Get an SD Card of whatever damn size you like - it just needs to be big enough to cater for Raspbian's many many packages upon installation (~2GB).  
 2. Get an up-to date version of [Raspbian](http://downloads.raspberrypi.org/raspbian_latest)  
 3. Install it on the SD card as per [the RPi instructions](http://www.raspberrypi.org/documentation/installation/installing-images/README.md)  

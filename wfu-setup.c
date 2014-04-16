@@ -73,8 +73,8 @@ scripts needed to set up the mesh network.\n\n"
     /etc/hostname\n\
     /etc/rc.local\n\
     /etc/hostapd/hostapd.conf\n\
-    /etc/udhcpd.conf\n\
-	/etc/default/udhcpd\n\
+    /etc/dhcp/dhcpd.conf\n\
+    /etc/default/isc-dhcp-server\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
     %s/wfu-brain-num\n\n",
@@ -182,18 +182,26 @@ int write_rc_local(int num)
 		fprintf(file,"sudo iw dev wlan0 del\n");
 		fprintf(file,"sudo iw reg set AU\n");
 		fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
-		//fprintf(file,"sudo ip link set dev mesh0 address 50:50:50:50:50:50\n");
 		fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 		fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:60\n");
 		fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
-		fprintf(file,"sudo ifconfig ap0 up\n");	
+		fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
 		
-		fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
 		fprintf(file,"sleep 3\n");
-		fprintf(file,"sudo servald start\n");
-		fprintf(file,"sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-		fprintf(file,"sudo hostapd -B /etc/hostapd/hostapd.conf\n");
-		fprintf(file,"sudo service udhcpd start\n");
+		fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
+		fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
+		fprintf(file,"if [ $GPS_MODULE != \"\" ]; then \n");
+		fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+		fprintf(file,"fi\n");
+		
+		fprintf(file,"AP_MODULE=`ifconfig | grep -i -E \"ap0\"`\n");
+		fprintf(file,"if [ $AP_MODULE != \"\" ]; then \n");
+		fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
+		fprintf(file,"	sleep 1\n");
+		fprintf(file,"	sudo dhcpd\n");
+		fprintf(file,"	sleep 1\n");
+		fprintf(file,"  sudo servald start\n");
+		fprintf(file,"fi\n");
 	}
 
 	fprintf(file,"exit 0\n");
@@ -272,11 +280,47 @@ int write_network_interfaces(int num)
 	return TRUE;
 }
 
-int write_udhcpd(int num)
+int write_dhcpd(int num)
 {
 	FILE* file = NULL;
 	
-	sprintf(nbuf,"/etc/udhcpd.conf");
+	sprintf(nbuf,"/etc/dhcp/dhcpd.conf");
+	if (!quietMode)
+		printf("%s %s...",opString,nbuf);
+	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	{
+		if (!quietMode)
+			printf("error. are you root?\n");
+		return FALSE;
+	}
+	if (uninstallMode)
+		return TRUE;
+		
+	fprintf(file,"ddns-update-style none;\n")
+	fprintf(file,"option domain-name \"wfu-brain-%d.local\";\n",num)
+	fprintf(file,"default-lease-time 86400;\n")
+	fprintf(file,"max-lease-time 604800;\n")
+	fprintf(file,"authoritative;\n")
+	fprintf(file,"log-facility local7;\n")
+	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n")
+	fprintf(file,"  range 192.168.0.11 192.168.0.254;\n")
+	fprintf(file,"  option subnet-mask 255.255.255.0;\n")
+	fprintf(file,"  option broadcast-address 192.168.0.255;\n")
+	fprintf(file,"}\n")
+
+
+	fclose(file);
+	if (!quietMode)
+		printf(" [ok]\n");
+	
+	return TRUE;
+}
+
+int write_dhcpd_default(int num)
+{
+	FILE* file = NULL;
+	
+	sprintf(nbuf,"/etc/default/isc-dhcp-server");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
 	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
@@ -288,38 +332,7 @@ int write_udhcpd(int num)
 	if (uninstallMode)
 		return TRUE;
 	
-	fprintf(file,"start      192.168.0.2\n");
-	fprintf(file,"end        192.168.0.254\n");
-	fprintf(file,"interface  ap0\n");
-	fprintf(file,"remaining  yes\n");
-	fprintf(file,"opt lease 86400\n");
-	fprintf(file,"opt subnet 255.255.255.0\n");
-	fprintf(file,"opt router 192.168.0.1\n");
-
-	fclose(file);
-	if (!quietMode)
-		printf(" [ok]\n");
-	
-	return TRUE;
-}
-
-int write_udhcpd_default(int num)
-{
-	FILE* file = NULL;
-	
-	sprintf(nbuf,"/etc/default/udhcpd");
-	if (!quietMode)
-		printf("%s %s...",opString,nbuf);
-	if ((file = fopen(nbuf,"w")) == NULL)
-	{
-		if (!quietMode)
-			printf("error. are you root?\n");
-		return FALSE;
-	}
-	
-	if (uninstallMode)
-		fprintf(file,"DHCPD_ENABLED=\"no\"\n");
-	fprintf(file,"DHCPD_OPTS=\"-S\"\n");
+	fprintf(file,"INTERFACES=\"ap0\"\n");
 
 	fclose(file);
 	if (!quietMode)
@@ -470,9 +483,9 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 5;
 	if (!write_hostapd(num))
 		return 6;
-	if (!write_udhcpd(num))
+	if (!write_dhcpd(num))
 		return 7;
-	if (!write_udhcpd_default(num))
+	if (!write_dhcpd_default(num))
 		return 8;
 	if (!write_network_interfaces(num))
 		return 9;
