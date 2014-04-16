@@ -78,6 +78,8 @@ fi
 
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
+sudo mkdir -p /usr/local/var/run/serval
+sudo mkdir -p /usr/local/var/log/serval
 cd "$SRC_DIR"
 if [ -f "/usr/local/sbin/servald" ]; then
 	echo -e "  ${STYLE_WARNING}already present."
@@ -100,14 +102,12 @@ else
 			cd serval-dna
 			autoreconf -f -i  > /dev/null
 			./configure  > /dev/null
-			make clean -s -k
-			make -s -k
+			sudo make clean -s -k
+			sudo make -s -k
 
 			echo -e "    ${STYLE_HEADING}installing...${STYLE_NONE}"
 			if [ -f servald ]; then
-				sudo mkdir -p /usr/local/var/log/serval
-				sudo mkdir -p /usr/local/etc/serval
-				killall servald > /dev/null 2>&1
+				sudo killall servald > /dev/null 2>&1
 				sudo rm -f /usr/local/sbin/servald
 				sudo make install -s -k
 				sudo chmod 755 /usr/local/sbin/servald
