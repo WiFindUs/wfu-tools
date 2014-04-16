@@ -13,8 +13,9 @@ echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
 echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
 sudo rm -f -r wfu-tools
 git clone --depth 1 -q $WFU_REPOSITORY
-
 cd wfu-tools
+sudo rm -f rebuild-rpi-servald.sh
+sudo rm -f rebuild-rpi-kernel.sh
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
 sudo rm -rf .git
