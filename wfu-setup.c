@@ -47,7 +47,7 @@ int min(int a, int b)
 
 int dtoh(int decimal, char* hex)
 {
-	int i = 0, remainders[30], length = 0;
+	int i = 0, j = 0, remainders[30], length = 0;
 	while(decimal > 0)
 	{
 		remainders[i++] = decimal%16;
@@ -56,7 +56,7 @@ int dtoh(int decimal, char* hex)
 	}
 	
 	for(i = length-1; i >= 0; i--)
-		hex[i]= remainders[i] >= 10 ? (char)(((int)'A')+(remainders[i]-10)) : (char)(((int)'0')+remainders[i]);
+		hex[j++]= remainders[i] >= 10 ? (char)(((int)'A')+(remainders[i]-10)) : (char)(((int)'0')+remainders[i]);
 	hex[length] = '\0';
 }
 
