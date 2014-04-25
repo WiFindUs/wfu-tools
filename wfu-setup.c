@@ -34,6 +34,7 @@
 
 int quietMode = FALSE;
 int uninstallMode = FALSE;
+int noWireless = FALSE;
 int daemon_flags = ALL_FLAGS;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
@@ -75,6 +76,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -D or --nodhcpd: disable dhcpd auto-start.\n");
 	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
 	fprintf(stderr, "  -G or --nogpsd: disable gpsd auto-start.\n");
+	fprintf(stderr, "  -W or --nowireless: disable auto-configuration of wireless interfaces.\n");
 	fprintf(stderr, "  -u or --uninstall: reverts scripts to pre-wfu defaults,\n\
 instead of writing them out to disk.\n");
 	fprintf(stderr, "Remarks:\n");
@@ -208,12 +210,16 @@ int write_rc_local(int num)
 		fprintf(file,"sudo ifconfig wlan0 down\n");
 		fprintf(file,"sudo iw dev wlan0 del\n");
 		fprintf(file,"sudo iw reg set AU\n");
-		fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
-		fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-		fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-		fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
-		fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
-		
+		if (!noWireless)
+		{
+
+			fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
+			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
+			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);		
+			fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
+			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");
+		}			
+			
 		if (daemon_flags > 0)
 		{
 			fprintf(file,"sleep 3\n");
@@ -226,7 +232,7 @@ int write_rc_local(int num)
 				fprintf(file,"fi\n");
 			}
 			
-			if ((daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
+			if (!noWireless && (daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
 			{
 				fprintf(file,"AP_MODULE=`ifconfig | grep -i -E \"ap0\"`\n");
 				fprintf(file,"if [ \"$AP_MODULE\" != \"\" ]; then \n");
@@ -478,10 +484,12 @@ int main(int argc, char **argv)
 			daemon_flags &= ~SERVALD_FLAG;
 		else if (strcmp(argv[i],"-D") == 0 || strcmp(argv[i],"--nodhcpd") == 0)
 			daemon_flags &= ~DHCPD_FLAG;
-		else if (strcmp(argv[i],"-H") == 0 || strcmp(argv[i],"--nohostapd") == 0)		
+		else if (strcmp(argv[i],"-H") == 0 || strcmp(argv[i],"--nohostapd") == 0)
 			daemon_flags &= ~HOSTAPD_FLAG;
-		else if (strcmp(argv[i],"-G") == 0 || strcmp(argv[i],"--nogpsd") == 0)		
+		else if (strcmp(argv[i],"-G") == 0 || strcmp(argv[i],"--nogpsd") == 0)
 			daemon_flags &= ~GPSD_FLAG;
+		else if (strcmp(argv[i],"-W") == 0 || strcmp(argv[i],"--nowireless") == 0)
+			noWireless = TRUE;
 		else
 		{
 			numExplicit = TRUE;
