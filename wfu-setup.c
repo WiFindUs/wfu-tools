@@ -26,8 +26,15 @@
 #define SRC_DIR "/home/pi/src" 
 #endif
 
+#define SERVALD_FLAG 1
+#define DHCPD_FLAG 2
+#define HOSTAPD_FLAG 4
+#define GPSD_FLAG 8
+#define ALL_FLAGS 15
+
 int quietMode = FALSE;
 int uninstallMode = FALSE;
+int daemon_flags = ALL_FLAGS;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
 
@@ -64,6 +71,10 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
+	fprintf(stderr, "  -S or --noservald: disable serval auto-start.\n");
+	fprintf(stderr, "  -D or --nodhcpd: disable dhcpd auto-start.\n");
+	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
+	fprintf(stderr, "  -G or --nogpsd: disable gpsd auto-start.\n");
 	fprintf(stderr, "  -u or --uninstall: reverts scripts to pre-wfu defaults,\n\
 instead of writing them out to disk.\n");
 	fprintf(stderr, "Remarks:\n");
@@ -203,21 +214,37 @@ int write_rc_local(int num)
 		fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
 		fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
 		
-		fprintf(file,"sleep 3\n");
-		fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
-		fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
-		fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
-		fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-		fprintf(file,"fi\n");
-		
-		fprintf(file,"AP_MODULE=`ifconfig | grep -i -E \"ap0\"`\n");
-		fprintf(file,"if [ \"$AP_MODULE\" != \"\" ]; then \n");
-		fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
-		fprintf(file,"	sleep 1\n");
-		fprintf(file,"	sudo dhcpd\n");
-		fprintf(file,"	sleep 1\n");
-		fprintf(file,"  sudo servald start\n");
-		fprintf(file,"fi\n");
+		if (daemon_flags > 0)
+		{
+			fprintf(file,"sleep 3\n");
+			fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
+			if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
+			{
+				fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
+				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
+				fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+				fprintf(file,"fi\n");
+			}
+			
+			if ((daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
+			{
+				fprintf(file,"AP_MODULE=`ifconfig | grep -i -E \"ap0\"`\n");
+				fprintf(file,"if [ \"$AP_MODULE\" != \"\" ]; then \n");
+				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
+				{
+					fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
+					fprintf(file,"	sleep 1\n");
+				}
+				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
+				{
+					fprintf(file,"	sudo dhcpd\n");
+					fprintf(file,"	sleep 1\n");
+				}
+				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
+					fprintf(file,"  sudo servald start\n");
+				fprintf(file,"fi\n");
+			}
+		}
 	}
 
 	fprintf(file,"exit 0\n");
@@ -447,6 +474,14 @@ int main(int argc, char **argv)
 			quietMode = TRUE;
 		else if (strcmp(argv[i],"-u") == 0 || strcmp(argv[i],"--uninstall") == 0)
 			uninstallMode = TRUE;
+		else if (strcmp(argv[i],"-S") == 0 || strcmp(argv[i],"--noservald") == 0)
+			daemon_flags &= ~SERVALD_FLAG;
+		else if (strcmp(argv[i],"-D") == 0 || strcmp(argv[i],"--nodhcpd") == 0)
+			daemon_flags &= ~DHCPD_FLAG;
+		else if (strcmp(argv[i],"-H") == 0 || strcmp(argv[i],"--nohostapd") == 0)		
+			daemon_flags &= ~HOSTAPD_FLAG;
+		else if (strcmp(argv[i],"-G") == 0 || strcmp(argv[i],"--nogpsd") == 0)		
+			daemon_flags &= ~GPSD_FLAG;
 		else
 		{
 			numExplicit = TRUE;
