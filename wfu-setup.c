@@ -35,6 +35,7 @@
 int quietMode = FALSE;
 int uninstallMode = FALSE;
 int noWireless = FALSE;
+int adhocMode = FALSE;
 int daemon_flags = ALL_FLAGS;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
@@ -72,6 +73,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
+	fprintf(stderr, "  -a or --adhoc: use ad-hoc mode instead of mesh-point.\n");
 	fprintf(stderr, "  -S or --noservald: disable serval auto-start.\n");
 	fprintf(stderr, "  -D or --nodhcpd: disable dhcpd auto-start.\n");
 	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
@@ -212,12 +214,13 @@ int write_rc_local(int num)
 		fprintf(file,"sudo iw reg set AU\n");
 		if (!noWireless)
 		{
-
-			fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
+			fprintf(file,"sudo iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
 			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);		
 			fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
-			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");
+			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
+			if (adhocMode)
+				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 		}			
 			
 		if (daemon_flags > 0)
@@ -284,7 +287,7 @@ int write_hostapd(int num)
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
 	fprintf(file,"ieee80211n=1\n");
-	fprintf(file,"channel=1\n");
+	fprintf(file,"channel=6\n");
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=3\n");
 	fprintf(file,"wpa=3\n");
@@ -490,6 +493,8 @@ int main(int argc, char **argv)
 			daemon_flags &= ~GPSD_FLAG;
 		else if (strcmp(argv[i],"-W") == 0 || strcmp(argv[i],"--nowireless") == 0)
 			noWireless = TRUE;
+		else if (strcmp(argv[i],"-a") == 0 || strcmp(argv[i],"--adhoc") == 0)
+			adhocMode = TRUE;
 		else
 		{
 			numExplicit = TRUE;
