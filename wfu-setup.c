@@ -45,7 +45,7 @@ int min(int a, int b)
 	return b;
 }
 
-int dtoh(int decimal, cstr* hex)
+int dtoh(int decimal, char* hex)
 {
 	int i = 0, remainders[30], length = 0;
 	while(num>0)
