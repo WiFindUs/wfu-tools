@@ -63,6 +63,17 @@ else
 	echo -e "${STYLE_ERROR}Could not update system; wfu-update-system.sh missing!...${STYLE_NONE}"
 fi
 
+echo -e "${STYLE_HEADING}Adding IPv6 to auto-loaded modules...${STYLE_NONE}"
+HAYSTACK=`cat /etc/modules | grep "ipv6"`
+if  [ "$HAYSTACK" == "" ]; then
+	sudo su
+	echo "ipv6" >> /etc/modules
+	exit
+	echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+else
+	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
+fi
+
 echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
 	cd "/lib/firmware"
