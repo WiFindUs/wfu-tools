@@ -29,12 +29,28 @@
 int quietMode = FALSE;
 int uninstallMode = FALSE;
 char sbuf[256], nbuf[256], opString[50];
+char hex[3];
 
 int min(int a, int b)
 {
 	if (a < b)
 		return a;
 	return b;
+}
+
+int dtoh(int decimal, cstr* hex)
+{
+	int i = 0, remainders[30], length = 0;
+	while(num>0)
+	{
+		remainders[i++] = decimal%16;
+		decimal=decimal/16;
+		length++;
+	}
+	
+	for(i = length-1; i >= 0; i--)
+		hex[i]= rem[i] >= 10 ? (char)(((int)'A')+(rem[i]-10)) : (char)(((int)'0')+rem[i]);
+	hex[length] = '\0';
 }
 
 void print_usage(char * argv0)
@@ -183,7 +199,7 @@ int write_rc_local(int num)
 		fprintf(file,"sudo iw reg set AU\n");
 		fprintf(file,"sudo iw phy phy0 interface add mesh0 type mp mesh_id wifindus_mesh\n");
 		fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-		fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:60\n");
+		fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 		fprintf(file,"sudo ifconfig mesh0 192.168.2.%d up\n",num);	
 		fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
 		
@@ -460,9 +476,12 @@ int main(int argc, char **argv)
 		print_usage(argv[0]);
 		return 2;
 	}
+	
+	dtoh(num,hex);
+	
 	if (!quietMode)
 	{
-		printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d\n",VERSION_STR,num);
+		printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d (%s)\n",VERSION_STR,num,hex);
 		if (uninstallMode)
 			printf("## UNINSTALL MODE ##\n");
 		if (numDefault)
