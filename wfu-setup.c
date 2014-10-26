@@ -212,7 +212,7 @@ int write_rc_local(int num)
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);		
 			fprintf(file,"sudo ifconfig mesh0 up\n");	
 			fprintf(file,"sudo ifconfig mesh0 192.168.2.%d\n",num);	
-			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
+			fprintf(file,"sudo ifconfig ap0 10.1.%d.1 up\n",num);	
 			fprintf(file,"sleep 1\n");
 			if (adhocMode)
 			{
@@ -322,7 +322,8 @@ int write_network_interfaces(int num)
 	
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
-	fprintf(file,"        netmask 255.255.255.0\n\n");
+	fprintf(file,"        netmask 255.255.255.0\n");
+	fprintf(file,"        gateway 192.168.1.254\n\n");
 
 	fclose(file);
 	if (!quietMode)
@@ -353,10 +354,10 @@ int write_dhcpd(int num)
 	fprintf(file,"max-lease-time 604800;\n");
 	fprintf(file,"authoritative;\n");
 	fprintf(file,"log-facility local7;\n");
-	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n");
-	fprintf(file,"  range 192.168.0.11 192.168.0.254;\n");
+	fprintf(file,"subnet 10.1.%d.0 netmask 255.255.255.0 {\n",num);
+	fprintf(file,"  range 10.1.%d.2 10.1.%d.254;\n",num,num);
 	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
-	fprintf(file,"  option broadcast-address 192.168.0.255;\n");
+	fprintf(file,"  option broadcast-address 10.1.%d.255;\n",num);
 	fprintf(file,"}\n");
 
 
