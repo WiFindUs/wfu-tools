@@ -143,7 +143,7 @@ int write_hosts(int num)
 	
 	if (!uninstallMode)
 	{	
-		fprintf(file,"192.168.1.1 wfu-server\n");
+		fprintf(file,"192.168.2.1 wfu-server\n");
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
