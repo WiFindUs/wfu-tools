@@ -142,14 +142,7 @@ int write_hosts(int num)
 	fprintf(file,"ff02::2 ip6-allrouters\n\n");
 	
 	if (!uninstallMode)
-	{
-		fprintf(file,"192.168.1.2 m-beast\n");
-		fprintf(file,"192.168.1.1 m-server\n\n");
-		fprintf(file,"192.168.2.254 m-beast-mesh\n\n");
-		
-		fprintf(file,"192.168.2.255 brains-broadcast\n");
-		fprintf(file,"192.168.0.255 clients-broadcast\n\n");
-		
+	{	
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
@@ -226,7 +219,7 @@ int write_rc_local(int num)
 				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 				fprintf(file,"sleep 1\n");
 			}
-		}			
+		}
 			
 		if (daemon_flags > 0)
 		{
@@ -329,8 +322,7 @@ int write_network_interfaces(int num)
 	
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
-	fprintf(file,"        netmask 255.255.255.0\n");
-	fprintf(file,"        gateway 192.168.1.254\n\n");
+	fprintf(file,"        netmask 255.255.255.0\n\n");
 
 	fclose(file);
 	if (!quietMode)
