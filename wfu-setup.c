@@ -135,6 +135,7 @@ int write_hosts(int num)
 	}
 	
 	fprintf(file,"127.0.0.1 localhost\n");
+	fprintf(file,"127.0.1.1 wfu-brain-%d\n",num);
 	fprintf(file,"::1 localhost ip6-localhost ip6-loopback\n");
 	fprintf(file,"fe00::0 ip6-localnet\n");
 	fprintf(file,"ff00::0 ip6-mcastprefix\n");
@@ -143,17 +144,13 @@ int write_hosts(int num)
 	
 	if (!uninstallMode)
 	{	
-		fprintf(file,"192.168.2.1 wfu-server\n");
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
-				fprintf(file,"127.0.1.1 wfu-brain-%d\n",i);
-			else
-				fprintf(file,"192.168.2.%d wfu-brain-%d\n",i,i);
+				continue;
+			fprintf(file,"10.0.0.%d wfu-brain-%d\n",i,i);
 		}
 	}
-	else
-		fprintf(file,"127.0.1.1 wfu-brain-%d\n",num);
 	
 	fclose(file);
 	if (!quietMode)
@@ -204,21 +201,22 @@ int write_rc_local(int num)
 		fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
 		
 		fprintf(file,"sudo ifconfig wlan0 down\n");
+		fprintf(file,"sleep 2\n");
 		fprintf(file,"sudo iw dev wlan0 del\n");
 		fprintf(file,"sudo iw reg set AU\n");
 		if (!noWireless)
 		{
 			fprintf(file,"sudo iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
 			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);		
-			fprintf(file,"sudo ifconfig mesh0 up\n");	
-			fprintf(file,"sudo ifconfig mesh0 192.168.2.%d\n",num);	
-			fprintf(file,"sudo ifconfig ap0 10.1.%d.1 up\n",num);	
-			fprintf(file,"sleep 1\n");
+			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+			fprintf(file,"sudo ifconfig mesh0 10.0.0.%d up\n",num);
+			fprintf(file,"sleep 2\n");
+			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
+			fprintf(file,"sleep 2\n");
 			if (adhocMode)
 			{
 				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
-				fprintf(file,"sleep 1\n");
+				fprintf(file,"sleep 2\n");
 			}
 		}
 			
@@ -240,17 +238,17 @@ int write_rc_local(int num)
 				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
 				{
 					fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
-					fprintf(file,"	sleep 1\n");
+					fprintf(file,"	sleep 2\n");
 				}
 				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 				{
 					fprintf(file,"	sudo dhcpd\n");
-					fprintf(file,"	sleep 1\n");
+					fprintf(file,"	sleep 2\n");
 				}
 				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 				{
 					fprintf(file,"  sudo servald start\n");
-					fprintf(file,"	sleep 1\n");
+					fprintf(file,"	sleep 2\n");
 				}
 				fprintf(file,"fi\n");
 			}
@@ -324,7 +322,8 @@ int write_network_interfaces(int num)
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
-	fprintf(file,"        gateway 192.168.1.254\n\n");
+	//fprintf(file,"        gateway 192.168.1.254\n");
+	fprintf(file,"\n");
 
 	fclose(file);
 	if (!quietMode)
@@ -355,10 +354,10 @@ int write_dhcpd(int num)
 	fprintf(file,"max-lease-time 604800;\n");
 	fprintf(file,"authoritative;\n");
 	fprintf(file,"log-facility local7;\n");
-	fprintf(file,"subnet 10.1.%d.0 netmask 255.255.255.0 {\n",num);
-	fprintf(file,"  range 10.1.%d.2 10.1.%d.254;\n",num,num);
+	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n");
+	fprintf(file,"  range 192.168.0.2 192.168.0.254;\n");
 	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
-	fprintf(file,"  option broadcast-address 10.1.%d.255;\n",num);
+	fprintf(file,"  option broadcast-address 192.168.0.255;\n");
 	fprintf(file,"}\n");
 
 
