@@ -287,7 +287,7 @@ int write_hostapd(int num)
 	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
-	fprintf(file,"ieee80211n=1\n");
+	fprintf(file,"ieee80211n=0\n"); //was 1
 	fprintf(file,"channel=1\n");
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=1\n");
@@ -319,7 +319,6 @@ int write_network_interfaces(int num)
 	}
 
 	fprintf(file,"auto lo\n");
-//	fprintf(file,"wireless-power off\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
 	fprintf(file,"iface eth0 inet static\n");
@@ -327,6 +326,8 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	//fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
+
+	fprintf(file,"wireless-power off\n");
 
 	fclose(file);
 	if (!quietMode)
