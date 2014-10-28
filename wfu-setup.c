@@ -327,8 +327,6 @@ int write_network_interfaces(int num)
 	//fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
-	fprintf(file,"wireless-power off\n");
-
 	fclose(file);
 	if (!quietMode)
 		printf(" [ok]\n");
