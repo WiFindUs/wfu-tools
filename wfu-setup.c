@@ -223,13 +223,11 @@ int write_rc_local(int num)
 			
 			//routing like a baws
 			fprintf(file,"sudo su\n");
-			fprintf(file,"sudo su\n");
-			fprintf(file,"sudo su\n");
-			fprintf(file,"sudo su\n");
-			fprintf(file,"sudo su\n");
-			fprintf(file,"sudo su\n");fprintf(file,"sudo su\n");
-			
-			
+			fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\n");
+			fprintf(file,"iptables -A FORWARD -i eth0 -o mesh0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT\n");
+			fprintf(file,"iptables -A FORWARD -i mesh0 -o eth0 -j ACCEPT\n");
+			fprintf(file,"exit\n");
 		}
 			
 		if (daemon_flags > 0)
