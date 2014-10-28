@@ -220,6 +220,16 @@ int write_rc_local(int num)
 				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 				fprintf(file,"sleep 2\n");
 			}
+			
+			//routing like a baws
+			fprintf(file,"sudo su\n");
+			fprintf(file,"sudo su\n");
+			fprintf(file,"sudo su\n");
+			fprintf(file,"sudo su\n");
+			fprintf(file,"sudo su\n");
+			fprintf(file,"sudo su\n");fprintf(file,"sudo su\n");
+			
+			
 		}
 			
 		if (daemon_flags > 0)
