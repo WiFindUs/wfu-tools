@@ -74,6 +74,8 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
+sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
+
 if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
 	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 	cd "/lib/firmware"
@@ -162,6 +164,8 @@ if [ -d wfu-tools ]; then
 else
 	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
+
+sudo route del -net 0.0.0.0 gw 192.168.1.254 eth0
 
 echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1

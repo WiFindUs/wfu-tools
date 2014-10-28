@@ -20,7 +20,9 @@ if [ -d wfu-tools ]; then
 fi
 
 echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
+sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
 git clone --depth 1 -q $WFU_REPOSITORY
+sudo route del -net 0.0.0.0 gw 192.168.1.254 eth0
 if [ -d wfu-tools ]; then
 	cd wfu-tools
 	sudo rm -f rebuild-rpi-servald.sh
