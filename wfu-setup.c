@@ -209,7 +209,9 @@ int write_rc_local(int num)
 			fprintf(file,"sudo iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
 			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"sudo ifconfig mesh0 10.0.0.%d up\n",num);
+			fprintf(file,"sudo ifconfig mesh0 up\n");	
+			fprintf(file,"sleep 2\n");
+			fprintf(file,"sudo ifconfig mesh0 10.0.0.%d\n",num);	
 			fprintf(file,"sleep 2\n");
 			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
 			fprintf(file,"sleep 2\n");
