@@ -319,6 +319,7 @@ int write_network_interfaces(int num)
 	}
 
 	fprintf(file,"auto lo\n");
+	fprintf(file,"wireless-power off\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
 	fprintf(file,"iface eth0 inet static\n");
