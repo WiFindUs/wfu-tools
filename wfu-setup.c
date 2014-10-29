@@ -151,7 +151,7 @@ int write_hosts(int num)
 		{
 			if (i == num)
 				continue;
-			fprintf(file,"172.16.0.%d wfu-brain-%d\n",i,i);
+			fprintf(file,"10.1.0.%d wfu-brain-%d\n",i,i);
 		}
 	}
 	
