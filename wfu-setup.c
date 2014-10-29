@@ -148,7 +148,7 @@ int write_hosts(int num)
 		{
 			if (i == num)
 				continue;
-			fprintf(file,"10.0.0.%d wfu-brain-%d\n",i,i);
+			fprintf(file,"172.16.0.%d wfu-brain-%d\n",i,i);
 		}
 	}
 	
@@ -211,9 +211,9 @@ int write_rc_local(int num)
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 			fprintf(file,"sudo ifconfig mesh0 up\n");	
 			fprintf(file,"sleep 2\n");
-			fprintf(file,"sudo ifconfig mesh0 10.0.0.%d\n",num);	
+			fprintf(file,"sudo ifconfig mesh0 172.16.0.%d\n",num);	
 			fprintf(file,"sleep 2\n");
-			fprintf(file,"sudo ifconfig ap0 192.168.0.1 up\n");	
+			fprintf(file,"sudo ifconfig ap0 10.0.%d.1 up\n",num);	
 			fprintf(file,"sleep 2\n");
 			if (adhocMode)
 			{
@@ -224,10 +224,13 @@ int write_rc_local(int num)
 			//routing like a baws
 			fprintf(file,"sudo su\n");
 			fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\n");
-			fprintf(file,"iptables -A FORWARD -i eth0 -o mesh0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT\n");
-			fprintf(file,"iptables -A FORWARD -i mesh0 -o eth0 -j ACCEPT\n");
-			fprintf(file,"exit\n");
+			fprintf(file,"iptables -F\n");
+			fprintf(file,"iptables -X\n");
+			fprintf(file,"iptables -t nat -F\n");
+			fprintf(file,"iptables -P INPUT ACCEPT\n");
+			fprintf(file,"iptables -P FORWARD ACCEPT\n");
+			fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+			fprintf(file,"exit\n");		
 		}
 			
 		if (daemon_flags > 0)
@@ -298,6 +301,7 @@ int write_hostapd(int num)
 	fprintf(file,"ieee80211n=0\n"); //was 1
 	fprintf(file,"channel=1\n");
 	fprintf(file,"macaddr_acl=0\n");
+	fprintf(file,"ignore_broadcast_ssid=0\n");
 	fprintf(file,"auth_algs=1\n");
 	fprintf(file,"wpa=2\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
@@ -329,9 +333,12 @@ int write_network_interfaces(int num)
 	fprintf(file,"auto lo\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
+	fprintf(file,"auto eth0\n");
+	fprintf(file,"allow-hotplug eth0\n");
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
+	fprintf(file,"        broadcast 192.168.1.255\n");
 	//fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
@@ -364,10 +371,10 @@ int write_dhcpd(int num)
 	fprintf(file,"max-lease-time 604800;\n");
 	fprintf(file,"authoritative;\n");
 	fprintf(file,"log-facility local7;\n");
-	fprintf(file,"subnet 192.168.0.0 netmask 255.255.255.0 {\n");
-	fprintf(file,"  range 192.168.0.2 192.168.0.254;\n");
+	fprintf(file,"subnet 10.0.%d.0 netmask 255.255.255.0 {\n",num);
+	fprintf(file,"  range 10.0.%d.2 10.0.%d.254;\n",num,num);
 	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
-	fprintf(file,"  option broadcast-address 192.168.0.255;\n");
+	fprintf(file,"  option broadcast-address 10.0.%d.255;\n",num);
 	fprintf(file,"}\n");
 
 
