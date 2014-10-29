@@ -47,7 +47,9 @@ echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_N
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
 read_number "this unit's ID #" 1 254
-ID_NUMBER=$?
+BRAIN_NUMBER=$?
+export BRAIN_NUMBER
+echo "$BRAIN_NUMBER" > "$PI_HOME/src/wfu-brain-num"
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
@@ -150,7 +152,7 @@ if [ -d wfu-tools ]; then
 	./wfu-update.sh
 	
 	echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
-	sudo wfu-setup $ID_NUMBER -q
+	sudo wfu-setup $BRAIN_NUMBER -q
 else
 	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
