@@ -228,18 +228,6 @@ int write_rc_local(int num)
 				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 				fprintf(file,"sleep 1\n");
 			}
-			
-			//routing like a baws
-			fprintf(file,"sudo su\n");
-			fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-			fprintf(file,"iptables -F\n");
-			fprintf(file,"iptables -X\n");
-			fprintf(file,"iptables -t nat -F\n");
-			fprintf(file,"iptables -P INPUT ACCEPT\n");
-			fprintf(file,"iptables -P FORWARD ACCEPT\n");
-			fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-			fprintf(file,"exit\n");
-			fprintf(file,"sleep 3\n");
 		}
 			
 		if (daemon_flags > 0)
@@ -259,22 +247,37 @@ int write_rc_local(int num)
 				fprintf(file,"if [ \"$AP_MODULE\" != \"\" ]; then \n");
 				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
 				{
+					fprintf(file,"	sleep 5\n");
 					fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
-					fprintf(file,"	sleep 2\n");
+					
 				}
 				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 				{
+					fprintf(file,"	sleep 5\n");
 					fprintf(file,"	sudo dhcpd\n");
-					fprintf(file,"	sleep 2\n");
+					
 				}
 				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 				{
+					fprintf(file,"	sleep 5\n");
 					fprintf(file,"  sudo servald start\n");
-					fprintf(file,"	sleep 2\n");
+					
 				}
 				fprintf(file,"fi\n");
 			}
+			fprintf(file,"sleep 5\n");
 		}
+		
+		//routing like a baws
+		fprintf(file,"sudo su\n");
+		fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+		fprintf(file,"iptables -F\n");
+		fprintf(file,"iptables -X\n");
+		fprintf(file,"iptables -t nat -F\n");
+		fprintf(file,"iptables -P INPUT ACCEPT\n");
+		fprintf(file,"iptables -P FORWARD ACCEPT\n");
+		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+		fprintf(file,"exit\n");
 	}
 
 	fprintf(file,"exit 0\n");
