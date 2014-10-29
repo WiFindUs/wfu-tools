@@ -204,29 +204,22 @@ int write_rc_local(int num)
 		fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
 		
 		fprintf(file,"sudo ifconfig wlan0 down\n");
-		fprintf(file,"sleep 1\n");
+		fprintf(file,"sleep 3\n");
 		fprintf(file,"sudo iw dev wlan0 del\n");
-		fprintf(file,"sleep 1\n");
 		fprintf(file,"sudo iw reg set AU\n");
-		fprintf(file,"sleep 1\n");
 		if (!noWireless)
 		{
 			fprintf(file,"sudo iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
-			fprintf(file,"sleep 1\n");
 			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-			fprintf(file,"sleep 1\n");
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"sleep 1\n");
 			fprintf(file,"sudo ifconfig mesh0 up\n");	
-			fprintf(file,"sleep 1\n");
+			fprintf(file,"sleep 3\n");
 			fprintf(file,"sudo ifconfig mesh0 10.1.0.%d\n",num);	
-			fprintf(file,"sleep 1\n");
 			fprintf(file,"sudo ifconfig ap0 10.0.%d.1 up\n",num);	
-			fprintf(file,"sleep 1\n");
 			if (adhocMode)
 			{
-				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 				fprintf(file,"sleep 1\n");
+				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 			}
 		}
 			
@@ -235,6 +228,7 @@ int write_rc_local(int num)
 			fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
 			if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
 			{
+				fprintf(file,"sleep 5\n");
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
 				fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
@@ -345,13 +339,9 @@ int write_network_interfaces(int num)
 	fprintf(file,"auto lo\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
-	//fprintf(file,"auto eth0\n");
-	//fprintf(file,"allow-hotplug eth0\n");
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
-	//fprintf(file,"        broadcast 192.168.1.255\n");
-	//fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
 	fclose(file);
