@@ -86,7 +86,7 @@ instead of writing them out to disk.\n");
 will be used (if it exists; otherwise 1 is used as default).\n",SRC_DIR);
 }
 
-void print_detailed_help()
+void print_detailed_help(char * argv0)
 {
 	if (quietMode)
 		return;
@@ -97,7 +97,10 @@ void print_detailed_help()
 (1-254, provided as a parameter), and generates all the associated\n\
 scripts needed to set up the mesh network.\n\n"
 	);
-
+	
+	print_usage(argv0);
+	printf("\n");
+	
 	printf(
 "The following files are automatically generated/overwritten:\n\
     /etc/hosts\n\
@@ -211,7 +214,7 @@ int write_rc_local(int num)
 			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 			fprintf(file,"sudo ifconfig mesh0 up\n");	
 			fprintf(file,"sleep 2\n");
-			fprintf(file,"sudo ifconfig mesh0 172.16.0.%d\n",num);	
+			fprintf(file,"sudo ifconfig mesh0 10.1.0.%d\n",num);	
 			fprintf(file,"sleep 2\n");
 			fprintf(file,"sudo ifconfig ap0 10.0.%d.1 up\n",num);	
 			fprintf(file,"sleep 2\n");
@@ -525,7 +528,7 @@ int main(int argc, char **argv)
 	
 	if (detailedHelpMode)
 	{
-		print_detailed_help();
+		print_detailed_help(argv[0]);
 		return 0;
 	}
 	
