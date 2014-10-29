@@ -74,6 +74,12 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
+echo -e "${STYLE_HEADING}Permanently disabling swap file..${STYLE_NONE}"
+sudo dphys-swapfile swapoff
+sudo dphys-swapfile uninstall
+sudo update-rc.d dphys-swapfile remove > /dev/null 2>&1
+echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+
 if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
 	"$WFU_TOOLS_DIR/wfu-update-wifi.sh"
 else

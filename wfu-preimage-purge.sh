@@ -29,11 +29,6 @@ sudo rm -rf /var/cache/apt
 echo -e "  ${STYLE_HEADING}writing zeros to free space...${STYLE_NONE}"
 sudo sfill -f -ll -z /
 
-echo -e "  ${STYLE_HEADING}writing zeros to swap...${STYLE_NONE}"
-sudo swapoff -a
-sudo dd if=/dev/zero of=/var/swap bs=1M count=100
-sudo swapon -a
-
 echo -e "  ${STYLE_HEADING}deleting logs...${STYLE_NONE}"
 sudo rm `find /var/log -type f`
 if [ -d "/usr/local/var/log/serval" ]; then
