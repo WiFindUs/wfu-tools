@@ -6,7 +6,6 @@
 # Description:
 #   Updates a Raspbian system with all the required packages etc.
 #===============================================================
-sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
 
 echo -e "${STYLE_HEADING}Updating system components...${STYLE_NONE}"
 sudo mkdir -p /var/cache/apt/archives/partial
@@ -36,5 +35,3 @@ sudo apt-get -qq clean > /dev/null
 sudo apt-get -qq autoclean > /dev/null
 
 echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"
-
-sudo route del -net 0.0.0.0 gw 192.168.1.254 eth0

@@ -88,8 +88,6 @@ else
 	echo -e "${STYLE_ERROR}Could not update wifi drivers; wfu-update-wifi.sh missing!...${STYLE_NONE}"
 fi
 
-sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
-
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
 sudo mkdir -p /usr/local/var/run/serval
@@ -156,8 +154,6 @@ if [ -d wfu-tools ]; then
 else
 	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
-
-sudo route del -net 0.0.0.0 gw 192.168.1.254 eth0
 
 echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1

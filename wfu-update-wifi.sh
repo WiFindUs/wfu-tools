@@ -7,7 +7,6 @@
 #   Updates the system wifi drivers.
 #===============================================================
 cd /lib/firmware
-sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
 
 echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 sudo wget -q -O htc_9271.fw.new http://www.wifindus.com/downloads/htc_9271.fw
@@ -28,4 +27,3 @@ if [ -f htc_7010.fw.new ]; then
 else
 	echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 fi
-sudo route del -net 0.0.0.0 gw 192.168.1.254 eth0
