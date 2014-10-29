@@ -42,6 +42,9 @@ if [ -d wfu-tools ]; then
 		sudo chmod 755 *.sh
 		sudo chmod 755 wfu-setup
 		
+		sudo rm -f /usr/bin/wfu-update-wifi
+		sudo ln -s "$WFU_TOOLS_DIR/wfu-update-wifi.sh" /usr/bin/wfu-update-wifi
+		
 		sudo rm -f /usr/bin/wfu-initial-setup
 		sudo ln -s "$WFU_TOOLS_DIR/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
 

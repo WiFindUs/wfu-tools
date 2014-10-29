@@ -74,29 +74,13 @@ else
 	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
 fi
 
+if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
+	"$WFU_TOOLS_DIR/wfu-update-wifi.sh"
+else
+	echo -e "${STYLE_ERROR}Could not update wifi drivers; wfu-update-wifi.sh missing!...${STYLE_NONE}"
+fi
+
 sudo route add -net 0.0.0.0 gw 192.168.1.254 eth0
-
-if [ ! -f "/lib/firmware/htc_9271.fw"  ]; then
-	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
-	cd "/lib/firmware"
-	sudo wget -q http://www.wifindus.com/downloads/htc_9271.fw
-	if [ -f "htc_9271.fw" ]; then
-		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
-	else
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-	fi
-fi
-
-if [ ! -f "/lib/firmware/htc_7010.fw"  ]; then
-	echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
-	cd "/lib/firmware"
-	sudo wget -q http://www.wifindus.com/downloads/htc_7010.fw
-	if [ -f "htc_7010.fw" ]; then
-		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
-	else
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-	fi
-fi
 
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
