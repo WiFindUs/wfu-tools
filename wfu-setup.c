@@ -144,6 +144,8 @@ int write_hosts(int num)
 	fprintf(file,"ff00::0 ip6-mcastprefix\n");
 	fprintf(file,"ff02::1 ip6-allnodes\n");
 	fprintf(file,"ff02::2 ip6-allrouters\n\n");
+	fprintf(file,"192.168.1.1 wfu-server\n");
+	fprintf(file,"192.168.1.1 m-server\n");
 	
 	if (!uninstallMode)
 	{	
@@ -203,23 +205,23 @@ int write_rc_local(int num)
 	{
 		fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
 		
-		fprintf(file,"sudo ifconfig wlan0 down\n");
+		fprintf(file,"ifconfig wlan0 down\n");
 		fprintf(file,"sleep 3\n");
-		fprintf(file,"sudo iw dev wlan0 del\n");
-		fprintf(file,"sudo iw reg set AU\n");
+		fprintf(file,"iw dev wlan0 del\n");
+		fprintf(file,"iw reg set AU\n");
 		if (!noWireless)
 		{
-			fprintf(file,"sudo iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
-			fprintf(file,"sudo iw phy phy0 interface add ap0 type managed\n");
-			fprintf(file,"sudo ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"sudo ifconfig mesh0 up\n");	
+			fprintf(file,"iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+			fprintf(file,"iw phy phy0 interface add ap0 type managed\n");
+			fprintf(file,"ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+			fprintf(file,"ifconfig mesh0 up\n");	
 			fprintf(file,"sleep 3\n");
-			fprintf(file,"sudo ifconfig mesh0 10.1.0.%d\n",num);	
-			fprintf(file,"sudo ifconfig ap0 10.0.%d.1 up\n",num);	
+			fprintf(file,"ifconfig mesh0 10.1.0.%d\n",num);	
+			fprintf(file,"ifconfig ap0 10.0.%d.1 up\n",num);	
 			if (adhocMode)
 			{
 				fprintf(file,"sleep 1\n");
-				fprintf(file,"sudo iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
+				fprintf(file,"iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 			}
 		}
 			
@@ -231,7 +233,7 @@ int write_rc_local(int num)
 				fprintf(file,"sleep 5\n");
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
-				fprintf(file,"	sudo gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+				fprintf(file,"	gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 				fprintf(file,"fi\n");
 			}
 			
@@ -242,19 +244,19 @@ int write_rc_local(int num)
 				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
 				{
 					fprintf(file,"	sleep 5\n");
-					fprintf(file,"	sudo hostapd -B /etc/hostapd/hostapd.conf\n");
+					fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
 					
 				}
 				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 				{
 					fprintf(file,"	sleep 5\n");
-					fprintf(file,"	sudo dhcpd\n");
+					fprintf(file,"	dhcpd\n");
 					
 				}
 				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 				{
 					fprintf(file,"	sleep 5\n");
-					fprintf(file,"  sudo servald start\n");
+					fprintf(file,"  servald start\n");
 					
 				}
 				fprintf(file,"fi\n");
@@ -263,7 +265,6 @@ int write_rc_local(int num)
 		}
 		
 		//routing like a baws
-		fprintf(file,"sudo su\n");
 		fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
 		fprintf(file,"iptables -F\n");
 		fprintf(file,"iptables -X\n");
@@ -274,7 +275,6 @@ int write_rc_local(int num)
 		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 		if (num > 1)
 			fprintf(file,"ip route add 192.168.1.0/24 via 10.1.0.1 dev mesh0\n");
-		fprintf(file,"exit\n");
 	}
 
 	fprintf(file,"exit 0\n");
