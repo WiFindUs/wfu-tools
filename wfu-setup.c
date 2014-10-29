@@ -336,12 +336,12 @@ int write_network_interfaces(int num)
 	fprintf(file,"auto lo\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
-	fprintf(file,"auto eth0\n");
-	fprintf(file,"allow-hotplug eth0\n");
+	//fprintf(file,"auto eth0\n");
+	//fprintf(file,"allow-hotplug eth0\n");
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
-	fprintf(file,"        broadcast 192.168.1.255\n");
+	//fprintf(file,"        broadcast 192.168.1.255\n");
 	//fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
