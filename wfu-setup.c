@@ -274,7 +274,11 @@ int write_rc_local(int num)
 		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 		if (num == 1)
+		{
 			fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0\n");
+			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -d 192.168.1.0/24 -j ACCEPT\n");
+			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -d 0.0.0.0/0 -j MASQUERADE\n");
+		}
 		else
 			fprintf(file,"ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 			
