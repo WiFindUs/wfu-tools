@@ -217,7 +217,7 @@ int write_rc_local(int num)
 			fprintf(file,"ifconfig mesh0 up\n");	
 			fprintf(file,"sleep 3\n");
 			fprintf(file,"ifconfig mesh0 10.1.0.%d\n",num);	
-			fprintf(file,"ifconfig ap0 10.0.%d.1 up\n",num);	
+			fprintf(file,"ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 			if (adhocMode)
 			{
 				fprintf(file,"sleep 1\n");
@@ -273,8 +273,10 @@ int write_rc_local(int num)
 		fprintf(file,"iptables -P FORWARD ACCEPT\n");
 		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-		if (num > 1)
-			fprintf(file,"ip route add 192.168.1.0/24 via 10.1.0.1 dev mesh0\n");
+		if (num == 1)
+			fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0\n");
+		else
+			fprintf(file,"ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 			
 	}
 
@@ -377,10 +379,11 @@ int write_dhcpd(int num)
 	fprintf(file,"max-lease-time 604800;\n");
 	fprintf(file,"authoritative;\n");
 	fprintf(file,"log-facility local7;\n");
-	fprintf(file,"subnet 10.0.%d.0 netmask 255.255.255.0 {\n",num);
-	fprintf(file,"  range 10.0.%d.2 10.0.%d.254;\n",num,num);
+	fprintf(file,"subnet 172.16.%d.0 netmask 255.255.255.0 {\n",num);
+	fprintf(file,"  range 172.16.%d.2 172.16.%d.254;\n",num,num);
+	fprintf(file,"  option routers 172.16.%d.1;\n",num);
 	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
-	fprintf(file,"  option broadcast-address 10.0.%d.255;\n",num);
+	fprintf(file,"  option broadcast-address 172.16.%d.255;\n",num);
 	fprintf(file,"}\n");
 
 
