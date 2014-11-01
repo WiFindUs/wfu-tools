@@ -233,7 +233,7 @@ int write_rc_local(int num)
 				fprintf(file,"sleep 5\n");
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
-				fprintf(file,"	gpsd /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 				fprintf(file,"fi\n");
 			}
 			
