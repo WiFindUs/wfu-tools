@@ -188,6 +188,7 @@ int write_hostname(int num)
 int write_rc_local(int num)
 {
 	FILE* file = NULL;
+	int i;
 	
 	sprintf(nbuf,"/etc/rc.local");
 	if (!quietMode)
@@ -276,6 +277,8 @@ int write_rc_local(int num)
 		if (num == 1)
 		{
 			fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0\n");
+			for (i = 2; i < 255; i++)
+				fprintf(file,"ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
 			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -d 192.168.1.0/24 -j ACCEPT\n");
 			fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -d 0.0.0.0/0 -j MASQUERADE\n");
 		}
