@@ -325,12 +325,12 @@ int write_hostapd(int num)
 	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
-	fprintf(file,"ieee80211n=0\n"); //was 1
+	fprintf(file,"ieee80211n=1\n");
 	fprintf(file,"channel=1\n");
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"ignore_broadcast_ssid=0\n");
 	fprintf(file,"auth_algs=1\n");
-	fprintf(file,"wpa=2\n");
+	fprintf(file,"wpa=3\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
@@ -390,8 +390,8 @@ int write_dhcpd(int num)
 		
 	fprintf(file,"ddns-update-style none;\n");
 	fprintf(file,"option domain-name \"wfu-brain-%d.local\";\n",num);
-	fprintf(file,"default-lease-time 86400;\n");
-	fprintf(file,"max-lease-time 604800;\n");
+	fprintf(file,"default-lease-time 600;\n");
+	fprintf(file,"max-lease-time 7200;\n");
 	fprintf(file,"authoritative;\n");
 	fprintf(file,"log-facility local7;\n");
 	fprintf(file,"subnet 172.16.%d.0 netmask 255.255.255.0 {\n",num);
