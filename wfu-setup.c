@@ -36,7 +36,7 @@ int quietMode = FALSE;
 int uninstallMode = FALSE;
 int noWireless = FALSE;
 int adhocMode = FALSE;
-int daemon_flags = ALL_FLAGS;
+int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
 
@@ -74,7 +74,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
 	fprintf(stderr, "  -a or --adhoc: use ad-hoc mode instead of mesh-point.\n");
-	fprintf(stderr, "  -S or --noservald: disable serval auto-start.\n");
+	fprintf(stderr, "  -S or --servald: enable serval auto-start.\n");
 	fprintf(stderr, "  -D or --nodhcpd: disable dhcpd auto-start.\n");
 	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
 	fprintf(stderr, "  -G or --nogpsd: disable gpsd auto-start.\n");
@@ -328,7 +328,7 @@ int write_hostapd(int num)
 	fprintf(file,"ieee80211n=1\n");
 	fprintf(file,"channel=1\n");
 	fprintf(file,"macaddr_acl=0\n");
-	fprintf(file,"ignore_broadcast_ssid=0\n");
+	fprintf(file,"ignore_broadcast_ssid=1\n");
 	fprintf(file,"auth_algs=1\n");
 	fprintf(file,"wpa=3\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
@@ -524,8 +524,8 @@ int main(int argc, char **argv)
 			quietMode = TRUE;
 		else if (strcmp(argv[i],"-u") == 0 || strcmp(argv[i],"--uninstall") == 0)
 			uninstallMode = TRUE;
-		else if (strcmp(argv[i],"-S") == 0 || strcmp(argv[i],"--noservald") == 0)
-			daemon_flags &= ~SERVALD_FLAG;
+		else if (strcmp(argv[i],"-S") == 0 || strcmp(argv[i],"--servald") == 0)
+			daemon_flags |= SERVALD_FLAG;
 		else if (strcmp(argv[i],"-D") == 0 || strcmp(argv[i],"--nodhcpd") == 0)
 			daemon_flags &= ~DHCPD_FLAG;
 		else if (strcmp(argv[i],"-H") == 0 || strcmp(argv[i],"--nohostapd") == 0)
