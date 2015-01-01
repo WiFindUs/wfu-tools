@@ -36,11 +36,9 @@ Network Addresses and Unit Identity
 -----------------------------------
 "Brain" node units are assigned a unique ID number between 1 and 254. This is used to determine their logical location on the network according to the following:  
 - hostname: `wfu-brain-[num]`  
-- mesh0 (mesh backbone interface): `192.168.2.[num]`  
-- ap0 (public client interface): `192.168.0.1`  
+- mesh0 (mesh backbone interface): `10.1.0.[num]`  
+- ap0 (public client interface): `172.16.[num].1`  
 - eth0 (wired, for testing only): `192.168.1.[max(100+num,254)]`  
-- brains-broadcast (mesh node broadcast address): `192.168.2.255`  
-- clients-broadcast (single-node client broadcast address): `192.168.0.255`  
 A node's ID number may be changed using the `wfu-setup` command, discussed below.  
 
 
