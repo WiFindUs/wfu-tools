@@ -325,7 +325,7 @@ int write_hostapd(int num)
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
 	fprintf(file,"ieee80211n=1\n");
-	fprintf(file,"channel=1\n");
+	fprintf(file,"channel=%d\n",1+((num-1)%3)*5);
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"ignore_broadcast_ssid=1\n");
 	fprintf(file,"auth_algs=1\n");
