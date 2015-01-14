@@ -361,6 +361,7 @@ int write_network_interfaces(int num)
 	fprintf(file,"auto lo\n");
 	fprintf(file,"iface lo inet loopback\n\n");
 	
+	fprintf(file,"auto eth0\n");
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
