@@ -537,7 +537,7 @@ int main(int argc, char **argv)
 			noWireless = TRUE;
 		else if (strcmp(argv[i],"-a") == 0 || strcmp(argv[i],"--adhoc") == 0)
 			adhocMode = TRUE;
-		else if (strncmp(argv[i],"-ch", 3) == 0 && strlen(argv[i])) > 3)
+		else if (strncmp(argv[i],"-ch", 3) == 0 && strlen(argv[i]) > 3)
 			apChannel = atoi(argv[i]+3);
 		else
 		{
