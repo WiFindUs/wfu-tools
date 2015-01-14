@@ -37,6 +37,7 @@ int uninstallMode = FALSE;
 int noWireless = FALSE;
 int adhocMode = FALSE;
 int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG;
+int apChannel = 0;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
 
@@ -81,6 +82,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -W or --nowireless: disable auto-configuration of wireless interfaces.\n");
 	fprintf(stderr, "  -u or --uninstall: reverts scripts to pre-wfu defaults,\n\
 instead of writing them out to disk.\n");
+	fprintf(stderr, "  -ch[1-11]: explicitly set hostapd wireless channel\n");
 	fprintf(stderr, "Remarks:\n");
 	fprintf(stderr, "  If the number is omitted, the value stored in %s/wfu-brain-num\n\
 will be used (if it exists; otherwise 1 is used as default).\n",SRC_DIR);
@@ -325,7 +327,7 @@ int write_hostapd(int num)
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
 	fprintf(file,"ieee80211n=1\n");
-	fprintf(file,"channel=%d\n",1+((num-1)%3)*5);
+	fprintf(file,"channel=%d\n",apChannel);
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"ignore_broadcast_ssid=1\n");
 	fprintf(file,"auth_algs=1\n");
@@ -535,6 +537,8 @@ int main(int argc, char **argv)
 			noWireless = TRUE;
 		else if (strcmp(argv[i],"-a") == 0 || strcmp(argv[i],"--adhoc") == 0)
 			adhocMode = TRUE;
+		else if (strncmp(argv[i],"-ch", 3) == 0 && strlen(argv[i])) > 3)
+			apChannel = atoi(argv[i]+3);
 		else
 		{
 			numExplicit = TRUE;
@@ -566,6 +570,9 @@ int main(int argc, char **argv)
 	}
 	
 	dtoh(num,hex);
+	
+	if (apChannel < 1 || apChannel > 11)
+		apChannel = 1+((num-1)%3)*5;
 	
 	if (!quietMode)
 	{
