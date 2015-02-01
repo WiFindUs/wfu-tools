@@ -203,9 +203,6 @@ int write_rc_local(int num)
 	}
 	
 	fprintf(file,"#! /bin/sh -e\n");
-	fprintf(file,"exec 2> /home/pi/rc.local.log\n");
-	fprintf(file,"exec 1>&2\n");
-	fprintf(file,"set -x\n");
 
 	if (!uninstallMode)
 	{
