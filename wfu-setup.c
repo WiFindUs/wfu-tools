@@ -202,7 +202,7 @@ int write_rc_local(int num)
 		return FALSE;
 	}
 	
-	fprintf(file,"#! /bin/sh -e\n");
+	fprintf(file,"#! /bin/sh\n");
 	//fprintf(file,"exec 2> /home/pi/rc.local.log\n");
 	//fprintf(file,"exec 1>&2\n");
 	//fprintf(file,"set -x\n");
@@ -227,7 +227,7 @@ int write_rc_local(int num)
 			fprintf(file,"		echo \"phy1 detected.\"\n");
 			fprintf(file,"	fi\n\n");
 			
-			fprintf(file,"echo \"Checking logical wireless interfaces...\"\n");
+			fprintf(file,"	echo \"Checking logical wireless interfaces...\"\n");
 			fprintf(file,"	WLAN_ZERO=`iwconfig | grep -o wlan0`\n");
 			fprintf(file,"	if [ \"$WLAN_ZERO\" != \"\" ]; then \n");
 			fprintf(file,"		echo \"wlan0 detected, deleting...\"\n");
