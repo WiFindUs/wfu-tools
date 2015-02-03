@@ -220,29 +220,31 @@ int write_rc_local(int num)
 			fprintf(file,"	PHY_ONE=`iw list | grep -o phy1`\n");
 			fprintf(file,"	if [ \"$PHY_ONE\" == \"\" ]; then \n");
 			fprintf(file,"		PHY_ONE=\"phy0\"\n");
-			fprintf(file,"	fi\n");
+			fprintf(file,"	fi\n\n");
 			
 			fprintf(file,"	WLAN_ZERO=`ifconfig | grep wlan0`\n");
 			fprintf(file,"	if [ \"$WLAN_ZERO\" != \"\" ]; then \n");
 			fprintf(file,"		ifconfig wlan0 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan0 del\n");
-			fprintf(file,"	fi\n");
+			fprintf(file,"	fi\n\n");
 			
 			fprintf(file,"	WLAN_ONE=`ifconfig | grep wlan1`\n");
 			fprintf(file,"	if [ \"$WLAN_ONE\" != \"\" ]; then \n");
 			fprintf(file,"		ifconfig wlan1 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan1 del\n");
-			fprintf(file,"	fi\n");
+			fprintf(file,"	fi\n\n");
 			
-			fprintf(file,"	iw reg set AU\n");
+			fprintf(file,"	iw reg set AU\n\n");
 			
 			fprintf(file,"	iw phy $PHY_ZERO interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
 			fprintf(file,"	iw phy $PHY_ONE interface add ap0 type managed\n");
 			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"	ifconfig mesh0 up\n");	
-			fprintf(file,"	sleep 3\n");
+			fprintf(file,"	ifconfig mesh0 up\n\n");	
+			
+			fprintf(file,"	sleep 3\n\n");
+			
 			fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
 			fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 			if (adhocMode)
@@ -251,7 +253,7 @@ int write_rc_local(int num)
 				fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 			}
 			
-			fprintf(file,"fi\n");
+			fprintf(file,"fi\n\n");
 		}
 			
 		if (daemon_flags > 0)
@@ -263,7 +265,7 @@ int write_rc_local(int num)
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -E \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
 				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-				fprintf(file,"fi\n");
+				fprintf(file,"fi\n\n");
 			}
 			
 			if (!noWireless && (daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
@@ -288,7 +290,7 @@ int write_rc_local(int num)
 					fprintf(file,"  servald start\n");
 					
 				}
-				fprintf(file,"fi\n");
+				fprintf(file,"fi\n\n");
 			}
 			fprintf(file,"sleep 5\n");
 		}
@@ -310,6 +312,7 @@ int write_rc_local(int num)
 		}
 		else
 			fprintf(file,"ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
+		fprintf(file,"\n");
 			
 		for (i = 1; i < 255; i++)
 		{
@@ -319,7 +322,7 @@ int write_rc_local(int num)
 		}
 	}
 
-	fprintf(file,"exit 0\n");
+	fprintf(file,"\nexit 0\n");
 	
 	fclose(file);
 	if (!quietMode)
