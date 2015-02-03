@@ -221,14 +221,14 @@ int write_rc_local(int num)
 			fprintf(file,"		PHY_ONE=\"phy0\"\n");
 			fprintf(file,"	fi\n\n");
 			
-			fprintf(file,"	WLAN_ZERO=`ifconfig | grep wlan0`\n");
+			fprintf(file,"	WLAN_ZERO=`iwconfig | grep -o wlan0`\n");
 			fprintf(file,"	if [ \"$WLAN_ZERO\" != \"\" ]; then \n");
 			fprintf(file,"		ifconfig wlan0 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan0 del\n");
 			fprintf(file,"	fi\n\n");
 			
-			fprintf(file,"	WLAN_ONE=`ifconfig | grep wlan1`\n");
+			fprintf(file,"	WLAN_ONE=`iwconfig | grep -o wlan1`\n");
 			fprintf(file,"	if [ \"$WLAN_ONE\" != \"\" ]; then \n");
 			fprintf(file,"		ifconfig wlan1 down\n");
 			fprintf(file,"		sleep 3\n");
