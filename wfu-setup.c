@@ -203,10 +203,7 @@ int write_rc_local(int num)
 	}
 	
 	fprintf(file,"#! /bin/sh\n");
-	//fprintf(file,"exec 2> /home/pi/rc.local.log\n");
-	//fprintf(file,"exec 1>&2\n");
-	//fprintf(file,"set -x\n");
-	fprintf(file,"set -x; exec >/home/pi/rc.local.log 2>&1\n");
+	fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n");
 
 	if (!uninstallMode)
 	{
@@ -234,6 +231,8 @@ int write_rc_local(int num)
 			fprintf(file,"		ifconfig wlan0 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan0 del\n");
+			fprintf(file,"	else\n");
+			fprintf(file,"		echo \"wlan0 not detected.\"\n");
 			fprintf(file,"	fi\n\n");
 			
 			fprintf(file,"	WLAN_ONE=`iwconfig | grep -o wlan1`\n");
@@ -242,18 +241,25 @@ int write_rc_local(int num)
 			fprintf(file,"		ifconfig wlan1 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan1 del\n");
+			fprintf(file,"	else\n");
+			fprintf(file,"		echo \"wlan1 not detected.\"\n");
 			fprintf(file,"	fi\n\n");
 			
+			fprintf(file,"	echo \"setting regulatory domain...\"\n");
 			fprintf(file,"	iw reg set AU\n\n");
 			
+			fprintf(file,"	echo \"creating mesh0 interface...\"\n");
 			fprintf(file,"	iw phy $PHY_ZERO interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+			fprintf(file,"	echo \"creating ap0 interface...\"\n");
 			fprintf(file,"	iw phy $PHY_ONE interface add ap0 type managed\n");
 			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+			fprintf(file,"	echo \"bringing mesh0 up...\"\n");
 			fprintf(file,"	ifconfig mesh0 up\n\n");	
-			
+
 			fprintf(file,"	sleep 3\n\n");
 			
 			fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
+			fprintf(file,"	echo \"bringing ap0 up...\"\n");
 			fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 			if (adhocMode)
 			{
