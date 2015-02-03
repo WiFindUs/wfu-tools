@@ -210,25 +210,48 @@ int write_rc_local(int num)
 	if (!uninstallMode)
 	{
 		fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
-		
-		fprintf(file,"ifconfig wlan0 down\n");
-		fprintf(file,"sleep 3\n");
-		fprintf(file,"iw dev wlan0 del\n");
-		fprintf(file,"iw reg set AU\n");
 		if (!noWireless)
 		{
-			fprintf(file,"iw phy phy0 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
-			fprintf(file,"iw phy phy0 interface add ap0 type managed\n");
-			fprintf(file,"ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"ifconfig mesh0 up\n");	
-			fprintf(file,"sleep 3\n");
-			fprintf(file,"ifconfig mesh0 10.1.0.%d\n",num);	
-			fprintf(file,"ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
+			fprintf(file,"PHY_ZERO=`iw list | grep -o phy0`\n");
+			fprintf(file,"if [ \"$PHY_ZERO\" == \"\" ]; then \n");
+			fprintf(file,"	echo \"	ERROR: no physical wireless interfaces detected.\"\n");
+			fprintf(file,"else\n");
+			
+			fprintf(file,"	PHY_ONE=`iw list | grep -o phy1`\n");
+			fprintf(file,"	if [ \"$PHY_ONE\" == \"\" ]; then \n");
+			fprintf(file,"		PHY_ONE=\"phy0\"\n");
+			fprintf(file,"	fi\n");
+			
+			fprintf(file,"	WLAN_ZERO=`ifconfig | grep wlan0`\n");
+			fprintf(file,"	if [ \"$WLAN_ZERO\" != \"\" ]; then \n");
+			fprintf(file,"		ifconfig wlan0 down\n");
+			fprintf(file,"		sleep 3\n");
+			fprintf(file,"		iw dev wlan0 del\n");
+			fprintf(file,"	fi\n");
+			
+			fprintf(file,"	WLAN_ONE=`ifconfig | grep wlan1`\n");
+			fprintf(file,"	if [ \"$WLAN_ONE\" != \"\" ]; then \n");
+			fprintf(file,"		ifconfig wlan1 down\n");
+			fprintf(file,"		sleep 3\n");
+			fprintf(file,"		iw dev wlan1 del\n");
+			fprintf(file,"	fi\n");
+			
+			fprintf(file,"	iw reg set AU\n");
+			
+			fprintf(file,"	iw phy $PHY_ZERO interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+			fprintf(file,"	iw phy $PHY_ONE interface add ap0 type managed\n");
+			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+			fprintf(file,"	ifconfig mesh0 up\n");	
+			fprintf(file,"	sleep 3\n");
+			fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
+			fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 			if (adhocMode)
 			{
-				fprintf(file,"sleep 1\n");
-				fprintf(file,"iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
+				fprintf(file,"	sleep 1\n");
+				fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
 			}
+			
+			fprintf(file,"fi\n");
 		}
 			
 		if (daemon_flags > 0)
