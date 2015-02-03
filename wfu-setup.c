@@ -203,26 +203,34 @@ int write_rc_local(int num)
 	}
 	
 	fprintf(file,"#! /bin/sh -e\n");
-	fprintf(file,"exec 2> /home/pi/rc.local.log\n");
-	fprintf(file,"exec 1>&2\n");
-	fprintf(file,"set -x\n");
+	//fprintf(file,"exec 2> /home/pi/rc.local.log\n");
+	//fprintf(file,"exec 1>&2\n");
+	//fprintf(file,"set -x\n");
+	fprintf(file,"set -x; exec >/home/pi/rc.local.log 2>&1\n");
 
 	if (!uninstallMode)
 	{
-		fprintf(file,"echo \"[WFU Mesh Setup] - creating node...\"\n");
+		fprintf(file,"echo \"========= WFU Mesh Setup =========\"\n");
 		if (!noWireless)
 		{
+			fprintf(file,"echo \"Checking physical wireless interfaces...\"\n");
 			fprintf(file,"PHY_ZERO=`iw list | grep -o phy0`\n");
 			fprintf(file,"if [ \"$PHY_ZERO\" = \"\" ]; then \n");
-			fprintf(file,"	echo \"	ERROR: no physical wireless interfaces detected.\"\n");
+			fprintf(file,"	echo \"ERROR: no physical wireless interfaces detected.\"\n");
 			fprintf(file,"else\n");
+			fprintf(file,"	echo \"phy0 detected.\"\n");
 			fprintf(file,"	PHY_ONE=`iw list | grep -o phy1`\n");
 			fprintf(file,"	if [ \"$PHY_ONE\" = \"\" ]; then \n");
+			fprintf(file,"		echo \"phy1 not detected! will use phy0 for AP interface.\"\n");
 			fprintf(file,"		PHY_ONE=\"phy0\"\n");
+			fprintf(file,"	else\n");
+			fprintf(file,"		echo \"phy1 detected.\"\n");
 			fprintf(file,"	fi\n\n");
 			
+			fprintf(file,"echo \"Checking logical wireless interfaces...\"\n");
 			fprintf(file,"	WLAN_ZERO=`iwconfig | grep -o wlan0`\n");
 			fprintf(file,"	if [ \"$WLAN_ZERO\" != \"\" ]; then \n");
+			fprintf(file,"		echo \"wlan0 detected, deleting...\"\n");
 			fprintf(file,"		ifconfig wlan0 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan0 del\n");
@@ -230,6 +238,7 @@ int write_rc_local(int num)
 			
 			fprintf(file,"	WLAN_ONE=`iwconfig | grep -o wlan1`\n");
 			fprintf(file,"	if [ \"$WLAN_ONE\" != \"\" ]; then \n");
+			fprintf(file,"		echo \"wlan1 detected, deleting...\"\n");
 			fprintf(file,"		ifconfig wlan1 down\n");
 			fprintf(file,"		sleep 3\n");
 			fprintf(file,"		iw dev wlan1 del\n");
