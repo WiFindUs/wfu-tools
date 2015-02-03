@@ -366,16 +366,24 @@ int write_hostapd(int num)
 	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
-	fprintf(file,"ieee80211n=1\n");
 	fprintf(file,"channel=%d\n",apChannel);
+	
+	//security
 	fprintf(file,"macaddr_acl=0\n");
-	fprintf(file,"ignore_broadcast_ssid=1\n");
+	fprintf(file,"ignore_broadcast_ssid=0\n");
 	fprintf(file,"auth_algs=1\n");
-	fprintf(file,"wpa=3\n");
+	fprintf(file,"wpa=2\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
 	fprintf(file,"rsn_pairwise=CCMP\n");
+	
+	//wireless-n
+	fprintf(file,"ieee80211n=1\n");
+	fprintf(file,"preamble=1\n");
+	fprintf(file,"ap_max_inactivity=60\n");
+	fprintf(file,"disassoc_low_ack=1\n");
+	fprintf(file,"wmm_enabled=1\n");
 	
 	fclose(file);
 	if (!quietMode)
