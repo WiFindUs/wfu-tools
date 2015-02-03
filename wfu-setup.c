@@ -213,6 +213,11 @@ int write_rc_local(int num)
 			fprintf(file,"echo \"Checking physical wireless interfaces...\"\n");
 			fprintf(file,"PHY_0=`iw list | grep -o phy0`\n");
 			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then \n");
+			fprintf(file,"	sleep 5\n");
+			fprintf(file,"	PHY_0=`iw list | grep -o phy0`\n");
+			fprintf(file,"fi\n\n");
+			
+			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then \n");
 			fprintf(file,"	echo \"ERROR: no physical wireless interfaces detected.\"\n");
 			fprintf(file,"else\n");
 			fprintf(file,"	echo \"phy0 detected.\"\n");
@@ -324,16 +329,18 @@ int write_rc_local(int num)
 			fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
 			fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
 		}
-		else
-			fprintf(file,"ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
-		fprintf(file,"\n");
-			
+		
+		fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
+		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then \n");
+		if (num != 1)
+			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
 				continue;
-			fprintf(file,"ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
+			fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
 		}
+		fprintf(file,"fi\n\n");
 	}
 
 	fprintf(file,"\nexit 0\n");
