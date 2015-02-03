@@ -212,17 +212,17 @@ int write_rc_local(int num)
 		{
 			fprintf(file,"echo \"Checking physical wireless interfaces...\"\n");
 			fprintf(file,"PHY_0=`iw list | grep -o phy0`\n");
-			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then \n");
+			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then\n");
 			fprintf(file,"	sleep 5\n");
 			fprintf(file,"	PHY_0=`iw list | grep -o phy0`\n");
 			fprintf(file,"fi\n\n");
 			
-			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then \n");
+			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then\n");
 			fprintf(file,"	echo \"ERROR: no physical wireless interfaces detected.\"\n");
 			fprintf(file,"else\n");
 			fprintf(file,"	echo \"phy0 detected.\"\n");
 			fprintf(file,"	PHY_1=`iw list | grep -o phy1`\n");
-			fprintf(file,"	if [ \"$PHY_1\" = \"\" ]; then \n");
+			fprintf(file,"	if [ \"$PHY_1\" = \"\" ]; then\n");
 			fprintf(file,"		echo \"phy1 not detected! will use phy0 for mesh and AP interfaces.\"\n");
 			fprintf(file,"		PHY_1=\"phy0\"\n");
 			fprintf(file,"	else\n");
@@ -231,7 +231,7 @@ int write_rc_local(int num)
 			
 			fprintf(file,"	echo \"Checking logical wireless interfaces...\"\n");
 			fprintf(file,"	WLAN_0=`iwconfig | grep -o wlan0`\n");
-			fprintf(file,"	if [ \"$WLAN_0\" != \"\" ]; then \n");
+			fprintf(file,"	if [ \"$WLAN_0\" != \"\" ]; then\n");
 			fprintf(file,"		echo \"wlan0 detected, deleting...\"\n");
 			fprintf(file,"		ifconfig wlan0 down\n");
 			fprintf(file,"		sleep 3\n");
@@ -241,7 +241,7 @@ int write_rc_local(int num)
 			fprintf(file,"	fi\n\n");
 			
 			fprintf(file,"	WLAN_1=`iwconfig | grep -o wlan1`\n");
-			fprintf(file,"	if [ \"$WLAN_1\" != \"\" ]; then \n");
+			fprintf(file,"	if [ \"$WLAN_1\" != \"\" ]; then\n");
 			fprintf(file,"		echo \"wlan1 detected, deleting...\"\n");
 			fprintf(file,"		ifconfig wlan1 down\n");
 			fprintf(file,"		sleep 3\n");
@@ -282,7 +282,7 @@ int write_rc_local(int num)
 			{
 				fprintf(file,"sleep 5\n");
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -o \"0e8d:3329\"`\n");
-				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then \n");
+				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
 				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 				fprintf(file,"fi\n\n");
 			}
@@ -290,7 +290,7 @@ int write_rc_local(int num)
 			if (!noWireless && (daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
 			{
 				fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
-				fprintf(file,"if [ \"$AP_0\" != \"\" ]; then \n");
+				fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
 				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
 				{
 					fprintf(file,"	sleep 5\n");
@@ -331,7 +331,7 @@ int write_rc_local(int num)
 		}
 		
 		fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
-		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then \n");
+		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
 		if (num != 1)
 			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 		for (i = 1; i < 255; i++)
@@ -370,6 +370,7 @@ int write_hostapd(int num)
 	
 	fprintf(file,"interface=ap0\n");
 	fprintf(file,"country_code=AU\n");
+	fprintf(file,"ieee80211d=1\n");
 	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
 	fprintf(file,"ssid=wifindus_public\n");
 	fprintf(file,"hw_mode=g\n");
@@ -377,9 +378,9 @@ int write_hostapd(int num)
 	
 	//security
 	fprintf(file,"macaddr_acl=0\n");
-	fprintf(file,"ignore_broadcast_ssid=0\n");
+	//fprintf(file,"ignore_broadcast_ssid=1\n");
 	fprintf(file,"auth_algs=1\n");
-	fprintf(file,"wpa=2\n");
+	fprintf(file,"wpa=1\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
