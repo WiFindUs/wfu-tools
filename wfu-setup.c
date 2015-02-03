@@ -213,12 +213,11 @@ int write_rc_local(int num)
 		if (!noWireless)
 		{
 			fprintf(file,"PHY_ZERO=`iw list | grep -o phy0`\n");
-			fprintf(file,"if [ \"$PHY_ZERO\" == \"\" ]; then \n");
+			fprintf(file,"if [ \"$PHY_ZERO\" = \"\" ]; then \n");
 			fprintf(file,"	echo \"	ERROR: no physical wireless interfaces detected.\"\n");
 			fprintf(file,"else\n");
-			
 			fprintf(file,"	PHY_ONE=`iw list | grep -o phy1`\n");
-			fprintf(file,"	if [ \"$PHY_ONE\" == \"\" ]; then \n");
+			fprintf(file,"	if [ \"$PHY_ONE\" = \"\" ]; then \n");
 			fprintf(file,"		PHY_ONE=\"phy0\"\n");
 			fprintf(file,"	fi\n\n");
 			
