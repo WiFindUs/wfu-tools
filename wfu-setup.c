@@ -423,6 +423,14 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"\n");
 
+	fprintf(file,"iface wlan0 inet manual\n");
+	fprintf(file,"        post-up iwconfig wlan0 power off\n");
+
+	fprintf(file,"iface wlan1 inet manual\n");
+	fprintf(file,"        post-up iwconfig wlan1 power off\n");
+
+
+
 	fclose(file);
 	if (!quietMode)
 		printf(" [ok]\n");
