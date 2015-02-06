@@ -30,7 +30,7 @@ RPI_BOOT="/media/boot"
 SRC_DIR="$HOME/src"
 
 #the name of the current kernel branch to clone
-KERNEL_VER="rpi-3.14.y"
+KERNEL_VER="rpi-3.18.5+"
 
 ##### END SETTINGS ####
 
