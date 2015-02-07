@@ -82,11 +82,11 @@ sudo dphys-swapfile uninstall
 sudo update-rc.d dphys-swapfile remove > /dev/null 2>&1
 echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
 
-if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
-	"$WFU_TOOLS_DIR/wfu-update-wifi.sh"
-else
-	echo -e "${STYLE_ERROR}Could not update wifi drivers; wfu-update-wifi.sh missing!...${STYLE_NONE}"
-fi
+#if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
+#	"$WFU_TOOLS_DIR/wfu-update-wifi.sh"
+#else
+#	echo -e "${STYLE_ERROR}Could not update wifi drivers; wfu-update-wifi.sh missing!...${STYLE_NONE}"
+#fi
 
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
