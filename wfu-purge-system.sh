@@ -14,11 +14,11 @@ if [ ! -d "/var/cache/apt/archives/partial" ]; then
 	echo -e "  ${STYLE_HEADING}updating apt-get list...${STYLE_NONE}"
 	sudo mkdir -p /var/cache/apt/archives/partial
 	sudo mkdir -p /var/lib/apt/list/partial
-	sudo apt-get -qq update > /dev/null
+	sudo apt-get -y update
 fi
 
 echo -e "  ${STYLE_HEADING}uninstalling unnecessary Raspbian packages...${STYLE_NONE}"
-sudo apt-get -qq purge xserver* x11-common x11-utils x11-xkb-utils  \
+sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
 wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
 pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
 wolfram-engine sonic-pi xarchiver xauth xkb-data console-setup \
@@ -31,15 +31,15 @@ penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
-udhcpd xdg-utils libfreetype* bash-completion ncurses-term > /dev/null
+udhcpd xdg-utils libfreetype* bash-completion ncurses-term
 
 echo -e "  ${STYLE_HEADING}removing config-only apt entries...${STYLE_NONE}"
-dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
+dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 	
 echo -e "  ${STYLE_HEADING}cleaning up...${STYLE_NONE}"
-sudo apt-get -qq autoremove > /dev/null
-sudo apt-get -qq clean > /dev/null
-sudo apt-get -qq autoclean > /dev/null
+sudo apt-get -y autoremove
+sudo apt-get -y clean
+sudo apt-get -y autoclean
 
 echo -e "  ${STYLE_HEADING}deleting GUI-related files and folders...${STYLE_NONE}"
 sudo rm -f ocr_pi.png
