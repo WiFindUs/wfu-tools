@@ -60,7 +60,7 @@ PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
 #===============================================================
-# PURGE
+# PURGE PACKAGES
 #===============================================================
 echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
 sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
@@ -103,7 +103,7 @@ sudo rm -rf /usr/share/man/??_*
 sudo rm -rf /usr/share/man/fr.*
 
 #===============================================================
-# UPDATE
+# UPDATE PACKAGES
 #===============================================================
 echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
 sudo apt-get -y update
@@ -129,20 +129,47 @@ sudo apt-get -y autoremove
 sudo apt-get -y clean
 sudo apt-get -y autoclean
 
-if [ -f /lib/firmware/htc_9271.fw ]; then
+#===============================================================
+# DOWNLOAD FIRMWARE AND BINARIES
+#===============================================================
+
+if [ ! -f /lib/firmware/htc_9271.fw ]; then
 	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
-	sudo wget -O htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
-	if [ ! -f htc_9271.fw ]; then
+	sudo wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
+	if [ ! -f /lib/firmware/htc_9271.fw ]; then
 		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
 fi
 
-if [ -f /lib/firmware/htc_7010.fw ]; then
+if [ ! -f /lib/firmware/htc_7010.fw ]; then
 	echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
-	sudo wget -O htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
-	if [ ! -f htc_7010.fw ]; then
+	sudo wget -O /lib/firmware/htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
+	if [ ! -f /lib/firmware/htc_7010.fw ]; then
 		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
+fi
+
+if [ ! -f "/usr/local/sbin/servald" ]; then
+	echo -e "${STYLE_HEADING}Downloading serval daemon...${STYLE_NONE}"
+	sudo mkdir -p /usr/local/etc/serval
+	sudo mkdir -p /usr/local/var/run/serval
+	sudo mkdir -p /usr/local/var/log/serval
+	sudo wget -O /usr/local/sbin/servald http://www.wifindus.com/downloads/servald
+	if [ ! -f /usr/local/sbin/servald ]; then
+		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+	fi
+fi
+
+if [ ! -d "WFU_TOOLS_DIR" ]; then
+	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
+	cd "$SRC_DIR"
+	git clone --depth 1 $WFU_REPOSITORY
+	cd "WFU_TOOLS_DIR"
+	sudo rm -rf .git
+	sudo rm -f .gitattributes
+	sudo rm -f .gitignore
+	sudo chmod 755 *.sh
+	./wfu-update.sh
 fi
 
 #===============================================================
@@ -153,93 +180,35 @@ sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo update-rc.d dphys-swapfile remove
 
-echo -e "${STYLE_HEADING}Updating /etc/default/ifplugd...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Writing /etc/default/ifplugd...${STYLE_NONE}"
 sudo sh -c 'echo -e "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
 sudo sh -c 'echo -e "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo -e "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo -e "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
 
-echo -e "${STYLE_HEADING}Updating /boot/cmdline.txt...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
 sudo sh -c 'echo -e "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
 
-echo -e "${STYLE_HEADING}Updating /etc/modules...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
 sudo sh -c 'echo -e "r8188eu" > /etc/modules'
 sudo sh -c 'echo -e "rt2800usb" >> /etc/modules'
 
-echo -e "${STYLE_HEADING}Updating /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
 sudo sh -c 'echo -e "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo -e "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo -e "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
 
-echo -e "${STYLE_HEADING}Updating /etc/default/crda...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Writing /etc/default/crda...${STYLE_NONE}"
 sudo sh -c 'echo -e "REGDOMAIN=AU" > /etc/default/crda'
 
-echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
-sudo mkdir -p /usr/local/etc/serval
-sudo mkdir -p /usr/local/var/run/serval
-sudo mkdir -p /usr/local/var/log/serval
-cd "$SRC_DIR"
-if [ -f "/usr/local/sbin/servald" ]; then
-	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
-else
-	echo -e "  ${STYLE_HEADING}downloading from wifindus.com...${STYLE_NONE}"
-	cd "/usr/local/sbin"
-	sudo  http://www.wifindus.com/downloads/servald
-	if [ -f servald ]; then
-		sudo chmod 755 servald
-		echo -e "    ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
-	else
-		echo -e "    ${STYLE_ERROR}download failed!${STYLE_NONE}"
-		echo -e "  ${STYLE_HEADING}trying to clone from github...${STYLE_NONE}"
-		cd "$SRC_DIR"
-		git clone --depth 1 git://github.com/servalproject/serval-dna.git
+echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8188eu.conf...${STYLE_NONE}"
+sudo sh -c 'echo -e "options 8188eu rtw_power_mgnt=0" > /etc/modprobe.d/8188eu.conf'
 
-		if [ -d serval-dna ]; then
-			echo -e "    ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
-			cd serval-dna
-			autoreconf -f -i
-			./configure
-			sudo make clean -s -k
-			sudo make -s -k
+echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8192cu.conf...${STYLE_NONE}"
+sudo sh -c 'echo -e "options 8192cu rtw_power_mgnt=0" > /etc/modprobe.d/8192cu.conf'
 
-			echo -e "    ${STYLE_HEADING}installing...${STYLE_NONE}"
-			if [ -f servald ]; then
-				sudo killall servald
-				sudo rm -f /usr/local/sbin/servald
-				sudo make install -s -k
-				sudo chmod 755 /usr/local/sbin/servald
-				sudo update-rc.d -f servald remove
-				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 .
-			else
-				echo -e "      ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
-			fi
-			cd ..
-			sudo rm -rf serval-dna
-		else
-			echo -e "      ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
-		fi
-	fi
-fi
-
-echo ""
-cd "$SRC_DIR"
-if [ ! -d wfu-tools ]; then
-	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
-	git clone --depth 1 $WFU_REPOSITORY
-fi
-if [ -d wfu-tools ]; then
-	cd wfu-tools
-	sudo rm -rf .git
-	sudo rm -f .gitattributes
-	sudo rm -f .gitignore
-	sudo chmod 755 *.sh
-	./wfu-update.sh
-	
-	echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
-	sudo wfu-setup $BRAIN_NUMBER
-else
-	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
-fi
+echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
+sudo wfu-setup $BRAIN_NUMBER
 
 echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi
