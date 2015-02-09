@@ -65,28 +65,53 @@ else
 	echo -e "${STYLE_ERROR}Could not update system; wfu-update-system.sh missing!...${STYLE_NONE}"
 fi
 
-#echo -e "${STYLE_HEADING}Adding IPv6 to auto-loaded modules...${STYLE_NONE}"
-#HAYSTACK=`cat /etc/modules | grep "ipv6"`
-#if  [ "$HAYSTACK" == "" ]; then
-#	sudo su
-#	echo "ipv6" >> /etc/modules
-#	exit
-#	echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
-#else
-#	echo -e "  ${STYLE_WARNING}already present.${STYLE_NONE}"
-#fi
-
 echo -e "${STYLE_HEADING}Permanently disabling swap file..${STYLE_NONE}"
 sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo update-rc.d dphys-swapfile remove
 echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
 
-#if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
-#	"$WFU_TOOLS_DIR/wfu-update-wifi.sh"
-#else
-#	echo -e "${STYLE_ERROR}Could not update wifi drivers; wfu-update-wifi.sh missing!...${STYLE_NONE}"
-#fi
+echo -e "${STYLE_HEADING}Updating /etc/default/ifplugd...${STYLE_NONE}"
+sudo sh -c 'echo -e "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
+sudo sh -c 'echo -e "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo -e "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo -e "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
+echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+
+echo -e "${STYLE_HEADING}Updating /boot/cmdline.txt...${STYLE_NONE}"
+sudo sh -c 'echo -e "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
+echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+
+echo -e "${STYLE_HEADING}Updating /etc/modules...${STYLE_NONE}"
+sudo sh -c 'echo -e "r8188eu" > /etc/modules'
+sudo sh -c 'echo -e "rt2800usb" >> /etc/modules'
+echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+
+echo -e "${STYLE_HEADING}Updating /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
+sudo sh -c 'echo -e "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo -e "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo -e "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
+echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+
+if [ -f /lib/firmware/htc_9271.fw ]; then
+	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
+	sudo wget -O htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
+	if [ -f htc_9271.fw ]; then
+		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+	else
+		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+	fi
+fi
+
+if [ -f /lib/firmware/htc_7010.fw ]; then
+	echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
+	sudo wget -O htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
+	if [ -f htc_7010.fw ]; then
+		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+	else
+		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+	fi
+fi
 
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
