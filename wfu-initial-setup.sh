@@ -12,6 +12,9 @@
 #	wfu-tools to /home/pi/src/wfu-tools.
 #===============================================================
 
+#===============================================================
+# ENVIRONMENT
+#===============================================================
 if [ -z "$PI_HOME" ]; then
 	echo -e "\$PI_HOME not detected. loading scripts and altering .profile..."
 	PI_HOME="/home/pi"
@@ -42,6 +45,9 @@ if [ -z "$PI_HOME" ]; then
 	fi
 fi
 
+#===============================================================
+# INTRO
+#===============================================================
 clear
 echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_NONE}"
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
@@ -53,52 +59,80 @@ echo "$BRAIN_NUMBER" > "$PI_HOME/src/wfu-brain-num"
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
-if [ -f "$WFU_TOOLS_DIR/wfu-purge-system.sh"  ]; then
-	"$WFU_TOOLS_DIR/wfu-purge-system.sh"
-else
-	echo -e "${STYLE_ERROR}Could not purge junk; wfu-purge-system.sh missing!...${STYLE_NONE}"
-fi
+#===============================================================
+# PURGE
+#===============================================================
+echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
+sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
+wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
+pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
+wolfram-engine sonic-pi xarchiver xauth xkb-data console-setup \
+xinit lightdm lxde* obconf openbox gtk* libgtk* alsa* netsurf-gtk \
+libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
+lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
+scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
+poppler* ^python* parted libvorbis* libv41* libsamplerate* \
+penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
+idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
+libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
+raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
+udhcpd xdg-utils libfreetype* bash-completion ncurses-term
 
-if [ -f "$WFU_TOOLS_DIR/wfu-update-system.sh"  ]; then
-	"$WFU_TOOLS_DIR/wfu-update-system.sh"
-else
-	echo -e "${STYLE_ERROR}Could not update system; wfu-update-system.sh missing!...${STYLE_NONE}"
-fi
+echo -e "  ${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
+dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 
-echo -e "${STYLE_HEADING}Permanently disabling swap file..${STYLE_NONE}"
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
-echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+echo -e "  ${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
+cd "$PI_HOME"
+sudo rm -f ocr_pi.png
+sudo rm -f /lib/modules.bak
+sudo rm -rf /var/lib/apt/list
+sudo rm -rf /var/cache/apt
+sudo rm -rf /opt
+sudo rm -rf /usr/games/
+sudo rm -rf python_games
+sudo rm -rf indiecity
+sudo rm -rf /etc/X11
+sudo rm -rf /var/log/ConsoleKit
+sudo rm -rf /etc/polkit-1
+sudo rm -rf /usr/lib/xorg
+sudo rm -rf /usr/share/icons
+sudo rm -rf /usr/share/applications
+sudo rm -rf /etc/console-setup
+sudo rm -rf /usr/share/man/??
+sudo rm -rf /usr/share/man/??_*
+sudo rm -rf /usr/share/man/fr.*
 
-echo -e "${STYLE_HEADING}Updating /etc/default/ifplugd...${STYLE_NONE}"
-sudo sh -c 'echo -e "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
-sudo sh -c 'echo -e "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo -e "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo -e "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
-echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+#===============================================================
+# UPDATE
+#===============================================================
+echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
+sudo apt-get -y update
 
-echo -e "${STYLE_HEADING}Updating /boot/cmdline.txt...${STYLE_NONE}"
-sudo sh -c 'echo -e "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
-echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
+sudo apt-get -y upgrade
 
-echo -e "${STYLE_HEADING}Updating /etc/modules...${STYLE_NONE}"
-sudo sh -c 'echo -e "r8188eu" > /etc/modules'
-sudo sh -c 'echo -e "rt2800usb" >> /etc/modules'
-echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Updating distro...${STYLE_NONE}"
+sudo apt-get -y dist-upgrade
 
-echo -e "${STYLE_HEADING}Updating /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
-sudo sh -c 'echo -e "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo -e "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo -e "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
-echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
+sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
+libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek firmware-ralink
+sudo update-rc.d -f hostapd remove
+sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
+sudo update-rc.d -f isc-dhcp-server remove
+sudo update-rc.d -f isc-dhcp-server stop 80 0 1 2 3 4 5 6 .
+sudo update-rc.d -f gpsd remove
+sudo update-rc.d -f gpsd stop 80 0 1 2 3 4 5 6 .
+
+echo -e "  ${STYLE_HEADING}Cleaning up apt...${STYLE_NONE}"
+sudo apt-get -y autoremove
+sudo apt-get -y clean
+sudo apt-get -y autoclean
 
 if [ -f /lib/firmware/htc_9271.fw ]; then
 	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 	sudo wget -O htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
-	if [ -f htc_9271.fw ]; then
-		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
-	else
+	if [ ! -f htc_9271.fw ]; then
 		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
 fi
@@ -106,12 +140,39 @@ fi
 if [ -f /lib/firmware/htc_7010.fw ]; then
 	echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
 	sudo wget -O htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
-	if [ -f htc_7010.fw ]; then
-		echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
-	else
+	if [ ! -f htc_7010.fw ]; then
 		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
 fi
+
+#===============================================================
+# CONFIGURATION
+#===============================================================
+echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
+sudo dphys-swapfile swapoff
+sudo dphys-swapfile uninstall
+sudo update-rc.d dphys-swapfile remove
+
+echo -e "${STYLE_HEADING}Updating /etc/default/ifplugd...${STYLE_NONE}"
+sudo sh -c 'echo -e "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
+sudo sh -c 'echo -e "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo -e "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo -e "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
+
+echo -e "${STYLE_HEADING}Updating /boot/cmdline.txt...${STYLE_NONE}"
+sudo sh -c 'echo -e "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
+
+echo -e "${STYLE_HEADING}Updating /etc/modules...${STYLE_NONE}"
+sudo sh -c 'echo -e "r8188eu" > /etc/modules'
+sudo sh -c 'echo -e "rt2800usb" >> /etc/modules'
+
+echo -e "${STYLE_HEADING}Updating /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
+sudo sh -c 'echo -e "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo -e "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo -e "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
+
+echo -e "${STYLE_HEADING}Updating /etc/default/crda...${STYLE_NONE}"
+sudo sh -c 'echo -e "REGDOMAIN=AU" > /etc/default/crda'
 
 echo -e "\n${STYLE_HEADING}Assembling servald...${STYLE_NONE}"
 sudo mkdir -p /usr/local/etc/serval
