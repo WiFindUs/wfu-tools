@@ -34,7 +34,7 @@ if [ -d wfu-tools ]; then
 	sudo rm -f .gitignore
 
 	echo -e "  ${STYLE_HEADING}making wfu-setup...${STYLE_NONE}"
-	make -s -k
+	make
 	if [ -f wfu-setup ]; then
 		echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
 		sudo chmod 755 *.sh
