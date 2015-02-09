@@ -220,7 +220,7 @@ int write_rc_local(int num)
 			fprintf(file,"### Mesh and AP Logging\n");
 			fprintf(file,"#############################################################\n");
 			fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
-			fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"`\n");
 			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
 			fprintf(file,"else\n");
@@ -228,7 +228,7 @@ int write_rc_local(int num)
 			fprintf(file,"fi\n\n");
 			
 			fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
-			fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rf: Info - RF chipset 5370 detected\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rf: Info - RF chipset 5370 detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
 			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"$AP_PHY detected.\"\n");
 			fprintf(file,"else\n");
