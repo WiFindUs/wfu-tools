@@ -266,7 +266,7 @@ int write_rc_local(int num)
 			fprintf(file,"fi\n\n");
 			
 			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"creating ap0 interface...\"\n");
+			fprintf(file,"	echo \"creating ap0 interface on $AP_PHY...\"\n");
 			fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
 			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 			fprintf(file,"fi\n\n");
