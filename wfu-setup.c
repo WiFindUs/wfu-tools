@@ -240,7 +240,7 @@ int write_rc_local(int num)
 			fprintf(file,"fi\n\n");
 					
 			fprintf(file,"echo \"Checking existing wireless interfaces...\"\n");
-			fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 wlan4 wlan5\"\n");
+			fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3\"\n");
 			fprintf(file,"for WLAN in $WLANS; do\n");
 			fprintf(file,"	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
 			fprintf(file,"	if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
