@@ -234,10 +234,10 @@ int write_rc_local(int num)
 			fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 wlan4 wlan5\"\n");
 			fprintf(file,"for WLAN in $WLANS; do\n");
 			fprintf(file,"	WLAN_IFACE=`iwconfig | grep -o -i \"$WLAN\"`\n");
-			fprintf(file,"	if [ \"$WLAN_IFACE\" != "" ]; then\n");
+			fprintf(file,"	if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
 			fprintf(file,"		echo \"$WLAN_IFACE detected, checking against iw...\"\n");
 			fprintf(file,"		WLAN_IFACE_IW=`iw list | grep -o -i \"$WLAN_IFACE\"`\n");
-			fprintf(file,"		if [ \"$WLAN_IFACE_IW\" != "" ]; then\n");
+			fprintf(file,"		if [ \"$WLAN_IFACE_IW\" != \"\" ]; then\n");
 			fprintf(file,"			echo \"$WLAN_IFACE found in iw. removing...\"\n");
 			fprintf(file,"			ifconfig \"$WLAN_IFACE\" down\n");
 			fprintf(file,"			sleep 3\n");
