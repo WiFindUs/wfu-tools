@@ -78,10 +78,10 @@ libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
 udhcpd xdg-utils libfreetype* bash-completion ncurses-term
 
-echo -e "  ${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 
-echo -e "  ${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
 cd "$PI_HOME"
 sudo rm -f ocr_pi.png
 sudo rm -f /lib/modules.bak
@@ -124,7 +124,7 @@ sudo update-rc.d -f isc-dhcp-server stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f gpsd remove
 sudo update-rc.d -f gpsd stop 80 0 1 2 3 4 5 6 .
 
-echo -e "  ${STYLE_HEADING}Cleaning up apt...${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Cleaning up apt...${STYLE_NONE}"
 sudo apt-get -y autoremove
 sudo apt-get -y clean
 sudo apt-get -y autoclean
@@ -181,31 +181,31 @@ sudo dphys-swapfile uninstall
 sudo update-rc.d dphys-swapfile remove
 
 echo -e "${STYLE_HEADING}Writing /etc/default/ifplugd...${STYLE_NONE}"
-sudo sh -c 'echo -e "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
-sudo sh -c 'echo -e "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo -e "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo -e "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
+sudo sh -c 'echo "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
+sudo sh -c 'echo "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
 
 echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
-sudo sh -c 'echo -e "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
+sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
 
 echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
-sudo sh -c 'echo -e "r8188eu" > /etc/modules'
-sudo sh -c 'echo -e "rt2800usb" >> /etc/modules'
+sudo sh -c 'echo "r8188eu" > /etc/modules'
+sudo sh -c 'echo "rt2800usb" >> /etc/modules'
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
-sudo sh -c 'echo -e "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo -e "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo -e "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
 
 echo -e "${STYLE_HEADING}Writing /etc/default/crda...${STYLE_NONE}"
-sudo sh -c 'echo -e "REGDOMAIN=AU" > /etc/default/crda'
+sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8188eu.conf...${STYLE_NONE}"
-sudo sh -c 'echo -e "options 8188eu rtw_power_mgnt=0" > /etc/modprobe.d/8188eu.conf'
+sudo sh -c 'echo "options 8188eu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8188eu.conf'
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8192cu.conf...${STYLE_NONE}"
-sudo sh -c 'echo -e "options 8192cu rtw_power_mgnt=0" > /etc/modprobe.d/8192cu.conf'
+sudo sh -c 'echo "options 8192cu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8192cu.conf'
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $BRAIN_NUMBER
