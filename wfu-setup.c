@@ -20,7 +20,7 @@
 #define NULL 0
 #endif
 
-#define VERSION_STR "v1.3" 
+#define VERSION_STR "v1.3.1" 
 #define SRC_DIR "/home/pi/src" 
 
 #define SERVALD_FLAG 1
@@ -30,7 +30,6 @@
 #define ALL_FLAGS 15
 
 int quietMode = FALSE;
-int uninstallMode = FALSE;
 int noWireless = FALSE;
 int adhocMode = FALSE;
 int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG;
@@ -77,8 +76,6 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
 	fprintf(stderr, "  -G or --nogpsd: disable gpsd auto-start.\n");
 	fprintf(stderr, "  -W or --nowireless: disable auto-configuration of wireless interfaces.\n");
-	fprintf(stderr, "  -u or --uninstall: reverts scripts to pre-wfu defaults,\n\
-instead of writing them out to disk.\n");
 	fprintf(stderr, "  -ch[1-11]: explicitly set hostapd wireless channel\n");
 	fprintf(stderr, "Remarks:\n");
 	fprintf(stderr, "  If the number is omitted, the value stored in %s/wfu-brain-num\n\
@@ -146,14 +143,11 @@ int write_hosts(int num)
 	fprintf(file,"192.168.1.1 wfu-server\n");
 	fprintf(file,"192.168.1.1 m-server\n");
 	
-	if (!uninstallMode)
-	{	
-		for (i = 1; i < 255; i++)
-		{
-			if (i == num)
-				continue;
-			fprintf(file,"10.1.0.%d wfu-brain-%d\n",i,i);
-		}
+	for (i = 1; i < 255; i++)
+	{
+		if (i == num)
+			continue;
+		fprintf(file,"10.1.0.%d wfu-brain-%d\n",i,i);
 	}
 	
 	fclose(file);
@@ -198,172 +192,167 @@ int write_rc_local(int num)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
+
+	fprintf(file,"#! /bin/sh\n\n");
+	fprintf(file,"#############################################################\n");
+	fprintf(file,"### Enviroment Logging\n");
+	fprintf(file,"#############################################################\n");
+	fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n\n");
 	
-	if (!uninstallMode)
-	{	
-		fprintf(file,"#! /bin/sh\n\n");
+	fprintf(file,"DMESG=`dmesg 2>&1`\n");
+	fprintf(file,"echo -e \"$DMESG\" > /home/pi/dmesg_boot.log\n");
+	fprintf(file,"LSUSB=`lsusb 2>&1`\n");
+	fprintf(file,"echo -e \"$LSUSB\" > /home/pi/lsusb_boot.log\n");
+	fprintf(file,"LSMOD=`lsmod 2>&1`\n");
+	fprintf(file,"echo -e \"$LSMOD\" > /home/pi/lsmod_boot.log\n\n");
+	
+	if (!noWireless)
+	{
 		fprintf(file,"#############################################################\n");
-		fprintf(file,"### Enviroment Logging\n");
+		fprintf(file,"### Mesh and AP Logging\n");
 		fprintf(file,"#############################################################\n");
-		fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n\n");
+		fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
+		fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"`\n");
+		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
+		fprintf(file,"else\n");
+		fprintf(file,"	echo \"ERROR: no supported mesh adapters detected.\"\n");
+		fprintf(file,"fi\n\n");
 		
-		fprintf(file,"DMESG=`dmesg 2>&1`\n");
-		fprintf(file,"echo -e \"$DMESG\" > /home/pi/dmesg_boot.log\n");
-		fprintf(file,"LSUSB=`lsusb 2>&1`\n");
-		fprintf(file,"echo -e \"$LSUSB\" > /home/pi/lsusb_boot.log\n");
-		fprintf(file,"LSMOD=`lsmod 2>&1`\n");
-		fprintf(file,"echo -e \"$LSMOD\" > /home/pi/lsmod_boot.log\n\n");
-		
-		if (!noWireless)
-		{
-			fprintf(file,"#############################################################\n");
-			fprintf(file,"### Mesh and AP Logging\n");
-			fprintf(file,"#############################################################\n");
-			fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
-			fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"`\n");
-			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
-			fprintf(file,"else\n");
-			fprintf(file,"	echo \"ERROR: no supported mesh adapters detected.\"\n");
-			fprintf(file,"fi\n\n");
-			
-			fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
-			fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rt: Info - RT chipset (5370|5592)(, rev [0-9]+)? detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
-			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"$AP_PHY detected.\"\n");
-			fprintf(file,"else\n");
-			fprintf(file,"	echo \"ERROR: no supported AP adapters detected.\"\n");
-			fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
-			fprintf(file,"		echo \"FALLBACK: Will use $MESH_PHY for both interfaces.\"\n");
-			fprintf(file,"		AP_PHY=\"$MESH_PHY\"\n");
-			fprintf(file,"	fi\n");
-			fprintf(file,"fi\n\n");
-					
-			fprintf(file,"echo \"Checking existing wireless interfaces...\"\n");
-			fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3\"\n");
-			fprintf(file,"for WLAN in $WLANS; do\n");
-			fprintf(file,"	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
-			fprintf(file,"	if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
-			fprintf(file,"		echo \"$WLAN_IFACE detected, attempting to remove...\"\n");
-			fprintf(file,"		ifconfig \"$WLAN_IFACE\" down\n");
-			fprintf(file,"		sleep 3\n");
-			fprintf(file,"		iw dev \"$WLAN_IFACE\" del\n");
-			fprintf(file,"		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
-			fprintf(file,"		if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
-			fprintf(file,"			echo \"ERROR: $WLAN could not be removed, possibly not nl80211-compatible...\"\n");
-			fprintf(file,"		else\n");
-			fprintf(file,"			echo \"$WLAN removed OK.\"\n");
-			fprintf(file,"		fi\n");
-			fprintf(file,"	fi\n");
-			fprintf(file,"done\n\n");	
-			
-			fprintf(file,"echo \"setting regulatory domain...\"\n");
-			fprintf(file,"iw reg set AU\n\n");
-			
-			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"creating mesh0 interface on $MESH_PHY...\"\n");
-			fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
-			fprintf(file,"fi\n\n");
-			
-			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"creating ap0 interface on $AP_PHY...\"\n");
-			fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
-			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
-			fprintf(file,"fi\n\n");
-			
-			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"bringing mesh0 up...\"\n");
-			fprintf(file,"	ifconfig mesh0 up\n\n");	
-			fprintf(file,"	sleep 3\n\n");
-			fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
-			fprintf(file,"fi\n\n");
-			
-			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"bringing ap0 up...\"\n");
-			fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
-			fprintf(file,"fi\n\n");
-			
-			if (adhocMode)
-			{
-				fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-				fprintf(file,"	echo \"joining ad-hoc network on mesh0...\"\n");
-				fprintf(file,"	sleep 1\n");
-				fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
-				fprintf(file,"fi\n\n");
-			}
-		}
-			
-		if (daemon_flags > 0)
-		{
-			fprintf(file,"#############################################################\n");
-			fprintf(file,"### Daemons\n");
-			fprintf(file,"#############################################################\n");
-			fprintf(file,"sleep 5\n");
-			if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
-			{
+		fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
+		fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rt: Info - RT chipset (5370|5592)(, rev [0-9]+)? detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
+		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"$AP_PHY detected.\"\n");
+		fprintf(file,"else\n");
+		fprintf(file,"	echo \"ERROR: no supported AP adapters detected.\"\n");
+		fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
+		fprintf(file,"		echo \"FALLBACK: Will use $MESH_PHY for both interfaces.\"\n");
+		fprintf(file,"		AP_PHY=\"$MESH_PHY\"\n");
+		fprintf(file,"	fi\n");
+		fprintf(file,"fi\n\n");
 				
-				fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
-				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
-				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
-				fprintf(file,"fi\n\n");
-			}
+		fprintf(file,"echo \"Checking existing wireless interfaces...\"\n");
+		fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3\"\n");
+		fprintf(file,"for WLAN in $WLANS; do\n");
+		fprintf(file,"	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
+		fprintf(file,"	if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
+		fprintf(file,"		echo \"$WLAN_IFACE detected, attempting to remove...\"\n");
+		fprintf(file,"		ifconfig \"$WLAN_IFACE\" down\n");
+		fprintf(file,"		sleep 3\n");
+		fprintf(file,"		iw dev \"$WLAN_IFACE\" del\n");
+		fprintf(file,"		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
+		fprintf(file,"		if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
+		fprintf(file,"			echo \"ERROR: $WLAN could not be removed, possibly not nl80211-compatible...\"\n");
+		fprintf(file,"		else\n");
+		fprintf(file,"			echo \"$WLAN removed OK.\"\n");
+		fprintf(file,"		fi\n");
+		fprintf(file,"	fi\n");
+		fprintf(file,"done\n\n");	
+		
+		fprintf(file,"echo \"setting regulatory domain...\"\n");
+		fprintf(file,"iw reg set AU\n\n");
+		
+		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"creating mesh0 interface on $MESH_PHY...\"\n");
+		fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+		fprintf(file,"fi\n\n");
+		
+		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"creating ap0 interface on $AP_PHY...\"\n");
+		fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
+		fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+		fprintf(file,"fi\n\n");
+		
+		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"bringing mesh0 up...\"\n");
+		fprintf(file,"	ifconfig mesh0 up\n\n");	
+		fprintf(file,"	sleep 3\n\n");
+		fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
+		fprintf(file,"fi\n\n");
+		
+		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
+		fprintf(file,"	echo \"bringing ap0 up...\"\n");
+		fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
+		fprintf(file,"fi\n\n");
+		
+		if (adhocMode)
+		{
+			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+			fprintf(file,"	echo \"joining ad-hoc network on mesh0...\"\n");
+			fprintf(file,"	sleep 1\n");
+			fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
+			fprintf(file,"fi\n\n");
+		}
+	}
+		
+	if (daemon_flags > 0)
+	{
+		fprintf(file,"#############################################################\n");
+		fprintf(file,"### Daemons\n");
+		fprintf(file,"#############################################################\n");
+		fprintf(file,"sleep 5\n");
+		if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
+		{
 			
-			if (!noWireless && (daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
+			fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
+			fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
+			fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+			fprintf(file,"fi\n\n");
+		}
+		
+		if (!noWireless && (daemon_flags & (DHCPD_FLAG | HOSTAPD_FLAG | SERVALD_FLAG)) > 0)
+		{
+			fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
+			fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
+			if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
+				fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
+			if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 			{
-				fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
-				fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
-				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
-					fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
-				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
-				{
-					fprintf(file,"	sleep 1\n");
-					fprintf(file,"	dhcpd -4 -q\n");
-				}
-				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
-				{
-					fprintf(file,"	sleep 1\n");
-					fprintf(file,"  servald start\n");
-					
-				}
-				fprintf(file,"fi\n\n");
+				fprintf(file,"	sleep 1\n");
+				fprintf(file,"	dhcpd -4 -q\n");
 			}
-		}
-		
-		fprintf(file,"#############################################################\n");
-		fprintf(file,"### Routing\n");
-		fprintf(file,"#############################################################\n");
-		fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-		fprintf(file,"iptables -F\n");
-		fprintf(file,"iptables -X\n");
-		fprintf(file,"iptables -t nat -F\n");
-		fprintf(file,"iptables -P INPUT ACCEPT\n");
-		fprintf(file,"iptables -P FORWARD ACCEPT\n");
-		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-		fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-		if (num == 1)
-		{
-			fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
-			fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
-			fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
-		}
-		
-		if (!noWireless)
-		{
-			fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
-			fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
-			if (num != 1)
-				fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
-			for (i = 1; i < 255; i++)
+			if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 			{
-				if (i == num)
-					continue;
-				fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
+				fprintf(file,"	sleep 1\n");
+				fprintf(file,"  servald start\n");
+				
 			}
 			fprintf(file,"fi\n\n");
 		}
 	}
-	else
-		fprintf(file,"#! /bin/sh -e\n");
+	
+	fprintf(file,"#############################################################\n");
+	fprintf(file,"### Routing\n");
+	fprintf(file,"#############################################################\n");
+	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+	fprintf(file,"iptables -F\n");
+	fprintf(file,"iptables -X\n");
+	fprintf(file,"iptables -t nat -F\n");
+	fprintf(file,"iptables -P INPUT ACCEPT\n");
+	fprintf(file,"iptables -P FORWARD ACCEPT\n");
+	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+	if (num == 1)
+	{
+		fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
+		fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
+		fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
+	}
+	
+	if (!noWireless)
+	{
+		fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
+		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
+		if (num != 1)
+			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
+		for (i = 1; i < 255; i++)
+		{
+			if (i == num)
+				continue;
+			fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
+		}
+		fprintf(file,"fi\n\n");
+	}
 
 	fprintf(file,"\nexit 0\n");
 	
@@ -381,14 +370,12 @@ int write_hostapd(int num)
 	sprintf(nbuf,"/etc/hostapd/hostapd.conf");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
-	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
-	if (uninstallMode)
-		return TRUE;
 	
 	fprintf(file,"interface=ap0\n");
 	fprintf(file,"country_code=AU\n");
@@ -449,8 +436,6 @@ int write_network_interfaces(int num)
 	fprintf(file,"iface wlan1 inet manual\n");
 	fprintf(file,"        post-up iwconfig wlan1 power off\n");
 
-
-
 	fclose(file);
 	if (!quietMode)
 		printf(" [ok]\n");
@@ -465,14 +450,12 @@ int write_dhcpd(int num)
 	sprintf(nbuf,"/etc/dhcp/dhcpd.conf");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
-	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
-	if (uninstallMode)
-		return TRUE;
 		
 	fprintf(file,"ddns-update-style none;\n");
 	fprintf(file,"option domain-name \"wfu-brain-%d.local\";\n",num);
@@ -502,14 +485,12 @@ int write_dhcpd_default(int num)
 	sprintf(nbuf,"/etc/default/isc-dhcp-server");
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
-	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
-	if (uninstallMode)
-		return TRUE;
 	
 	fprintf(file,"INTERFACES=\"ap0\"\n");
 
@@ -528,14 +509,12 @@ int write_servald(int num)
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
 	
-	if ((uninstallMode && remove(nbuf) != 0) || (!uninstallMode && (file = fopen(nbuf,"w")) == NULL))
+	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		if (!quietMode)
 			printf("error. are you root?\n");
 		return FALSE;
 	}
-	if (uninstallMode)
-		return TRUE;
 	
 	fprintf(file,"interfaces.0.match=mesh*,ap*\n");
 	fprintf(file,"interfaces.0.type=wifi\n");
@@ -608,8 +587,6 @@ int main(int argc, char **argv)
 			detailedHelpMode = TRUE;
 		else if (strcmp(argv[i],"-q") == 0 || strcmp(argv[i],"--quiet") == 0)
 			quietMode = TRUE;
-		else if (strcmp(argv[i],"-u") == 0 || strcmp(argv[i],"--uninstall") == 0)
-			uninstallMode = TRUE;
 		else if (strcmp(argv[i],"-S") == 0 || strcmp(argv[i],"--servald") == 0)
 			daemon_flags |= SERVALD_FLAG;
 		else if (strcmp(argv[i],"-D") == 0 || strcmp(argv[i],"--nodhcpd") == 0)
@@ -633,7 +610,7 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	strcpy(opString,uninstallMode ? "Reverting" : "Writing");
+	strcpy(opString,"Writing");
 	
 	if (detailedHelpMode)
 	{
@@ -662,8 +639,6 @@ int main(int argc, char **argv)
 	if (!quietMode)
 	{
 		printf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d (%s)\n",VERSION_STR,num,hex);
-		if (uninstallMode)
-			printf("## UNINSTALL MODE ##\n");
 		if (numDefault)
 		{
 			printf("  -- Notice --\n\
