@@ -447,7 +447,6 @@ int write_network_interfaces(int num)
 
 	fprintf(file,"iface wlan0 inet manual\n");
 	fprintf(file,"        post-up iwconfig wlan0 power off\n");
-
 	fprintf(file,"iface wlan1 inet manual\n");
 	fprintf(file,"        post-up iwconfig wlan1 power off\n");
 
@@ -659,7 +658,7 @@ int main(int argc, char **argv)
 	dtoh(num,hex);
 	
 	if (apChannel < 1 || apChannel > 11)
-		apChannel = 1+(num%3)*5;
+		apChannel = 6 + (num%2) * 5; //default to 11 for odd numbers, 6 for even
 	
 	if (!quietMode)
 	{
