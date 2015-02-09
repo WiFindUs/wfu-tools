@@ -14,17 +14,12 @@ rm -rf "$SRC_DIR/wfu-tools/.git"
 rm -f "$SRC_DIR/wfu-tools/.git*"
 
 echo -e "  ${STYLE_HEADING}removing config-only apt entries...${STYLE_NONE}"
-dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -qq purge > /dev/null
+dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 	
 echo -e "  ${STYLE_HEADING}cleaning up...${STYLE_NONE}"
-sudo apt-get -qq autoremove > /dev/null
-sudo apt-get -qq clean > /dev/null
-sudo apt-get -qq autoclean > /dev/null
-
-
-echo -e "  ${STYLE_HEADING}cleaning apt-cache...${STYLE_NONE}"
-sudo rm -rf /var/lib/apt/list
-sudo rm -rf /var/cache/apt
+sudo apt-get -y autoremove
+sudo apt-get -y clean
+sudo apt-get -y autoclean
 
 echo -e "  ${STYLE_HEADING}writing zeros to free space...${STYLE_NONE}"
 sudo sfill -f -ll -z /
