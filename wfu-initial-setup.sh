@@ -79,7 +79,7 @@ fi
 echo -e "${STYLE_HEADING}Permanently disabling swap file..${STYLE_NONE}"
 sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove > /dev/null 2>&1
+sudo update-rc.d dphys-swapfile remove
 echo -e "  ${STYLE_SUCCESS}OK!${STYLE_NONE}"
 
 #if [ -f "$WFU_TOOLS_DIR/wfu-update-wifi.sh"  ]; then
@@ -98,7 +98,7 @@ if [ -f "/usr/local/sbin/servald" ]; then
 else
 	echo -e "  ${STYLE_HEADING}downloading from wifindus.com...${STYLE_NONE}"
 	cd "/usr/local/sbin"
-	sudo wget -q http://www.wifindus.com/downloads/servald
+	sudo  http://www.wifindus.com/downloads/servald
 	if [ -f servald ]; then
 		sudo chmod 755 servald
 		echo -e "    ${STYLE_SUCCESS}downloaded OK!${STYLE_NONE}"
@@ -106,24 +106,24 @@ else
 		echo -e "    ${STYLE_ERROR}download failed!${STYLE_NONE}"
 		echo -e "  ${STYLE_HEADING}trying to clone from github...${STYLE_NONE}"
 		cd "$SRC_DIR"
-		git clone --depth 1 -q git://github.com/servalproject/serval-dna.git
+		git clone --depth 1 git://github.com/servalproject/serval-dna.git
 
 		if [ -d serval-dna ]; then
 			echo -e "    ${STYLE_HEADING}making... ${STYLE_YELLOW}(may take a while)${STYLE_NONE}"
 			cd serval-dna
-			autoreconf -f -i  > /dev/null
-			./configure  > /dev/null
+			autoreconf -f -i
+			./configure
 			sudo make clean -s -k
 			sudo make -s -k
 
 			echo -e "    ${STYLE_HEADING}installing...${STYLE_NONE}"
 			if [ -f servald ]; then
-				sudo killall servald > /dev/null 2>&1
+				sudo killall servald
 				sudo rm -f /usr/local/sbin/servald
 				sudo make install -s -k
 				sudo chmod 755 /usr/local/sbin/servald
-				sudo update-rc.d -f servald remove > /dev/null 2>&1
-				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 . > /dev/null 2>&1
+				sudo update-rc.d -f servald remove
+				sudo update-rc.d -f servald stop 80 0 1 2 3 4 5 6 .
 			else
 				echo -e "      ${STYLE_ERROR}error! servald may not have built.${STYLE_NONE}"
 			fi
@@ -139,7 +139,7 @@ echo ""
 cd "$SRC_DIR"
 if [ ! -d wfu-tools ]; then
 	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
-	git clone --depth 1 -q $WFU_REPOSITORY
+	git clone --depth 1 $WFU_REPOSITORY
 fi
 if [ -d wfu-tools ]; then
 	cd wfu-tools
@@ -150,14 +150,14 @@ if [ -d wfu-tools ]; then
 	./wfu-update.sh
 	
 	echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
-	sudo wfu-setup $BRAIN_NUMBER -q
+	sudo wfu-setup $BRAIN_NUMBER
 else
 	echo -e "  ${STYLE_ERROR}error! cloning probably failed.${STYLE_NONE}"
 fi
 
 echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
-echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi > /dev/null 2>&1
+echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi
 
 echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
-sudo shutdown -r now > /dev/null
+sudo shutdown -r now
