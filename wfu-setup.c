@@ -19,12 +19,9 @@
 #ifndef NULL
 #define NULL 0
 #endif
-#ifndef VERSION_STR
-#define VERSION_STR "v1.2" 
-#endif
-#ifndef SRC_DIR
+
+#define VERSION_STR "v1.3" 
 #define SRC_DIR "/home/pi/src" 
-#endif
 
 #define SERVALD_FLAG 1
 #define DHCPD_FLAG 2
@@ -210,11 +207,11 @@ int write_rc_local(int num)
 		fprintf(file,"#############################################################\n");
 		fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n");
 		fprintf(file,"DMESG=`dmesg 2>&1`\n");
-		fprintf(file,"echo $DMESG > dmesg_boot.log\n");
+		fprintf(file,"echo $DMESG > /home/pi/dmesg_boot.log\n");
 		fprintf(file,"LSUSB=`lsusb 2>&1`\n");
-		fprintf(file,"echo $LSUSB > lsusb_boot.log\n\n");
+		fprintf(file,"echo $LSUSB > /home/pi/lsusb_boot.log\n\n");
 		fprintf(file,"LSMOD=`lsmod 2>&1`\n");
-		fprintf(file,"echo $LSMOD > lsmod_boot.log\n\n");
+		fprintf(file,"echo $LSMOD > /home/pi/lsmod_boot.log\n\n");
 		
 		if (!noWireless)
 		{
