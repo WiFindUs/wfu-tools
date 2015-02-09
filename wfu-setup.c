@@ -659,7 +659,7 @@ int main(int argc, char **argv)
 	dtoh(num,hex);
 	
 	if (apChannel < 1 || apChannel > 11)
-		apChannel = 1+((num-1)%3)*5;
+		apChannel = 1+(num%3)*5;
 	
 	if (!quietMode)
 	{
