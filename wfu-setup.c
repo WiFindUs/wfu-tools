@@ -205,13 +205,14 @@ int write_rc_local(int num)
 		fprintf(file,"#############################################################\n");
 		fprintf(file,"### Enviroment Logging\n");
 		fprintf(file,"#############################################################\n");
-		fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n");
+		fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n\n");
+		
 		fprintf(file,"DMESG=`dmesg 2>&1`\n");
-		fprintf(file,"echo $DMESG > /home/pi/dmesg_boot.log\n");
+		fprintf(file,"echo -e \"$DMESG\" > /home/pi/dmesg_boot.log\n");
 		fprintf(file,"LSUSB=`lsusb 2>&1`\n");
-		fprintf(file,"echo $LSUSB > /home/pi/lsusb_boot.log\n\n");
+		fprintf(file,"echo -e \"$LSUSB\" > /home/pi/lsusb_boot.log\n");
 		fprintf(file,"LSMOD=`lsmod 2>&1`\n");
-		fprintf(file,"echo $LSMOD > /home/pi/lsmod_boot.log\n\n");
+		fprintf(file,"echo -e \"$LSMOD\" > /home/pi/lsmod_boot.log\n\n");
 		
 		if (!noWireless)
 		{
@@ -219,7 +220,7 @@ int write_rc_local(int num)
 			fprintf(file,"### Mesh and AP Logging\n");
 			fprintf(file,"#############################################################\n");
 			fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
-			fprintf(file,"MESH_PHY=`echo $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"\n");
 			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
 			fprintf(file,"else\n");
@@ -227,7 +228,7 @@ int write_rc_local(int num)
 			fprintf(file,"fi\n\n");
 			
 			fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
-			fprintf(file,"AP_PHY=`echo $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rf: Info - RF chipset 5370 detected\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rf: Info - RF chipset 5370 detected\" | grep -E -i -o \"phy[0-9]+\"\n");
 			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"$AP_PHY detected.\"\n");
 			fprintf(file,"else\n");
@@ -301,7 +302,7 @@ int write_rc_local(int num)
 			if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
 			{
 				
-				fprintf(file,"GPS_MODULE=`echo $LSUSB | grep -i -o \"0e8d:3329\"`\n");
+				fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
 				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
 				fprintf(file,"fi\n\n");
