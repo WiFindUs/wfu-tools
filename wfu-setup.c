@@ -210,77 +210,87 @@ int write_rc_local(int num)
 		fprintf(file,"echo \"========= WFU Mesh Setup =========\"\n");
 		if (!noWireless)
 		{
-			fprintf(file,"echo \"Checking physical wireless interfaces...\"\n");
-			fprintf(file,"PHY_0=`iw list | grep -o phy0`\n");
-			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then\n");
-			fprintf(file,"	sleep 5\n");
-			fprintf(file,"	PHY_0=`iw list | grep -o phy0`\n");
+			fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
+			fprintf(file,"MESH_PHY=`dmesg | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"if [ \"$MESH_PHY\" = \"\" ]; then\n");
+			fprintf(file,"	echo \"ERROR: no supported mesh adapters detected.\"\n");
+			fprintf(file,"else\n");
+			fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
 			fprintf(file,"fi\n\n");
 			
-			fprintf(file,"if [ \"$PHY_0\" = \"\" ]; then\n");
-			fprintf(file,"	echo \"ERROR: no physical wireless interfaces detected.\"\n");
+			fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
+			fprintf(file,"AP_PHY=`dmesg | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rf: Info - RF chipset 5370 detected\" | grep -E -i -o \"phy[0-9]+\"\n");
+			fprintf(file,"if [ \"$AP_PHY\" = \"\" ]; then\n");
+			fprintf(file,"	echo \"ERROR: no supported AP adapters detected.\"\n");
+			fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
+			fprintf(file,"		echo \"FALLBACK: Will use $MESH_PHY for both interfaces.\"\n");
+			fprintf(file,"		AP_PHY=\"$MESH_PHY\"\n");
+			fprintf(file,"	fi\n");
 			fprintf(file,"else\n");
-			fprintf(file,"	echo \"phy0 detected.\"\n");
-			fprintf(file,"	PHY_1=`iw list | grep -o phy1`\n");
-			fprintf(file,"	if [ \"$PHY_1\" = \"\" ]; then\n");
-			fprintf(file,"		echo \"phy1 not detected! will use phy0 for mesh and AP interfaces.\"\n");
-			fprintf(file,"		PHY_1=\"phy0\"\n");
-			fprintf(file,"	else\n");
-			fprintf(file,"		echo \"phy1 detected.\"\n");
-			fprintf(file,"	fi\n\n");
+			fprintf(file,"	echo \"$AP_PHY detected.\"\n");
+			fprintf(file,"fi\n\n");
+					
+			fprintf(file,"echo \"Checking existing wireless interfaces...\"\n");
+			fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 wlan4 wlan5\"\n");
+			fprintf(file,"for WLAN in $WLANS; do\n");
+			fprintf(file,"	WLAN_IFACE=`iwconfig | grep -o -i \"$WLAN\"`\n");
+			fprintf(file,"	if [ \"$WLAN_IFACE\" != "" ]; then\n");
+			fprintf(file,"		echo \"$WLAN_IFACE detected, checking against iw...\"\n");
+			fprintf(file,"		WLAN_IFACE_IW=`iw list | grep -o -i \"$WLAN_IFACE\"`\n");
+			fprintf(file,"		if [ \$WLAN_IFACE_IW\" != "" ]; then\n");
+			fprintf(file,"			echo \"$WLAN_IFACE found in iw. removing...\"\n");
+			fprintf(file,"			ifconfig \"$WLAN_IFACE\" down\n");
+			fprintf(file,"			sleep 3\n");
+			fprintf(file,"			iw dev \"$WLAN_IFACE\" del\n");
+			fprintf(file,"		else\n");
+			fprintf(file,"			echo \"ERROR: $WLAN_IFACE does not use the nl80211 driver and thus cannot be removed with iw\"\n");
+			fprintf(file,"		fi\n");
+			fprintf(file,"	fi\n");
+			fprintf(file,"done\n\n");	
 			
-			fprintf(file,"	echo \"Checking logical wireless interfaces...\"\n");
-			fprintf(file,"	WLAN_0=`iwconfig | grep -o wlan0`\n");
-			fprintf(file,"	if [ \"$WLAN_0\" != \"\" ]; then\n");
-			fprintf(file,"		echo \"wlan0 detected, deleting...\"\n");
-			fprintf(file,"		ifconfig wlan0 down\n");
-			fprintf(file,"		sleep 3\n");
-			fprintf(file,"		iw dev wlan0 del\n");
-			fprintf(file,"	else\n");
-			fprintf(file,"		echo \"wlan0 not detected.\"\n");
-			fprintf(file,"	fi\n\n");
+			fprintf(file,"echo \"setting regulatory domain...\"\n");
+			fprintf(file,"iw reg set AU\n\n");
 			
-			fprintf(file,"	WLAN_1=`iwconfig | grep -o wlan1`\n");
-			fprintf(file,"	if [ \"$WLAN_1\" != \"\" ]; then\n");
-			fprintf(file,"		echo \"wlan1 detected, deleting...\"\n");
-			fprintf(file,"		ifconfig wlan1 down\n");
-			fprintf(file,"		sleep 3\n");
-			fprintf(file,"		iw dev wlan1 del\n");
-			fprintf(file,"	else\n");
-			fprintf(file,"		echo \"wlan1 not detected.\"\n");
-			fprintf(file,"	fi\n\n");
+			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+			fprintf(file,"	echo \"creating mesh0 interface on $MESH_PHY...\"\n");
+			fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+			fprintf(file,"fi\n\n");
 			
-			fprintf(file,"	echo \"setting regulatory domain...\"\n");
-			fprintf(file,"	iw reg set AU\n\n");
-			
-			fprintf(file,"	echo \"creating mesh0 interface...\"\n");
-			fprintf(file,"	iw phy $PHY_1 interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"creating ap0 interface...\"\n");
-			fprintf(file,"	iw phy $PHY_0 interface add ap0 type managed\n");
+			fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
 			fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
+			fprintf(file,"fi\n\n");
+			
+			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"bringing mesh0 up...\"\n");
 			fprintf(file,"	ifconfig mesh0 up\n\n");	
-
 			fprintf(file,"	sleep 3\n\n");
-			
 			fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
+			fprintf(file,"fi\n\n");
+			
+			fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 			fprintf(file,"	echo \"bringing ap0 up...\"\n");
 			fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
+			fprintf(file,"fi\n\n");
+			
 			if (adhocMode)
 			{
+				fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+				fprintf(file,"	echo \"joining ad-hoc network on mesh0...\"\n");
 				fprintf(file,"	sleep 1\n");
 				fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
+				fprintf(file,"fi\n\n");
 			}
-			
-			fprintf(file,"fi\n\n");
 		}
 			
 		if (daemon_flags > 0)
 		{
-			fprintf(file,"echo \"[WFU Mesh Setup] - launching daemons...\"\n");
+			fprintf(file,"echo \"========= WFU Daemon Setup =========\"\n");
+			fprintf(file,"sleep 5\n");
 			if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
 			{
-				fprintf(file,"sleep 5\n");
+				
 				fprintf(file,"GPS_MODULE=`lsusb | grep -i -o \"0e8d:3329\"`\n");
 				fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
 				fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
@@ -292,26 +302,21 @@ int write_rc_local(int num)
 				fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
 				fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
 				if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
-				{
-					fprintf(file,"	sleep 5\n");
 					fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
-					
-				}
 				if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 				{
-					fprintf(file,"	sleep 5\n");
+					fprintf(file,"	sleep 1\n");
 					fprintf(file,"	dhcpd\n");
-					
 				}
 				if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 				{
-					fprintf(file,"	sleep 5\n");
+					fprintf(file,"	sleep 1\n");
 					fprintf(file,"  servald start\n");
 					
 				}
 				fprintf(file,"fi\n\n");
 			}
-			fprintf(file,"sleep 5\n");
+			fprintf(file,"sleep 1\n");
 		}
 		
 		//routing like a baws
