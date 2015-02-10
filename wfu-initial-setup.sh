@@ -197,9 +197,6 @@ sudo sh -c 'echo "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
 
-echo -e "${STYLE_HEADING}Writing /etc/default/crda...${STYLE_NONE}"
-sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
-
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8188eu.conf...${STYLE_NONE}"
 sudo sh -c 'echo "options 8188eu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8188eu.conf'
 
@@ -211,6 +208,12 @@ sudo sh -c 'echo "domain wfu.gateway" > /etc/resolv.conf'
 sudo sh -c 'echo "search wfu.gateway" >> /etc/resolv.conf'
 sudo sh -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
 sudo sh -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+
+echo -e "${STYLE_HEADING}Writing /etc/default/crda...${STYLE_NONE}"
+sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
+
+echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
+sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
