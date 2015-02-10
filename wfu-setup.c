@@ -336,7 +336,6 @@ int write_rc_local(int num)
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-	/*
 	fprintf(file,"echo \"Flushing ip tables...\"\n");
 	fprintf(file,"iptables -F\n");
 	fprintf(file,"iptables -X\n");
@@ -345,6 +344,7 @@ int write_rc_local(int num)
 	fprintf(file,"iptables -P FORWARD ACCEPT\n");
 	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+	fprintf(file,"sudo ip route del 192.168.1.0/24 dev eth0\n");
 	if (num == 1)
 	{
 		fprintf(file,"echo \"Adding default gateway route...\"\n");
@@ -373,7 +373,6 @@ int write_rc_local(int num)
 		}
 		fprintf(file,"fi\n\n");
 	}
-	*/
 
 	fprintf(file,"\nexit 0\n");
 	
