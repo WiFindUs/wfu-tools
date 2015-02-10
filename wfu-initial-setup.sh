@@ -207,6 +207,12 @@ sudo sh -c 'echo "options 8188eu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8192cu.conf...${STYLE_NONE}"
 sudo sh -c 'echo "options 8192cu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8192cu.conf'
 
+echo -e "${STYLE_HEADING}Writing /etc/resolv.conf...${STYLE_NONE}"
+sudo sh -c 'echo "domain wfu.gateway" > /etc/resolv.conf'
+sudo sh -c 'echo "search wfu.gateway" >> /etc/resolv.conf'
+sudo sh -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+sudo sh -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
+
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
 
