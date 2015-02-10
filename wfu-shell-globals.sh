@@ -11,11 +11,17 @@ PI_HOME="/home/pi"
 SRC_DIR="$PI_HOME/src"
 WFU_TOOLS_DIR="$SRC_DIR/wfu-tools"
 WFU_REPOSITORY="git://github.com/WiFindUs/wfu-tools.git"
+if [ -f "$PI_HOME/wfu-brain-num" ]; then
+	WFU_BRAIN_NUM=`cat $PI_HOME/wfu-brain-num | grep -i -E -o "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+else
+	WFU_BRAIN_NUM="0"
+fi
 
 export PI_HOME
 export SRC_DIR
 export WFU_TOOLS_DIR
 export WFU_REPOSITORY
+export WFU_BRAIN_NUM
 
 if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS_DIR/wfu-shell-styles.sh"

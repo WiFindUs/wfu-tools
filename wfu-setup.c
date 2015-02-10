@@ -21,7 +21,7 @@
 #endif
 
 #define VERSION_STR "v1.3.1" 
-#define SRC_DIR "/home/pi/src" 
+#define SRC_DIR "/home/pi" 
 
 #define SERVALD_FLAG 1
 #define DHCPD_FLAG 2
@@ -559,8 +559,11 @@ int write_brain_num(int num)
 		return FALSE;
 	}
 	fprintf(file,"%d\n",num);
-	
 	fclose(file);
+	
+	sprintf(sbuf,"WFU_BRAIN_NUM=`cat \"%s/wfu-brain-num\" | grep -i -E -o \"([1-2][0-9]{2}|[1-9][0-9]|[1-9])\"`; export WFU_BRAIN_NUM", SRC_DIR);
+	system(sbuf);
+	
 	if (!quietMode)
 		printf(" [ok]\n");
 	

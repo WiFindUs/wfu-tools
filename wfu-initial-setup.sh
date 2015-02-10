@@ -53,9 +53,9 @@ echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_N
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
 read_number "this unit's ID #" 1 254
-BRAIN_NUMBER=$?
-export BRAIN_NUMBER
-echo "$BRAIN_NUMBER" > "$PI_HOME/src/wfu-brain-num"
+WFU_BRAIN_NUM=$?
+export WFU_BRAIN_NUM
+echo "$WFU_BRAIN_NUM" > "$PI_HOME/wfu-brain-num"
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
@@ -208,7 +208,7 @@ echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8192cu.conf...${STYLE_NONE}"
 sudo sh -c 'echo "options 8192cu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8192cu.conf'
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
-sudo wfu-setup $BRAIN_NUMBER
+sudo wfu-setup $WFU_BRAIN_NUM
 
 echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi
