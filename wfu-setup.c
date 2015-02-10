@@ -211,23 +211,40 @@ int write_rc_local(int num)
 		fprintf(file,"#############################################################\n");
 		fprintf(file,"### Mesh and AP Logging\n");
 		fprintf(file,"#############################################################\n");
+		
+		//enumerate mesh adapters
 		fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
-		fprintf(file,"MESH_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\"`\n");
+		//atheros ar9271
+		fprintf(file,"MESH_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"phy[0-9]+: Atheros AR9271\"`\n");
 		fprintf(file,"if [ -n \"$MESH_PHY_INFO\" ]; then\n");
 		fprintf(file,"	MESH_ADAPTER=\"Atheros AR9271\"\n");
 		fprintf(file,"fi\n\n");
-		
+		//assess enumeration
 		fprintf(file,"if [ -n \"$MESH_PHY_INFO\" ]; then\n");
 		fprintf(file,"	MESH_PHY=`echo -e \"$MESH_PHY_INFO\" | grep -E -i -o \"phy[0-9]+\"`\n");
-		fprintf(file,"	echo \"$MESH_PHY detected ($MESH_ADAPTER).\"\n");
+		fprintf(file,"	echo \"$MESH_ADAPTER detected ($MESH_PHY).\"\n");
 		fprintf(file,"else\n");
 		fprintf(file,"	echo \"ERROR: no supported mesh adapters detected.\"\n");
 		fprintf(file,"fi\n\n");
 		
-		fprintf(file,"echo \"Checking for supported AP adapters...\"\n");	
-		fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_r(t|f): Info - R(T|F) chipset (5370|5592)(, rev [0-9]+)? detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
-		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"$AP_PHY detected.\"\n");
+		//enumerate ap adapters
+		fprintf(file,"echo \"Checking for supported AP adapter...\"\n");	
+		//ralink rt5370
+		fprintf(file,"AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected\"`\n");
+		fprintf(file,"if [ -n \"$AP_PHY_INFO\" ]; then\n");
+		fprintf(file,"	AP_ADAPTER=\"Ralink RT5370\"\n");
+		fprintf(file,"fi\n\n");
+		//ralink rt5592
+		fprintf(file,"if [ -z \"$AP_PHY_INFO\" ]; then\n");
+		fprintf(file,"	AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected\"`\n");
+		fprintf(file,"	if [ -n \"$AP_PHY_INFO\" ]; then\n");
+		fprintf(file,"		AP_ADAPTER=\"Ralink RT5592\"\n");
+		fprintf(file,"	fi\n");
+		fprintf(file,"fi\n\n");
+		//assess enumeration
+		fprintf(file,"if [ -n \"$AP_PHY_INFO\" ]; then\n");
+		fprintf(file,"	AP_PHY=`echo -e \"$AP_PHY_INFO\" | grep -E -i -o \"phy[0-9]+\"`\n");
+		fprintf(file,"	echo \"$AP_ADAPTER detected ($AP_PHY).\"\n");
 		fprintf(file,"else\n");
 		fprintf(file,"	echo \"ERROR: no supported AP adapters detected.\"\n");
 		fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
