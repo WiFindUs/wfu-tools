@@ -199,6 +199,8 @@ int write_rc_local(int num)
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"sudo rm -f /home/pi/*.log\n");
 	fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n\n");
+	fprintf(file,"#exec 1>&2\n");
+	fprintf(file,"#set -x\n");
 	fprintf(file,"DMESG=`dmesg 2>&1`\n");
 	fprintf(file,"echo -e \"$DMESG\" > /home/pi/dmesg_boot.log\n");
 	fprintf(file,"LSUSB=`lsusb 2>&1`\n");
