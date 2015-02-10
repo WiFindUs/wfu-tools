@@ -375,7 +375,7 @@ int write_rc_local(int num)
 		fprintf(file,"echo \"Adding default gateway route...\"\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
-		fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
+		//fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
 	}
 	
 	if (!noWireless)
