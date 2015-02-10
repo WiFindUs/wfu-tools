@@ -190,8 +190,7 @@ echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
 sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
 
 echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
-sudo sh -c 'echo "r8188eu" > /etc/modules'
-sudo sh -c 'echo "rt2800usb" >> /etc/modules'
+sudo sh -c 'echo "rt2800usb" > /etc/modules'
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
 sudo sh -c 'echo "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'

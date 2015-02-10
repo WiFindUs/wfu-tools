@@ -234,11 +234,11 @@ int write_rc_local(int num)
 		fprintf(file,"if [ -n \"$AP_PHY_INFO\" ]; then\n");
 		fprintf(file,"	AP_ADAPTER=\"Ralink RT5370\"\n");
 		fprintf(file,"fi\n\n");
-		//ralink rt5592
+		//ralink rt5572
 		fprintf(file,"if [ -z \"$AP_PHY_INFO\" ]; then\n");
 		fprintf(file,"	AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected\"`\n");
 		fprintf(file,"	if [ -n \"$AP_PHY_INFO\" ]; then\n");
-		fprintf(file,"		AP_ADAPTER=\"Ralink RT5592\"\n");
+		fprintf(file,"		AP_ADAPTER=\"Ralink RT5572\"\n");
 		fprintf(file,"	fi\n");
 		fprintf(file,"fi\n\n");
 		//assess enumeration
@@ -250,6 +250,7 @@ int write_rc_local(int num)
 		fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
 		fprintf(file,"		echo \"FALLBACK: Will use $MESH_PHY for both interfaces.\"\n");
 		fprintf(file,"		AP_PHY=\"$MESH_PHY\"\n");
+		fprintf(file,"		AP_ADAPTER=\"$MESH_ADAPTER\"\n");
 		fprintf(file,"	fi\n");
 		fprintf(file,"fi\n\n");
 				
