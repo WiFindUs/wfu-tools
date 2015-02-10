@@ -212,15 +212,20 @@ int write_rc_local(int num)
 		fprintf(file,"### Mesh and AP Logging\n");
 		fprintf(file,"#############################################################\n");
 		fprintf(file,"echo \"Checking for supported mesh adapter...\"\n");
-		fprintf(file,"MESH_PHY=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\" | grep -E -i -o \"phy[0-9]+\"`\n");
-		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"$MESH_PHY detected.\"\n");
+		fprintf(file,"MESH_PHY_INFO=`echo -e $DMESG | grep -E -i -o \"ieee80211 phy[0-9]+: Atheros AR9271\"`\n");
+		fprintf(file,"if [ -n \"$MESH_PHY_INFO\" ]; then\n");
+		fprintf(file,"	MESH_ADAPTER=\"Atheros AR9271\"\n");
+		fprintf(file,"fi\n\n");
+		
+		fprintf(file,"if [ -n \"$MESH_PHY_INFO\" ]; then\n");
+		fprintf(file,"	MESH_PHY=`echo -e \"$MESH_PHY_INFO\" | grep -E -i -o \"phy[0-9]+\"`\n");
+		fprintf(file,"	echo \"$MESH_PHY detected ($MESH_ADAPTER).\"\n");
 		fprintf(file,"else\n");
 		fprintf(file,"	echo \"ERROR: no supported mesh adapters detected.\"\n");
 		fprintf(file,"fi\n\n");
 		
-		fprintf(file,"echo \"Checking for supported AP adapters...\"\n");
-		fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_rt: Info - RT chipset (5370|5592)(, rev [0-9]+)? detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
+		fprintf(file,"echo \"Checking for supported AP adapters...\"\n");	
+		fprintf(file,"AP_PHY=`echo -e \"$DMESG\" | grep -E -i -o \"ieee80211 phy[0-9]+: rt2(x|8)00_set_r(t|f): Info - R(T|F) chipset (5370|5592)(, rev [0-9]+)? detected\" | grep -E -i -o \"phy[0-9]+\"`\n");
 		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 		fprintf(file,"	echo \"$AP_PHY detected.\"\n");
 		fprintf(file,"else\n");
