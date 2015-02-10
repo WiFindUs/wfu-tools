@@ -431,11 +431,12 @@ int write_hostapd(int num)
 	//security
 	fprintf(file,"macaddr_acl=0\n");
 	fprintf(file,"auth_algs=1\n");
-	fprintf(file,"wpa=2\n");
+	fprintf(file,"wpa=3\n");
 	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
 	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
 	fprintf(file,"wpa_pairwise=TKIP\n");
 	fprintf(file,"rsn_pairwise=CCMP\n");
+	fprintf(file,"ignore_broadcast_ssid=0\n");
 	
 	//wireless-n
 	fprintf(file,"ieee80211n=1\n");
