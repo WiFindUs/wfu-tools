@@ -336,7 +336,7 @@ int write_rc_local(int num)
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-	
+	/*
 	fprintf(file,"echo \"Flushing ip tables...\"\n");
 	fprintf(file,"iptables -F\n");
 	fprintf(file,"iptables -X\n");
@@ -350,7 +350,7 @@ int write_rc_local(int num)
 		fprintf(file,"echo \"Adding default gateway route...\"\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
-		fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
+		fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0\n");
 	}
 	
 	if (!noWireless)
@@ -373,6 +373,7 @@ int write_rc_local(int num)
 		}
 		fprintf(file,"fi\n\n");
 	}
+	*/
 
 	fprintf(file,"\nexit 0\n");
 	
