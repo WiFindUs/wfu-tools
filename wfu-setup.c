@@ -296,9 +296,9 @@ int write_rc_local(int num)
 			fprintf(file,"echo \"Starting gpsd...\"\n");
 			fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
 			fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
-			fprintf(file,"	GPS_STREAM=`echo -e \"$DMESG\" | grep -E -i \"pps[0-9]+.+/dev/ttyACM[0-9].+added\" | grep -E -i -o \"/dev/ttyACM[0-9]\"`\n");
+			fprintf(file,"	GPS_STREAM=`echo -e \"$DMESG\" | grep -E -i -o \"ttyACM[0-9]+\"`\n");
 			fprintf(file,"	if [ \"$GPS_STREAM\" != \"\" ]; then\n");
-			fprintf(file,"		gpsd -n $GPS_STREAM -F /var/run/gpsd.sock\n");
+			fprintf(file,"		gpsd -n \"$GPS_STREAM\" -F /var/run/gpsd.sock\n");
 			fprintf(file,"	else\n");
 			fprintf(file,"		echo \"ERROR: GPS receiver found but no socket stream detected. Perhaps update firmware or drivers?\"\n");
 			fprintf(file,"	fi\n");
@@ -313,7 +313,7 @@ int write_rc_local(int num)
 			fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
 			if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
 			{
-				fprintf(file,"echo \"Starting hostapd...\"\n");
+				fprintf(file,"	echo \"Starting hostapd...\"\n");
 				fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
 			}
 			if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
@@ -358,10 +358,10 @@ int write_rc_local(int num)
 		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
 		if (num != 1)
 		{
-			fprintf(file,"echo \"Adding default gateway route...\"\n");
+			fprintf(file,"	echo \"Adding default gateway route...\"\n");
 			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 		}
-		fprintf(file,"echo \"Adding node routes...\"\n");
+		fprintf(file,"	echo \"Adding node routes...\"\n");
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
