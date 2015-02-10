@@ -249,29 +249,29 @@ int write_rc_local(int num)
 		fprintf(file,"	fi\n");
 		fprintf(file,"done\n\n");	
 		
-		fprintf(file,"echo \"setting regulatory domain...\"\n");
+		fprintf(file,"echo \"Setting regulatory domain...\"\n");
 		fprintf(file,"iw reg set AU\n\n");
 		
 		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"creating mesh0 interface on $MESH_PHY...\"\n");
+		fprintf(file,"	echo \"Creating mesh0 interface on $MESH_PHY...\"\n");
 		fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
 		fprintf(file,"fi\n\n");
 		
 		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"creating ap0 interface on $AP_PHY...\"\n");
+		fprintf(file,"	echo \"Creating ap0 interface on $AP_PHY...\"\n");
 		fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
 		fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 		fprintf(file,"fi\n\n");
 		
 		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"bringing mesh0 up...\"\n");
+		fprintf(file,"	echo \"Bringing mesh0 up...\"\n");
 		fprintf(file,"	ifconfig mesh0 up\n\n");	
 		fprintf(file,"	sleep 3\n\n");
 		fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
 		fprintf(file,"fi\n\n");
 		
 		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
-		fprintf(file,"	echo \"bringing ap0 up...\"\n");
+		fprintf(file,"	echo \"Bringing ap0 up...\"\n");
 		fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 		fprintf(file,"fi\n\n");
 		
@@ -293,10 +293,17 @@ int write_rc_local(int num)
 		fprintf(file,"sleep 5\n");
 		if ((daemon_flags & GPSD_FLAG) == GPSD_FLAG)
 		{
-			
+			fprintf(file,"echo \"Starting gpsd...\"\n");
 			fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
 			fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
-			fprintf(file,"	gpsd -n /dev/ttyACM0 -F /var/run/gpsd.sock\n");
+			fprintf(file,"	GPS_STREAM=`echo -e \"$DMESG\" | grep -E -i \"pps[0-9]+.+/dev/ttyACM[0-9].+added\" | grep -E -i -o \"/dev/ttyACM[0-9]\"`\n");
+			fprintf(file,"	if [ \"$GPS_STREAM\" != \"\" ]; then\n");
+			fprintf(file,"		gpsd -n $GPS_STREAM -F /var/run/gpsd.sock\n");
+			fprintf(file,"	else\n");
+			fprintf(file,"		echo \"ERROR: GPS receiver found but no socket stream detected. Perhaps update firmware or drivers?\"\n");
+			fprintf(file,"	fi\n");
+			fprintf(file,"else\n");
+			fprintf(file,"	echo \"ERROR: no supported GPS receiver detected.\"\n");
 			fprintf(file,"fi\n\n");
 		}
 		
@@ -305,17 +312,21 @@ int write_rc_local(int num)
 			fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
 			fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
 			if ((daemon_flags & HOSTAPD_FLAG) == HOSTAPD_FLAG)
+			{
+				fprintf(file,"echo \"Starting hostapd...\"\n");
 				fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
+			}
 			if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 			{
 				fprintf(file,"	sleep 1\n");
+				fprintf(file,"echo \"Starting dhcpd...\"\n");
 				fprintf(file,"	dhcpd -4 -q\n");
 			}
 			if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
 			{
 				fprintf(file,"	sleep 1\n");
+				fprintf(file,"echo \"Starting servald...\"\n");
 				fprintf(file,"  servald start\n");
-				
 			}
 			fprintf(file,"fi\n\n");
 		}
@@ -325,6 +336,7 @@ int write_rc_local(int num)
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+	fprintf(file,"echo \"Flushing ip tables...\"\n");
 	fprintf(file,"iptables -F\n");
 	fprintf(file,"iptables -X\n");
 	fprintf(file,"iptables -t nat -F\n");
@@ -334,6 +346,7 @@ int write_rc_local(int num)
 	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 	if (num == 1)
 	{
+		fprintf(file,"echo \"Adding default gateway route...\"\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
 		fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
 		fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
@@ -344,7 +357,11 @@ int write_rc_local(int num)
 		fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
 		fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
 		if (num != 1)
+		{
+			fprintf(file,"echo \"Adding default gateway route...\"\n");
 			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
+		}
+		fprintf(file,"echo \"Adding node routes...\"\n");
 		for (i = 1; i < 255; i++)
 		{
 			if (i == num)
