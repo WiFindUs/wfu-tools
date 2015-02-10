@@ -336,6 +336,7 @@ int write_rc_local(int num)
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+	
 	fprintf(file,"echo \"Flushing ip tables...\"\n");
 	fprintf(file,"iptables -F\n");
 	fprintf(file,"iptables -X\n");
@@ -361,6 +362,8 @@ int write_rc_local(int num)
 			fprintf(file,"	echo \"Adding default gateway route...\"\n");
 			fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
 		}
+
+		
 		fprintf(file,"	echo \"Adding node routes...\"\n");
 		for (i = 1; i < 255; i++)
 		{
@@ -446,6 +449,10 @@ int write_network_interfaces(int num)
 	fprintf(file,"iface eth0 inet static\n");
 	fprintf(file,"        address 192.168.1.%d\n",min(100+num,254));
 	fprintf(file,"        netmask 255.255.255.0\n");
+	fprintf(file,"        network 192.168.1.0\n");
+	fprintf(file,"        broadcast 192.168.1.255\n");
+	if (num == 1)
+		fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
 	fprintf(file,"iface wlan0 inet manual\n");
