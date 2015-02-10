@@ -344,7 +344,7 @@ int write_rc_local(int num)
 			if ((daemon_flags & DHCPD_FLAG) == DHCPD_FLAG)
 			{
 				fprintf(file,"	sleep 1\n");
-				fprintf(file,"echo \"Starting dhcpd...\"\n");
+				fprintf(file,"	echo \"Starting dhcpd...\"\n");
 				fprintf(file,"	dhcpd -4 -q\n");
 			}
 			if ((daemon_flags & SERVALD_FLAG) == SERVALD_FLAG)
