@@ -30,7 +30,7 @@ fi
 
 if [ -f "/home/pi/.wfu-brain-id" ]; then
 	BRAIN_ID=`cat /home/pi/.wfu-brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
-	BRAIN_ID=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
+	BRAIN_ID=`printf "%x\n" $BRAIN_ID | tr '[:lower:]' '[:upper:]'`
 fi
 if [ -f "/home/pi/.wfu-brain-num" ]; then
 	BRAIN_NUM=`cat /home/pi/.wfu-brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
