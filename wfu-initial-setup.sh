@@ -49,7 +49,7 @@ fi
 # INTRO
 #===============================================================
 clear
-echo -e "${STYLE_TITLE}          WIFINDUS BRAIN INITIAL SETUP          ${STYLE_NONE}"
+echo -e "${STYLE_TITLE}        WIFINDUS BRAIN #$WFU_BRAIN_ID_HEX INITIAL SETUP        ${STYLE_NONE}"
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
 read_number "this unit's ID #" 1 254
@@ -117,7 +117,7 @@ sudo apt-get -y dist-upgrade
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
 libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-autoconf2.13 firmware-ralink ntp
+firmware-ralink ntp
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
@@ -159,14 +159,6 @@ if [ ! -f "/usr/local/sbin/servald" ]; then
 	if [ ! -f /usr/local/sbin/servald ]; then
 		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
-fi
-
-if [ ! -f "$SRC_DIR/jsawk" ]; then
-	echo -e "  ${STYLE_HEADING}Downloading jsawk...${STYLE_NONE}"
-	sudo curl -L http://github.com/micha/jsawk/raw/master/jsawk > "$SRC_DIR/jsawk"
-	sudo chmod 755 "$SRC_DIR/jsawk"
-	sudo rm -f /usr/bin/jsawk
-	sudo ln -s "$SRC_DIR/jsawk" /usr/bin/jsawk
 fi
 
 if [ ! -d "WFU_TOOLS_DIR" ]; then
