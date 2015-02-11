@@ -7,13 +7,15 @@
 #===============================================================
 
 COUNT=$1
-if [ -z $COUNT ] || [ $COUNT -le 0 ]; then
-	COUNT=1
+if [ -z $COUNT ]; then
+	COUNT=5
+elif [ $COUNT -eq 0 ]; then
+	exit 0
 fi
 
 SLEEP=$2
 if [ -z $SLEEP ] || [ $SLEEP -lt 0 ]; then
-	SLEEP=0
+	SLEEP=1
 fi
 
 SERVER=$3
@@ -26,7 +28,8 @@ if [ -z "$PORT" ]; then
 	PORT="33339"
 fi
 
-for i in `seq 1 $COUNT`; do
+COUNTER=0
+while true; do
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
 	PACKET="EYE|NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP|num:$WFU_BRAIN_NUM"
@@ -86,6 +89,12 @@ for i in `seq 1 $COUNT`; do
 
 	echo "$PACKET";
 	echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
+	
+	COUNTER=`expr $COUNTER + 1`
+	if [ $COUNT -gt 0 ] && [ $COUNTER -ge $COUNT ]; then
+		break
+	fi
+	
 	sleep $SLEEP
 done
 exit 0
