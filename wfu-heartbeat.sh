@@ -26,7 +26,7 @@ if [ -z "$PORT" ]; then
 	PORT="33339"
 fi
 
-	for i in {1..$COUNT}; do
+for i in `seq 1 $COUNT`; do
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
 	PACKET="EYE|NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP|num:$WFU_BRAIN_NUM"
