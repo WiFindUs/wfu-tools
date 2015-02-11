@@ -7,12 +7,12 @@
 #===============================================================
 
 COUNT=$1
-if [ -z $COUNT -o $COUNT -le 0 ]; then
+if [ -z $COUNT ] || [ $COUNT -le 0 ]; then
 	COUNT=1
 fi
 
 SLEEP=$2
-if [ -z $SLEEP -o $SLEEP -lt 0 ]; then
+if [ -z $SLEEP ] || [ $SLEEP -lt 0 ]; then
 	SLEEP=0
 fi
 
@@ -43,13 +43,13 @@ fi
 				ACC_X=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epx\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
 				ACC_Y=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epy\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
 				
-				if [ -z "$ACC_X" -a -n "$ACC_Y" ]; then
+				if [ -z "$ACC_X" ] || [ -n "$ACC_Y" ]; then
 					ACC_X="$ACC_Y"
-				elif [ -z "$ACC_Y" -a -n "$ACC_X" ]; then
+				elif [ -z "$ACC_Y" ] || [ -n "$ACC_X" ]; then
 					ACC_Y="$ACC_X"
 				fi
 				
-				if [ -n "$ACC_Y" -a -n "$ACC_X" ]; then
+				if [ -n "$ACC_Y" ] || [ -n "$ACC_X" ]; then
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 				fi
 			fi
