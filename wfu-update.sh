@@ -33,13 +33,6 @@ if [ -d wfu-tools ]; then
 	sudo rm -f .gitattributes
 	sudo rm -f .gitignore
 	
-	echo -e "  ${STYLE_HEADING}getting jsawk...${STYLE_NONE}"
-	sudo rm -f /usr/bin/jsawk
-	rm -f jsawk
-	curl -L http://github.com/micha/jsawk/raw/master/jsawk > jsawk
-	sudo chmod 755 jsawk
-	sudo ln -s "$WFU_TOOLS_DIR/jsawk" /usr/bin/jsawk
-
 	echo -e "  ${STYLE_HEADING}making wfu-setup...${STYLE_NONE}"
 	make
 	if [ -f wfu-setup ]; then
