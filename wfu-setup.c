@@ -27,12 +27,13 @@
 #define DHCPD_FLAG 2
 #define HOSTAPD_FLAG 4
 #define GPSD_FLAG 8
-#define ALL_FLAGS 15
+#define HEARTBEAT_FLAG 16
+#define ALL_FLAGS 31
 
 int quietMode = FALSE;
 int noWireless = FALSE;
 int adhocMode = FALSE;
-int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG;
+int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG | HEARTBEAT_FLAG;
 int apChannel = 0;
 char sbuf[256], nbuf[256], opString[50];
 char hex[3];
@@ -358,6 +359,12 @@ int write_rc_local(int num)
 				fprintf(file,"  servald start\n");
 			}
 			fprintf(file,"fi\n\n");
+		}
+		
+		if ((daemon_flags & HEARTBEAT_FLAG) == HEARTBEAT_FLAG)
+		{
+			fprintf(file,"echo \"Launching heartbeat packet thread...\"\n");
+			fprintf(file,"wfu-heartbeat -1 15 192.168.1.2 &\n\n");
 		}
 	}
 	
