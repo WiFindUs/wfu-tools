@@ -41,14 +41,17 @@ if [ -n "$GPSD" ]; then
 fi
 
 if [ -n "$LONGITUDE" ]; then
+	LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
 	PACKET="$PACKET|long:$LONGITUDE"
 fi
 
 if [ -n "$LATITUDE" ]; then
+	LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
 	PACKET="$PACKET|lat:$LATITUDE"
 fi
 
 if [ -n "$ALTITUDE" ]; then
+	ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
 	PACKET="$PACKET|alt:$ALTITUDE"
 fi
 
@@ -61,5 +64,17 @@ if [ -n "$SATCOUNT" ]; then
 fi
 
 echo "$PACKET";
+
+SERVER=$1
+if [ -z "$SERVER" ]; then
+	SERVER="wfu-server"
+fi
+
+PORT=$2
+if [ -z "$PORT" ]; then
+	PORT="33339"
+fi
+
+echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
 
 exit 0
