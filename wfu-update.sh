@@ -52,6 +52,9 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /usr/bin/wfu-setup
 		sudo ln -s "$WFU_TOOLS_DIR/wfu-setup" /usr/bin/wfu-setup
 		
+		sudo rm -f /usr/bin/wfu-heartbeat
+		sudo ln -s "$WFU_TOOLS_DIR/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
+		
 		cd ..
 		if [ -d wfu-tools-old ]; then
 			echo -e "  ${STYLE_HEADING}deleting tools backup...${STYLE_NONE}"
