@@ -29,8 +29,7 @@ if [ -n "$GPSD" ]; then
 			fi
 			
 			if [ -n "$ACC_Y" -a -n "$ACC_X" ]; then
-				ACCURACY=`expr $ACC_X + $ACC_Y`
-				ACCURACY=`expr $ACCURACY / 2.0`
+				ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 			fi
 		fi
 		
