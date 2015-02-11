@@ -78,7 +78,7 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -W or --nowireless: disable auto-configuration of wireless interfaces.\n");
 	fprintf(stderr, "  -ch[1-11]: explicitly set hostapd wireless channel\n");
 	fprintf(stderr, "Remarks:\n");
-	fprintf(stderr, "  If the number is omitted, the value stored in %s/wfu-brain-num\n\
+	fprintf(stderr, "  If the number is omitted, the value stored in %s/.wfu-brain-num\n\
 will be used (if it exists; otherwise 1 is used as default).\n",SRC_DIR);
 }
 
@@ -107,7 +107,7 @@ scripts needed to set up the mesh network.\n\n"
     /etc/default/isc-dhcp-server\n\
     /etc/network/interfaces\n\
     /usr/local/etc/serval/serval.conf\n\
-    %s/wfu-brain-num\n\n",
+    %s/.wfu-brain-num\n\n",
 	SRC_DIR
 	);
 		
@@ -583,7 +583,7 @@ int write_brain_num(int num)
 {
 	FILE* file = NULL;
 
-	sprintf(nbuf,"%s/wfu-brain-num",SRC_DIR);
+	sprintf(nbuf,"%s/.wfu-brain-num",SRC_DIR);
 	if (!quietMode)
 		printf("%s %s...",opString,nbuf);
 	
@@ -596,7 +596,7 @@ int write_brain_num(int num)
 	fprintf(file,"%d\n",num);
 	fclose(file);
 	
-	sprintf(sbuf,"WFU_BRAIN_NUM=`cat \"%s/wfu-brain-num\" | grep -i -E -o \"([1-2][0-9]{2}|[1-9][0-9]|[1-9])\"`; export WFU_BRAIN_NUM", SRC_DIR);
+	sprintf(sbuf,"WFU_BRAIN_NUM=`cat \"%s/.wfu-brain-num\" | grep -i -E -o \"([1-2][0-9]{2}|[1-9][0-9]|[1-9])\"`; export WFU_BRAIN_NUM", SRC_DIR);
 	system(sbuf);
 	
 	if (!quietMode)
@@ -610,7 +610,7 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	sprintf(nbuf,"%s/wfu-brain-num",SRC_DIR);
+	sprintf(nbuf,"%s/.wfu-brain-num",SRC_DIR);
 	if ((file = fopen(nbuf,"r")) == NULL)
 		return FALSE;
 	fscanf(file, "%d", &val);

@@ -55,7 +55,7 @@ echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${ST
 read_number "this unit's ID #" 1 254
 WFU_BRAIN_NUM=$?
 export WFU_BRAIN_NUM
-echo "$WFU_BRAIN_NUM" > "$PI_HOME/wfu-brain-num"
+echo "$WFU_BRAIN_NUM" > "$PI_HOME/.wfu-brain-num"
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
@@ -214,6 +214,11 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
+
+echo -e "${STYLE_HEADING}Writing $PI_HOME/.bash_aliases...${STYLE_NONE}"
+sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r\"' > $PI_HOME/.bash_aliases"
+sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_aliases"
+sudo chmod 755 "$PI_HOME/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
