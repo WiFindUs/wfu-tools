@@ -221,10 +221,6 @@ sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r\"' > $PI_HOME/.bash
 sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_aliases"
 sudo chmod 755 "$PI_HOME/.bash_aliases"
 
-echo -e "${STYLE_HEADING}Writing /etc/cron.d/heartbeat...${STYLE_NONE}"
-sudo sh -c 'echo "* * * * * pi bash $WFU_TOOLS_DIR/wfu-heartbeat.sh" > /etc/cron.d/heartbeat'
-sudo sh -c 'echo "" >> /etc/cron.d/heartbeat'
-
 echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
 sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
 sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
