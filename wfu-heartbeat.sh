@@ -6,20 +6,32 @@
 #   Sends a heartbeat packet back to the server.
 #===============================================================
 
-if [ `ps aux | grep -m 1 gpsd` = "" ]; then
-	echo -e "${STYLE_ERROR}error: gpsd not running.${STYLE_NONE}"
-	exit 1
+TIMESTAMP=`date +"%s"`
+TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
+PACKET="EYE|NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP|num:$WFU_BRAIN_NUM"
+
+GPSD=`ps aux | grep -m 1 "gpsd"`
+if [ -n "$GPSD" ]; then
+	GPSDATA=`gpspipe -w -n 10 | grep -m 1 "lat"`
+	if [ -n "$GPSDATA" ]; then
+		LONGITUDE=`echo "$GPSDATA" | grep -E -o -i -m 1 "\"lon\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
+		LATITUDE=`echo "$GPSDATA" | grep -E -o -i -m 1 "\"lat\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
+		ALTITUDE=`echo "$GPSDATA" | grep -E -o -i -m 1 "\"alt\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
+	fi
 fi
 
-$GPSDATA=`gpspipe -w -n 10 | grep -m 1 lat`
-if [ $GPSDATA = "" ]; then
-	echo -e "${STYLE_ERROR}error: no gps positioning data was returned.${STYLE_NONE}"
-	exit 2
+if [ -n "$LONGITUDE" ]; then
+	PACKET="$PACKET|long:$LONGITUDE"
 fi
 
-echo $GPSDATA;
+if [ -n "$LATITUDE" ]; then
+	PACKET="$PACKET|lat:$LATITUDE"
+fi
+
+if [ -n "$ALTITUDE" ]; then
+	PACKET="$PACKET|alt:$ALTITUDE"
+fi
+
+echo "$PACKET";
 
 exit 0
-
-
- #| jsawk 'return this.lat'
