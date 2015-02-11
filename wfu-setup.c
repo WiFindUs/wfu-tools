@@ -360,12 +360,6 @@ int write_rc_local(int num)
 			}
 			fprintf(file,"fi\n\n");
 		}
-		
-		if ((daemon_flags & HEARTBEAT_FLAG) == HEARTBEAT_FLAG)
-		{
-			fprintf(file,"echo \"Launching heartbeat packet thread...\"\n");
-			fprintf(file,"wfu-heartbeat -1 15 192.168.1.2 &\n\n");
-		}
 	}
 	
 	fprintf(file,"#############################################################\n");
@@ -408,6 +402,15 @@ int write_rc_local(int num)
 			fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
 		}
 		fprintf(file,"fi\n\n");
+	}
+	
+	if ((daemon_flags & HEARTBEAT_FLAG) == HEARTBEAT_FLAG)
+	{
+		fprintf(file,"#############################################################\n");
+		fprintf(file,"### Heartbeat\n");
+		fprintf(file,"#############################################################\n");
+		fprintf(file,"echo \"Launching heartbeat packet process...\"\n");
+		fprintf(file,"wfu-heartbeat -1 15 &\n\n");
 	}
 
 	fprintf(file,"\nexit 0\n");
