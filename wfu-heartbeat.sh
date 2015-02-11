@@ -28,11 +28,22 @@ if [ -z "$PORT" ]; then
 	PORT="33339"
 fi
 
+if [ -f "/home/pi/.wfu-brain-id" ]; then
+	BRAIN_ID=`cat /home/pi/.wfu-brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+	BRAIN_ID=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
+fi
+if [ -f "/home/pi/.wfu-brain-num" ]; then
+	BRAIN_NUM=`cat /home/pi/.wfu-brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+fi
+if [ -z $BRAIN_ID ] || [ -z $BRAIN_NUM ]; then
+	exit 1
+fi
+
 COUNTER=0
 while true; do
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
-	PACKET="EYE|NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP|num:$WFU_BRAIN_NUM"
+	PACKET="EYE|NODE|$BRAIN_ID|$TIMESTAMP|num:$BRAIN_NUM"
 
 	GPSD=`ps aux | grep -m 1 "gpsd"`
 	if [ -n "$GPSD" ]; then
@@ -87,7 +98,6 @@ while true; do
 		PACKET="$PACKET|sats:$SATCOUNT"
 	fi
 
-	echo "$PACKET";
 	echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
 	
 	COUNTER=`expr $COUNTER + 1`
