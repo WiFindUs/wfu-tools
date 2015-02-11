@@ -41,7 +41,7 @@ if [ -z "$PI_HOME" ]; then
 		echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
 		echo -e "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
 		echo -e "fi" >> "$PROFILE_CONFIG"
-		echo -e "" >> "$PROFILE_CONFIG"
+		echo -e "TZ='Australia/Adelaide'; export TZ" >> "$PROFILE_CONFIG"
 	fi
 fi
 
@@ -117,7 +117,7 @@ sudo apt-get -y dist-upgrade
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
 libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-mercurial autoconf2.13 firmware-ralink
+autoconf2.13 firmware-ralink ntp
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
@@ -228,6 +228,13 @@ echo -e "${STYLE_HEADING}Writing $PI_HOME/.bash_aliases...${STYLE_NONE}"
 sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r\"' > $PI_HOME/.bash_aliases"
 sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_aliases"
 sudo chmod 755 "$PI_HOME/.bash_aliases"
+
+echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
+sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
+sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
+sudo sh -c 'echo "fudge  127.127.28.0 time1 0.183 refid NMEA" >> /etc/ntp.conf'
+sudo sh -c 'echo "server 127.127.28.1 minpoll 4 prefer" >> /etc/ntp.conf'
+sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
