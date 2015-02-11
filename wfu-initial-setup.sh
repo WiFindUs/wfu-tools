@@ -222,7 +222,7 @@ sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_al
 sudo chmod 755 "$PI_HOME/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Writing /etc/cron.d/heartbeat...${STYLE_NONE}"
-sudo sh -c 'echo "* * * * *  wfu-heartbeat" > /etc/cron.d/heartbeat'
+sudo sh -c 'echo "* * * * * pi bash $WFU_TOOLS_DIR/wfu-heartbeat.sh" > /etc/cron.d/heartbeat'
 sudo sh -c 'echo "" >> /etc/cron.d/heartbeat'
 
 echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
