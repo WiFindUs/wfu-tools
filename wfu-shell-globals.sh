@@ -12,16 +12,26 @@ SRC_DIR="$PI_HOME/src"
 WFU_TOOLS_DIR="$SRC_DIR/wfu-tools"
 WFU_REPOSITORY="git://github.com/WiFindUs/wfu-tools.git"
 if [ -f "$PI_HOME/.wfu-brain-num" ]; then
-	WFU_BRAIN_NUM=`cat $PI_HOME/.wfu-brain-num | grep -i -E -o "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+	WFU_BRAIN_NUM=`cat $PI_HOME/.wfu-brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
 else
 	WFU_BRAIN_NUM="0"
 fi
+if [ -f "$PI_HOME/.wfu-brain-id" ]; then
+	WFU_BRAIN_ID=`cat $PI_HOME/.wfu-brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+else
+	WFU_BRAIN_ID=$RANDOM
+	echo $WFU_BRAIN_ID > "$PI_HOME/.wfu-brain-id"
+fi
+WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
 
 export PI_HOME
 export SRC_DIR
 export WFU_TOOLS_DIR
 export WFU_REPOSITORY
 export WFU_BRAIN_NUM
+export WFU_BRAIN_ID
+export WFU_BRAIN_ID_HEX
+
 
 if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS_DIR/wfu-shell-styles.sh"
@@ -33,7 +43,7 @@ read_plaintext ()
 	VALUE=""
 	while [ $VALID -eq 0 ]
 	do
-		while [ "$VALUE" = "" ]
+		while [ -z "$VALUE" ]
 		do
 			echo -n -e "  ${STYLE_PROMPT}Enter $1:${STYLE_NONE} " >&2
 			read VALUE
@@ -66,12 +76,12 @@ export -f read_plaintext
 read_number ()
 {
 	VALUE=""
-	while [ "$VALUE" = "" ]
+	while [ -z "$VALUE" ]
 	do
 		echo -n -e "  ${STYLE_PROMPT}Enter $1 ($2-$3):${STYLE_NONE} "
 		read VALUE
 
-		if [ "$VALUE" != "" ]; then
+		if [ -n "$VALUE" ]; then
 			while [ $VALUE -lt $2 ] || [ $VALUE -gt $3 ]
 			do
 				echo -e "    ${STYLE_ERROR}outside range!${STYLE_NONE}"
@@ -94,7 +104,7 @@ read_password ()
 		PASS=""
 		SECONDPASS=""
 
-		while [ "$PASS" = "" ]
+		while [ -z "$PASS" ]
 		do
 			echo -n -e "  ${STYLE_PROMPT}Enter $1 ($2-$3 chars):${STYLE_NONE} " >&2
 			stty -echo
@@ -104,7 +114,7 @@ read_password ()
 			PASS=`echo "$PASS" | sed 's/^ *//;s/ *$//'`
 		done
 
-		while [ "$SECONDPASS" = "" ]
+		while [ -z "$SECONDPASS" ]
 		do
 			echo -n -e "  ${STYLE_PROMPT}Re-enter password:${STYLE_NONE} " >&2
 			stty -echo
