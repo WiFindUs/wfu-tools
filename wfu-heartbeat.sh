@@ -44,8 +44,39 @@ while true; do
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
 	PACKET="EYE|NODE|$BRAIN_ID|$TIMESTAMP|num:$BRAIN_NUM"
+	
+	MESH_0=`ifconfig | grep -m 1 "^mesh0"`
+	if [ -n "$MESH_0" ]; then
+		PACKET="$PACKET|mp:1"
+	else
+		PACKET="$PACKET|mp:0"
+	fi
+	
+	MESH_PEERS=`sudo iw dev mesh0 mpath dump | grep mesh0`
+	if [ -n "$MESH_0" ]; then
+		MESH_PEER_LIST="peers:"
+		while read -r PEER; do
+			echo $PEER
+		done <<< "$MESH_PEERS"
+	fi
+	
+	HOSTAPD=`pstree | grep -m 1 -o "hostapd"`
+	AP_0=`ifconfig | grep -m 1 "^ap0"`
+	MON_AP_0=`ifconfig | grep -m 1 "^mon.ap0"`
+	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ] && [ -n "$MON_AP_0" ]; then
+		PACKET="$PACKET|ap:1"
+	else
+		PACKET="$PACKET|ap:0"
+	fi
+	
+	DHCPD=`pstree | grep -m 1 -o "dhcpd"`
+	if [ -n "$DHCPD" ]; then
+		PACKET="$PACKET|dhcp:1"
+	else
+		PACKET="$PACKET|dhcp:0"
+	fi	
 
-	GPSD=`ps aux | grep -m 1 "gpsd"`
+	GPSD=`pstree | grep -m 1 -o "gpsd"`
 	if [ -n "$GPSD" ]; then
 		GPS_DATA=`gpspipe -w -n 6`
 		if [ -n "$GPS_DATA" ]; then
@@ -73,6 +104,9 @@ while true; do
 				SATCOUNT=`echo "$SKY_DATA" | grep -E -m 1 -o "\"satellites\":\[.*\]" | grep -o -P "{.*?\"used\":true.*?}" | wc -l`
 			fi
 		fi
+		PACKET="$PACKET|gpsd:1"
+	else
+		PACKET="$PACKET|gpsd:0"
 	fi
 
 	if [ -n "$LONGITUDE" ]; then
@@ -98,6 +132,7 @@ while true; do
 		PACKET="$PACKET|sats:$SATCOUNT"
 	fi
 
+	echo "$PACKET"
 	echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
 	
 	COUNTER=`expr $COUNTER + 1`
