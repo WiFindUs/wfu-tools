@@ -147,7 +147,6 @@ while true; do
 		PACKET="$PACKET|sats:$SATCOUNT"
 	fi
 
-	echo "$PACKET"
 	echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
 	
 	COUNTER=`expr $COUNTER + 1`
