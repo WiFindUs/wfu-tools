@@ -275,7 +275,7 @@ int write_rc_local(int num)
 	
 	fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 	fprintf(file,"	echo \"Bringing ap0 up...\"\n");
-	fprintf(file,"	ifconfig ap0 up\n");editrc
+	fprintf(file,"	ifconfig ap0 up\n");
 	fprintf(file,"	ifconfig ap0 172.16.%d.1\n",num);
 	fprintf(file,"	ifconfig ap0 netmask 255.255.255.0\n");
 
