@@ -32,7 +32,6 @@
 
 int quietMode = FALSE;
 int noWireless = FALSE;
-int adhocMode = FALSE;
 int daemon_flags = DHCPD_FLAG | HOSTAPD_FLAG | GPSD_FLAG | HEARTBEAT_FLAG;
 int apChannel = 0;
 char sbuf[256], nbuf[256], opString[50];
@@ -71,7 +70,6 @@ void print_usage(char * argv0)
 	fprintf(stderr, "  -s or --shutdown: auto halt after completion.\n");
 	fprintf(stderr, "  -h or --help: print full description only.\n");
 	fprintf(stderr, "  -q or --quiet: quiet mode (no text output).\n");
-	fprintf(stderr, "  -a or --adhoc: use ad-hoc mode instead of mesh-point.\n");
 	fprintf(stderr, "  -S or --servald: enable serval auto-start.\n");
 	fprintf(stderr, "  -D or --nodhcpd: disable dhcpd auto-start.\n");
 	fprintf(stderr, "  -H or --nohostapd: disable hostapd auto-start.\n");
@@ -280,7 +278,7 @@ int write_rc_local(int num)
 		
 		fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
 		fprintf(file,"	echo \"Creating mesh0 interface on $MESH_PHY...\"\n");
-		fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type %s\n",(adhocMode ? "ibss" : "mp mesh_id wifindus_mesh"));
+		fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type mp mesh_id wifindus_mesh\n");
 		fprintf(file,"fi\n\n");
 		
 		fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
@@ -300,15 +298,6 @@ int write_rc_local(int num)
 		fprintf(file,"	echo \"Bringing ap0 up...\"\n");
 		fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
 		fprintf(file,"fi\n\n");
-		
-		if (adhocMode)
-		{
-			fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
-			fprintf(file,"	echo \"joining ad-hoc network on mesh0...\"\n");
-			fprintf(file,"	sleep 1\n");
-			fprintf(file,"	iw dev mesh0 ibss join wifindus_mesh 2412 key 0:PWbDq39QQ8632\n");
-			fprintf(file,"fi\n\n");
-		}
 	}
 		
 	if (daemon_flags > 0)
@@ -664,8 +653,6 @@ int main(int argc, char **argv)
 			daemon_flags &= ~GPSD_FLAG;
 		else if (strcmp(argv[i],"-W") == 0 || strcmp(argv[i],"--nowireless") == 0)
 			noWireless = TRUE;
-		else if (strcmp(argv[i],"-a") == 0 || strcmp(argv[i],"--adhoc") == 0)
-			adhocMode = TRUE;
 		else if (strncmp(argv[i],"-ch", 3) == 0 && strlen(argv[i]) > 3)
 			apChannel = atoi(argv[i]+3);
 		else
