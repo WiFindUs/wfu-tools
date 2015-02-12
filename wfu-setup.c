@@ -269,7 +269,6 @@ int write_rc_local(int num)
 	fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
 	fprintf(file,"	echo \"Bringing mesh0 up...\"\n");
 	fprintf(file,"	ifconfig mesh0 up\n");
-	//fprintf(file,"	sleep 3\n\n");
 	fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
 	fprintf(file,"fi\n\n");
 	
@@ -305,6 +304,7 @@ int write_rc_local(int num)
 	fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
 	fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
 	fprintf(file,"	echo \"Starting hostapd...\"\n");
+	fprintf(file,"	sleep 3\n");
 	fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
 	fprintf(file,"	sleep 1\n");
 	fprintf(file,"	echo \"Starting dhcpd...\"\n");
@@ -343,16 +343,16 @@ int write_rc_local(int num)
 	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
 	//add new rules
 	fprintf(file,"echo \"Adding firewall rules...\"\n");
-	fprintf(file,"iptables -A INPUT -i lo -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -i lo -j ACCEPT\n"); //internal loopback
 	fprintf(file,"iptables -A INPUT -j ACCEPT -m state --state ESTABLISHED,RELATED\n");
-	fprintf(file,"iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p tcp --sport 9418 -m state --state NEW -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p udp --sport 53 -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT\n");
-	fprintf(file,"iptables -A INPUT -p udp --dport 123 -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT\n"); //ssh
+	fprintf(file,"iptables -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT\n"); //http
+	fprintf(file,"iptables -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT\n"); //https
+	fprintf(file,"iptables -A INPUT -p tcp --sport 9418 -m state --state NEW -j ACCEPT\n"); //git
+	fprintf(file,"iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT\n"); //ping
+	fprintf(file,"iptables -A INPUT -p udp --sport 53 -j ACCEPT\n"); //dns
+	fprintf(file,"iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT\n"); //wifindus
+	fprintf(file,"iptables -A INPUT -p udp --dport 123 -j ACCEPT\n"); //ntp
 	//NAT on node 1
 	if (num == 1)
 		fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\n");

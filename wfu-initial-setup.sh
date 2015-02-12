@@ -71,7 +71,7 @@ xinit lightdm lxde* obconf openbox gtk* libgtk* alsa* netsurf-gtk \
 libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
 lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
 scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
-poppler* ^python* parted libvorbis* libv41* libsamplerate* \
+poppler* parted libvorbis* libv41* libsamplerate* \
 penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
@@ -219,8 +219,6 @@ sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
 sudo sh -c 'echo "fudge  127.127.28.0 time1 0.183 refid NMEA" >> /etc/ntp.conf'
 sudo sh -c 'echo "server 127.127.28.1 minpoll 4 prefer" >> /etc/ntp.conf'
 sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
-
-
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
