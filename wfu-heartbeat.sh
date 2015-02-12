@@ -57,24 +57,21 @@ while true; do
 		MS="[0-9A-Za-z]{1,2}"
 		MAC="$MS[:]$MS[:]$MS[:]$MS[:]$MS[:]($MS)"
 		REGEX="($MAC) +($MAC) +mesh0"
+		MESH_PEER_LIST=""
 		while read -r PEER; do
 			if [[ $PEER =~ $REGEX ]]; then
-				echo "${BASH_REMATCH[1]} ==== ${BASH_REMATCH[2]}"
-				if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
+				if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[3]}" ]; then
 					NEW_PEER=`echo "${BASH_REMATCH[1]}" | cut -d':' -f6`
-					echo $NEW_PEER
 					NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
-					echo $NEW_PEER
 					if [ -n "$MESH_PEER_LIST" ]; then
 						MESH_PEER_LIST="${MESH_PEER_LIST},"
 					fi
 					MESH_PEER_LIST="${MESH_PEER_LIST}$NEW_PEER"
-					echo $MESH_PEER_LIST
 				fi
 			fi
 		done <<< "$MESH_PEERS"
 		if [ -n "$MESH_PEER_LIST" ]; then
-			PACKET="$PACKET|peers:$MESH_PEER_LIST"
+			PACKET="$PACKET|mpl:$MESH_PEER_LIST"
 		fi
 	fi
 	
