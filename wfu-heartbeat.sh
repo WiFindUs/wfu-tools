@@ -53,9 +53,12 @@ while true; do
 	fi
 	
 	MESH_PEERS=`sudo iw dev mesh0 mpath dump | grep mesh0`
-	if [ -n "$MESH_0" ]; then
+	if [ -n "$MESH_PEERS" ]; then
+		MS="[0-9A-Za-z]{1,2}"
+		MAC="$MS[:]$MS[:]$MS[:]$MS[:]$MS[:]($MS)"
+		REGEX="($MAC) +($MAC) +mesh0"
 		while read -r PEER; do
-			if [[ $PEER =~ "^((?:[0-9A-Z]{2}:?){6}) +((?:[0-9A-Z]{2}:?){6}) +mesh0" ]]; then
+			if [[ $PEER =~ $REGEX ]]; then
 				echo "${BASH_REMATCH[1]} ==== ${BASH_REMATCH[2]}"
 				if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
 					NEW_PEER=`echo "${BASH_REMATCH[1]}" | cut -d':' -f6`
