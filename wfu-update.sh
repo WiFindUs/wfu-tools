@@ -23,7 +23,6 @@ echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
 git clone --depth 1 -q $WFU_REPOSITORY
 if [ -d wfu-tools ]; then
 	cd wfu-tools
-	sudo rm -f rebuild-rpi-servald.sh
 	sudo rm -f rebuild-rpi-kernel.sh
 	sudo rm -f record-sdcard-image.sh
 	sudo rm -f README.md

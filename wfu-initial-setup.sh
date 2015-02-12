@@ -150,17 +150,6 @@ if [ ! -f /lib/firmware/htc_7010.fw ]; then
 	fi
 fi
 
-if [ ! -f "/usr/local/sbin/servald" ]; then
-	echo -e "${STYLE_HEADING}Downloading serval daemon...${STYLE_NONE}"
-	sudo mkdir -p /usr/local/etc/serval
-	sudo mkdir -p /usr/local/var/run/serval
-	sudo mkdir -p /usr/local/var/log/serval
-	sudo wget -O /usr/local/sbin/servald http://www.wifindus.com/downloads/servald
-	if [ ! -f /usr/local/sbin/servald ]; then
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-	fi
-fi
-
 if [ ! -d "WFU_TOOLS_DIR" ]; then
 	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
 	cd "$SRC_DIR"
@@ -220,6 +209,9 @@ echo -e "${STYLE_HEADING}Writing $PI_HOME/.bash_aliases...${STYLE_NONE}"
 sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r\"' > $PI_HOME/.bash_aliases"
 sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_aliases"
 sudo chmod 755 "$PI_HOME/.bash_aliases"
+
+echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
+sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
 
 echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
 sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'

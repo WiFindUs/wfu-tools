@@ -9,7 +9,6 @@
 echo -e "${STYLE_HEADING}Performing SD card imaging-prep operations...${STYLE_NONE}"
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
-rm -rf "$SRC_DIR/serval-dna"
 rm -rf "$SRC_DIR/wfu-tools/.git"
 rm -f "$SRC_DIR/wfu-tools/.git*"
 rm -f "$PI_HOME/*.log"
@@ -27,7 +26,4 @@ sudo sfill -f -ll -z /
 
 echo -e "  ${STYLE_HEADING}deleting logs...${STYLE_NONE}"
 sudo rm `find /var/log -type f`
-if [ -d "/usr/local/var/log/serval" ]; then
-	sudo rm -f "/usr/local/var/log/serval/*.log"
-fi
 echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"
