@@ -315,21 +315,17 @@ int write_rc_local(int num)
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
-	//set up routes
+	fprintf(file,"	echo \"Configuring default gateway route...\"\n");
+	fprintf(file,"ip route del 192.168.1.0/24 dev eth0\n");
+	fprintf(file,"ip route add 0.0.0.0/0 via %s\n",num == 1 ? "192.168.1.254" : "10.1.0.1");
 	fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
 	fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
-	if (num != 1)
-	{
-		//fprintf(file,"	echo \"Adding default gateway route...\"\n");
-		//fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1\n");
-	}
-	//mesh routing
-	fprintf(file,"	echo \"Adding node routes...\"\n");
+	fprintf(file,"	echo \"Configuring mesh node routes...\"\n");
 	for (i = 1; i < 255; i++)
 	{
 		if (i == num)
 			continue;
-		//fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
+		fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
 	}
 	fprintf(file,"fi\n\n");
 	
@@ -356,16 +352,10 @@ int write_rc_local(int num)
 	fprintf(file,"iptables -A INPUT -p udp --sport 53 -j ACCEPT\n");
 	fprintf(file,"iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT\n");
 	fprintf(file,"iptables -A INPUT -p udp --dport 123 -j ACCEPT\n");
-	//rules for node 1's NAT
+	//NAT on node 1
 	if (num == 1)
-	{
 		fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\n");
-		//iptables -t nat -A POSTROUTING -i eth0 -j ACCEPT
-		//fprintf(file,"iptables -t nat -A POSTROUTING -i eth0-d 192.168.1.0/24 -j ACCEPT\n");
-		//fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
-	}
-	fprintf(file,"fi\n");
-	
+	fprintf(file,"\n");
 	
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Heartbeat\n");
@@ -445,8 +435,6 @@ int write_network_interfaces(int num)
 	fprintf(file,"        netmask 255.255.255.0\n");
 	fprintf(file,"        network 192.168.1.0\n");
 	fprintf(file,"        broadcast 192.168.1.255\n");
-	if (num == 1)
-		fprintf(file,"        gateway 192.168.1.254\n");
 	fprintf(file,"\n");
 
 	fprintf(file,"iface wlan0 inet manual\n");
