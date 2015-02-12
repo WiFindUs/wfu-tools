@@ -275,10 +275,10 @@ int write_rc_local(int num)
 	
 	fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
 	fprintf(file,"	echo \"Bringing ap0 up...\"\n");
-	//fprintf(file,"	ifconfig ap0 172.16.%d.1 netmask 255.255.255.0 up\n",num);	
-	fprintf(file,"	ifconfig ap0 up\n");
-	//fprintf(file,"	sleep 3\n\n");
-	fprintf(file,"	ifconfig ap0 172.16.%d.1\n",num);	
+	fprintf(file,"	ifconfig ap0 up\n");editrc
+	fprintf(file,"	ifconfig ap0 172.16.%d.1\n",num);
+	fprintf(file,"	ifconfig ap0 netmask 255.255.255.0\n");
+
 	fprintf(file,"fi\n\n");
 		
 	fprintf(file,"#############################################################\n");
@@ -315,33 +315,13 @@ int write_rc_local(int num)
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
-	//flush existing rules
-	/*
-	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
-	fprintf(file,"echo \"Flushing ip tables...\"\n");
-	fprintf(file,"iptables -F\n");
-	fprintf(file,"iptables -X\n");
-	fprintf(file,"iptables -t nat -F\n");
-	fprintf(file,"iptables -P INPUT ACCEPT\n");
-	fprintf(file,"iptables -P FORWARD ACCEPT\n");
-	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
-	//fprintf(file,"sudo ip route del 192.168.1.0/24 dev eth0\n");
-	//port forwarding (net sharing) for node 1
-	if (num == 1)
-	{
-		fprintf(file,"echo \"Adding default gateway route...\"\n");
-		fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
-		fprintf(file,"iptables -t nat -A POSTROUTING -d 0.0.0.0/0 -j MASQUERADE\n");
-		//fprintf(file,"ip route add 0.0.0.0/0 via 192.168.1.254\n");
-	}
-	//port forwarding (net sharing) for node 2-254
+	//set up routes
 	fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
 	fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
 	if (num != 1)
 	{
-		fprintf(file,"	echo \"Adding default gateway route...\"\n");
-		fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1\n");
+		//fprintf(file,"	echo \"Adding default gateway route...\"\n");
+		//fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1\n");
 	}
 	//mesh routing
 	fprintf(file,"	echo \"Adding node routes...\"\n");
@@ -349,10 +329,43 @@ int write_rc_local(int num)
 	{
 		if (i == num)
 			continue;
-		fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
+		//fprintf(file,"	ip route add 172.16.%d.0/24 via 10.1.0.%d dev mesh0\n",i,i);
 	}
 	fprintf(file,"fi\n\n");
-	*/
+	
+	fprintf(file,"#############################################################\n");
+	fprintf(file,"### NAT\n");
+	fprintf(file,"#############################################################\n");
+	//enable forwarding
+	fprintf(file,"echo 1 > /proc/sys/net/ipv4/ip_forward\n");
+	//flush existing rules
+	fprintf(file,"echo \"Clearing ip tables...\"\n");
+	fprintf(file,"iptables -F\n");
+	fprintf(file,"iptables -P INPUT DROP\n");
+	fprintf(file,"iptables -P FORWARD ACCEPT\n");
+	fprintf(file,"iptables -P OUTPUT ACCEPT\n");
+	//add new rules
+	fprintf(file,"echo \"Adding firewall rules...\"\n");
+	fprintf(file,"iptables -A INPUT -i lo -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -j ACCEPT -m state --state ESTABLISHED,RELATED\n");
+	fprintf(file,"iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p tcp --sport 9418 -m state --state NEW -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p udp --sport 53 -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT\n");
+	fprintf(file,"iptables -A INPUT -p udp --dport 123 -j ACCEPT\n");
+	//rules for node 1's NAT
+	if (num == 1)
+	{
+		fprintf(file,"iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\n");
+		//iptables -t nat -A POSTROUTING -i eth0 -j ACCEPT
+		//fprintf(file,"iptables -t nat -A POSTROUTING -i eth0-d 192.168.1.0/24 -j ACCEPT\n");
+		//fprintf(file,"iptables -t nat -A POSTROUTING -d 192.168.1.0/24 -j ACCEPT\n");
+	}
+	fprintf(file,"fi\n");
+	
 	
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Heartbeat\n");
@@ -470,8 +483,8 @@ int write_dhcpd(int num)
 	fprintf(file,"  option routers 172.16.%d.1;\n",num);
 	fprintf(file,"  option subnet-mask 255.255.255.0;\n");
 	fprintf(file,"  option broadcast-address 172.16.%d.255;\n",num);
+	fprintf(file,"  option domain-name-servers 8.8.8.8, 8.8.4.4;\n");
 	fprintf(file,"}\n");
-
 
 	fclose(file);
 	qprintf(" [ok]\n");
