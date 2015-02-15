@@ -12,6 +12,9 @@ fi
 if [ -z $WFU_TOOLS ]; then
 	WFU_TOOLS="$WFU_HOME/wfu-tools"
 fi
+if [ -z $WFU_TOOLS_REPO ]; then
+	WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
+fi
 cd $WFU_HOME
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
@@ -26,7 +29,7 @@ if [ -d wfu-tools ]; then
 fi
 
 echo -e "  ${STYLE_HEADING}cloning...${STYLE_NONE}"
-git clone --depth 1 -q $WFU_REPOSITORY
+git clone --depth 1 -q $WFU_TOOLS_REPO
 if [ -d wfu-tools ]; then
 	cd wfu-tools
 	sudo rm -f rebuild-rpi-kernel.sh
