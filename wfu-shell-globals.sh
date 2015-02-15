@@ -24,7 +24,7 @@ fi
 if [ -f "$WFU_HOME/.brain-id" ]; then
 	WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
 fi
-if [ -z "$WFU_BRAIN_NUM" ]; then
+if [ -z "$WFU_BRAIN_ID" ]; then
 	WFU_BRAIN_ID=$RANDOM
 	echo $WFU_BRAIN_ID > "$WFU_HOME/.brain-id"
 fi
