@@ -2,16 +2,16 @@
 #===============================================================
 # File: wfu-preimage-purge.sh
 # Author: Mark Gillard
-# Target environment: Raspbian
+# Target environment: Debian/Raspbain Nodes
 # Description:
 #   Disk operations to make a recorded SD Card image smaller.
 #===============================================================
 echo -e "${STYLE_HEADING}Performing SD card imaging-prep operations...${STYLE_NONE}"
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
-rm -rf "$SRC_DIR/wfu-tools/.git"
-rm -f "$SRC_DIR/wfu-tools/.git*"
-rm -f "$PI_HOME/*.log"
+rm -rf "$WFU_TOOLS/.git"
+rm -f "$WFU_TOOLS/.git*"
+rm -f "~/*.log"
 
 echo -e "  ${STYLE_HEADING}removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge

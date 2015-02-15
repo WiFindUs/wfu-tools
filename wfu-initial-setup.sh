@@ -2,28 +2,30 @@
 #===============================================================
 # File: wfu-initial-setup.sh
 # Author: Mark Gillard
-# Target environment: Raspbian
+# Target environment: Debian/Raspbian Nodes
 # Description:
-#   Sets up a fresh Rasbian install for use as a wfu-brain unit.
+#   Sets up a fresh install for use as a brain unit.
 #
 # Remarks:
 #   This script is intended to be the very next thing
-#   you do on a fresh install of Raspbian after cloning
-#	wfu-tools to /home/pi/src/wfu-tools.
+#   you do on a fresh install of linux after cloning
+#	wfu-tools to /usr/local/wifindus.
 #===============================================================
 
 #===============================================================
 # ENVIRONMENT
 #===============================================================
-if [ -z "$PI_HOME" ]; then
-	echo -e "\$PI_HOME not detected. loading scripts and altering .profile..."
-	PI_HOME="/home/pi"
-	export PI_HOME
+if [ -z "$WFU_HOME" ]; then
+	echo -e "\$WFU_HOME not detected. loading scripts and altering .profile..."
+	WFU_HOME="/usr/local/wifindus"
+	WFU_TOOLS="$WFU_HOME/wfu-tools"
+	export WFU_HOME
+	export WFU_TOOLS
 	
-	cd "$PI_HOME/src/wfu-tools"
+	cd "$WFU_TOOLS"
 	sudo chmod 755 *.sh wfu-setup
 	
-	IMPORT_SCRIPT="$PI_HOME/src/wfu-tools/wfu-shell-globals.sh"
+	IMPORT_SCRIPT="$WFU_TOOLS/wfu-shell-globals.sh"
 	if [ -f "$IMPORT_SCRIPT" ]; then
 		source "$IMPORT_SCRIPT"
 	else
@@ -31,7 +33,7 @@ if [ -z "$PI_HOME" ]; then
 		exit 1
 	fi
 	
-	PROFILE_CONFIG="$PI_HOME/.profile"
+	PROFILE_CONFIG="~/.profile"
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
 	if  [ "$HAYSTACK" == "" ]; then
 		echo -e "" >> "$PROFILE_CONFIG"
@@ -55,7 +57,7 @@ echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${ST
 read_number "this unit's ID #" 1 254
 WFU_BRAIN_NUM=$?
 export WFU_BRAIN_NUM
-echo "$WFU_BRAIN_NUM" > "$PI_HOME/.wfu-brain-num"
+echo "$WFU_BRAIN_NUM" > "$WFU_HOME/.brain-num"
 PASSWORD=`read_password "a password for the 'pi' user" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
@@ -82,7 +84,7 @@ echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 
 echo -e "${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
-cd "$PI_HOME"
+cd ~
 sudo rm -f ocr_pi.png
 sudo rm -f /lib/modules.bak
 sudo rm -rf /var/lib/apt/list
@@ -150,11 +152,11 @@ if [ ! -f /lib/firmware/htc_7010.fw ]; then
 	fi
 fi
 
-if [ ! -d "WFU_TOOLS_DIR" ]; then
+if [ ! -d "$WFU_TOOLS" ]; then
 	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
-	cd "$SRC_DIR"
-	git clone --depth 1 $WFU_REPOSITORY
-	cd "WFU_TOOLS_DIR"
+	cd "$WFU_HOME"
+	git clone --depth 1 $WFU_TOOLS_REPO
+	cd "$WFU_TOOLS"
 	sudo rm -rf .git
 	sudo rm -f .gitattributes
 	sudo rm -f .gitignore
@@ -205,10 +207,10 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
-echo -e "${STYLE_HEADING}Writing $PI_HOME/.bash_aliases...${STYLE_NONE}"
-sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r\"' > $PI_HOME/.bash_aliases"
-sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $PI_HOME/.bash_aliases"
-sudo chmod 755 "$PI_HOME/.bash_aliases"
+echo -e "${STYLE_HEADING}Writing ~/.bash_aliases...${STYLE_NONE}"
+echo 'alias wusr="wfu-update; sudo wfu-setup -r"' > ~/.bash_aliases
+echo 'alias editrc="sudo nano /etc/rc.local"' >> ~/.bash_aliases
+sudo chmod 755 "~/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'

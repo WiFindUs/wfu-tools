@@ -2,7 +2,6 @@
 #===============================================================
 # File: wfu-shell-styles.sh
 # Author: Mark Gillard
-# Target environment: Raspbian
 # Description:
 #   Pretty colours.
 #===============================================================

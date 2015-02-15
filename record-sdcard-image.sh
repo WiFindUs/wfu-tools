@@ -2,7 +2,7 @@
 #===============================================================
 # File: record-sdcard-image.sh
 # Author: Mark Gillard
-# Target environment: Debian/Unix
+# Target environment: Debian PC
 # Description:
 #   Helper script for recording/zipping new images.
 #===============================================================

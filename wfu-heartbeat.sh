@@ -2,48 +2,67 @@
 #===============================================================
 # File: wfu-heartbeat.sh
 # Author: Mark Gillard
+# Target environment: Debian/Raspbian Nodes
 # Description:
 #   Sends a heartbeat packet back to the server.
 #===============================================================
 
+# environment
+if [ -z $WFU_HOME ]; then
+	WFU_HOME="/usr/local/wifindus"
+fi
+if [ -z $WFU_BRAIN_NUM ]; then
+	WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+fi
+if [ -z $WFU_BRAIN_ID ]; then
+	WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+fi
+if [ -z $WFU_BRAIN_ID_HEX ]; then
+	WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
+fi
+
+# parameters
 COUNT=$1
+if [ -z $COUNT ] && [ -f "$WFU_HOME/.heartbeat-count" ]; then
+	COUNT=`cat $WFU_HOME/.heartbeat-count | grep -E -o -m 1 "[-+]?[0-9]+"`
+fi
 if [ -z $COUNT ]; then
 	COUNT=5
-elif [ $COUNT -eq 0 ]; then
+fi
+if [ $COUNT -eq 0 ]; then
 	exit 0
 fi
 
 SLEEP=$2
+if [ -z $SLEEP ] && [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
+	SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[-+]?[0-9]+"`
+fi
 if [ -z $SLEEP ] || [ $SLEEP -lt 0 ]; then
 	SLEEP=1
 fi
 
 SERVER=$3
-if [ -z "$SERVER" ]; then
+if [ -z $SERVER ] && [ -f "$WFU_HOME/.heartbeat-server" ]; then
+	SERVER=`cat $WFU_HOME/.heartbeat-server`
+fi
+if [ -z $SERVER ]; then
 	SERVER="wfu-server"
 fi
 
 PORT=$4
-if [ -z "$PORT" ]; then
-	PORT="33339"
+if [ -z $PORT ] && [ -f "$WFU_HOME/.heartbeat-port" ]; then
+	PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
+fi
+if [ -z "$PORT" ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
+	PORT=33339
 fi
 
-if [ -f "/home/pi/.wfu-brain-id" ]; then
-	BRAIN_ID=`cat /home/pi/.wfu-brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
-	BRAIN_ID=`printf "%x\n" $BRAIN_ID | tr '[:lower:]' '[:upper:]'`
-fi
-if [ -f "/home/pi/.wfu-brain-num" ]; then
-	BRAIN_NUM=`cat /home/pi/.wfu-brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
-fi
-if [ -z $BRAIN_ID ] || [ -z $BRAIN_NUM ]; then
-	exit 1
-fi
-
+# loop
 COUNTER=0
 while true; do
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
-	PACKET="EYE|NODE|$BRAIN_ID|$TIMESTAMP|num:$BRAIN_NUM"
+	PACKET="EYE{NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP{num:$WFU_BRAIN_NUM"
 	
 	MESH_0=`ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
@@ -93,6 +112,7 @@ while true; do
 
 	GPSD=`pstree | grep -m 1 -o "gpsd"`
 	if [ -n "$GPSD" ]; then
+		PACKET="$PACKET|gps:1"
 		GPS_DATA=`gpspipe -w -n 6`
 		if [ -n "$GPS_DATA" ]; then
 			TPV_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"TPV\""`
@@ -103,6 +123,21 @@ while true; do
 				ACC_X=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epx\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
 				ACC_Y=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epy\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
 				
+				if [ -n "$LONGITUDE" ]; then
+					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
+					PACKET="$PACKET|long:$LONGITUDE"
+				fi
+
+				if [ -n "$LATITUDE" ]; then
+					LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
+					PACKET="$PACKET|lat:$LATITUDE"
+				fi
+
+				if [ -n "$ALTITUDE" ]; then
+					ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+					PACKET="$PACKET|alt:$ALTITUDE"
+				fi
+				
 				if [ -z "$ACC_X" ] || [ -n "$ACC_Y" ]; then
 					ACC_X="$ACC_Y"
 				elif [ -z "$ACC_Y" ] || [ -n "$ACC_X" ]; then
@@ -111,43 +146,26 @@ while true; do
 				
 				if [ -n "$ACC_Y" ] || [ -n "$ACC_X" ]; then
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
+					if [ -n "$ACCURACY" ]; then
+						PACKET="$PACKET|acc:$ACCURACY"
+					fi
 				fi
 			fi
 			
 			SKY_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"SKY\""`
 			if [ -n "$SKY_DATA" ]; then
 				SATCOUNT=`echo "$SKY_DATA" | grep -E -m 1 -o "\"satellites\":\[.*\]" | grep -o -P "{.*?\"used\":true.*?}" | wc -l`
+				
+				if [ -n "$SATCOUNT" ]; then
+					PACKET="$PACKET|sats:$SATCOUNT"
+				fi
 			fi
 		fi
-		PACKET="$PACKET|gpsd:1"
 	else
-		PACKET="$PACKET|gpsd:0"
+		PACKET="$PACKET|gps:0"
 	fi
 
-	if [ -n "$LONGITUDE" ]; then
-		LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
-		PACKET="$PACKET|long:$LONGITUDE"
-	fi
-
-	if [ -n "$LATITUDE" ]; then
-		LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
-		PACKET="$PACKET|lat:$LATITUDE"
-	fi
-
-	if [ -n "$ALTITUDE" ]; then
-		ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
-		PACKET="$PACKET|alt:$ALTITUDE"
-	fi
-
-	if [ -n "$ACCURACY" ]; then
-		PACKET="$PACKET|acc:$ACCURACY"
-	fi
-
-	if [ -n "$SATCOUNT" ]; then
-		PACKET="$PACKET|sats:$SATCOUNT"
-	fi
-
-	echo "$PACKET" > "/dev/udp/$SERVER/$PORT"
+	echo "$PACKET}}" > "/dev/udp/$SERVER/$PORT"
 	
 	COUNTER=`expr $COUNTER + 1`
 	if [ $COUNT -gt 0 ] && [ $COUNTER -ge $COUNT ]; then

@@ -2,39 +2,46 @@
 #===============================================================
 # File: wfu-shell-globals.sh
 # Author: Mark Gillard
-# Target environment: Raspbian
+# Target environment: Debian/Raspbian Nodes
 # Description:
 #   Adds some global stuff to the shell environment
 #===============================================================
 
-PI_HOME="/home/pi"
-SRC_DIR="$PI_HOME/src"
-WFU_TOOLS_DIR="$SRC_DIR/wfu-tools"
-WFU_REPOSITORY="git://github.com/WiFindUs/wfu-tools.git"
-if [ -f "$PI_HOME/.wfu-brain-num" ]; then
-	WFU_BRAIN_NUM=`cat $PI_HOME/.wfu-brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
-else
-	WFU_BRAIN_NUM="0"
+WFU_HOME="/usr/local/wifindus"
+WFU_TOOLS="$WFU_HOME/wfu-tools"
+WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
+
+# brain number
+if [ -f "$WFU_HOME/.brain-num" ]; then
+	WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
 fi
-if [ -f "$PI_HOME/.wfu-brain-id" ]; then
-	WFU_BRAIN_ID=`cat $PI_HOME/.wfu-brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
-else
+if [ -z "$WFU_BRAIN_NUM" ]; then
+	WFU_BRAIN_NUM=0
+	echo $WFU_BRAIN_NUM > "$WFU_HOME/.brain-num"
+fi
+
+# brain id
+if [ -f "$WFU_HOME/.brain-id" ]; then
+	WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+fi
+if [ -z "$WFU_BRAIN_NUM" ]; then
 	WFU_BRAIN_ID=$RANDOM
-	echo $WFU_BRAIN_ID > "$PI_HOME/.wfu-brain-id"
+	echo $WFU_BRAIN_ID > "$WFU_HOME/.brain-id"
 fi
 WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
 
-export PI_HOME
-export SRC_DIR
-export WFU_TOOLS_DIR
-export WFU_REPOSITORY
+# exports
+export WFU_HOME
+export WFU_TOOLS
+export WFU_TOOLS_REPO
 export WFU_BRAIN_NUM
+export WFU_BRAIN_NUM_HEX
 export WFU_BRAIN_ID
 export WFU_BRAIN_ID_HEX
 
 
 if [ -z "$STYLE_MARKER" ]; then
-	source "$WFU_TOOLS_DIR/wfu-shell-styles.sh"
+	source "$WFU_TOOLS/wfu-shell-styles.sh"
 fi
 
 read_plaintext ()

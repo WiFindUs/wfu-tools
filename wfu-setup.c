@@ -1,9 +1,9 @@
 //===============================================================
 // File: wfu-setup.c
 // Author: Mark Gillard
-// Target environment: Raspbian
+// Target environment: Debian/Raspbian Nodes
 // Description:
-//   Sets the PI unit up according to it's ID number (1-254).
+//   Sets the brain unit up according to it's ID number (1-254).
 //===============================================================
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,12 +21,12 @@
 #define NULL 0
 #endif
 
-#define VERSION_STR "v1.4" 
-#define SRC_DIR "/home/pi" 
+#define VERSION_STR "v1.5" 
+#define WFU_HOME "/usr/local/wifindus" 
 
 int quietMode = FALSE;
 int apChannel = 0;
-char sbuf[256], nbuf[256], opString[50];
+char sbuf[256], nbuf[256];
 char hex[3];
 
 void qprintf(const char * format, ...)
@@ -71,8 +71,8 @@ void print_usage(char * argv0)
 	qprintf("  -q:  quiet mode (no text output).\n");
 	qprintf("  -ch[1-11]: explicitly set hostapd wireless channel\n");
 	qprintf("Remarks:\n");
-	qprintf("  If the number is omitted, the value stored in %s/.wfu-brain-num\n\
-will be used (if it exists; otherwise 1 is used as default).\n",SRC_DIR);
+	qprintf("  If the number is omitted, the value stored in %s/.brain-num\n\
+will be used (if it exists; otherwise 1 is used as default).\n",WFU_HOME);
 }
 
 void print_detailed_help(char * argv0)
@@ -95,8 +95,8 @@ scripts needed to set up the mesh network.\n\n"
     /etc/hostapd/hostapd.conf\n\
     /etc/dhcp/dhcpd.conf\n\
     /etc/network/interfaces\n\
-    %s/.wfu-brain-num\n\n",
-	SRC_DIR
+    %s/.brain-num\n\n",
+	WFU_HOME
 	);
 		
 	qprintf(
@@ -112,7 +112,7 @@ int write_hosts(int num)
 	int i;
 	
 	sprintf(nbuf,"/etc/hosts");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -125,9 +125,8 @@ int write_hosts(int num)
 	fprintf(file,"fe00::0 ip6-localnet\n");
 	fprintf(file,"ff00::0 ip6-mcastprefix\n");
 	fprintf(file,"ff02::1 ip6-allnodes\n");
-	fprintf(file,"ff02::2 ip6-allrouters\n\n");
-	fprintf(file,"192.168.1.1 wfu-server\n");
-	fprintf(file,"192.168.1.1 m-server\n");
+	fprintf(file,"ff02::2 ip6-allrouters\n");
+	fprintf(file,"192.168.1.1 wfu-server m-server\n\n");
 	
 	for (i = 1; i < 255; i++)
 	{
@@ -146,7 +145,7 @@ int write_hostname(int num)
 	FILE* file = NULL;
 
 	sprintf(nbuf,"/etc/hostname");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -166,7 +165,7 @@ int write_rc_local(int num)
 	int i;
 	
 	sprintf(nbuf,"/etc/rc.local");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -175,18 +174,18 @@ int write_rc_local(int num)
 
 	fprintf(file,"#! /bin/sh\n\n");
 	fprintf(file,"#############################################################\n");
-	fprintf(file,"### Enviroment Logging\n");
+	fprintf(file,"### Environment Logging\n");
 	fprintf(file,"#############################################################\n");
-	fprintf(file,"sudo rm -f /home/pi/*.log\n");
-	fprintf(file,"exec >/home/pi/rc.local.log 2>&1\n\n");
+	fprintf(file,"sudo rm -f ~/*.log\n");
+	fprintf(file,"exec >~/rc.local.log 2>&1\n\n");
 	fprintf(file,"#exec 1>&2\n");
 	fprintf(file,"#set -x\n");
 	fprintf(file,"DMESG=`dmesg 2>&1`\n");
-	fprintf(file,"echo -e \"$DMESG\" > /home/pi/dmesg_boot.log\n");
+	fprintf(file,"echo -e \"$DMESG\" > ~/dmesg_boot.log\n");
 	fprintf(file,"LSUSB=`lsusb 2>&1`\n");
-	fprintf(file,"echo -e \"$LSUSB\" > /home/pi/lsusb_boot.log\n");
+	fprintf(file,"echo -e \"$LSUSB\" > ~/lsusb_boot.log\n");
 	fprintf(file,"LSMOD=`lsmod 2>&1`\n");
-	fprintf(file,"echo -e \"$LSMOD\" > /home/pi/lsmod_boot.log\n\n");
+	fprintf(file,"echo -e \"$LSMOD\" > ~/lsmod_boot.log\n\n");
 	
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Mesh and AP\n");
@@ -377,7 +376,7 @@ int write_hostapd(int num)
 	FILE* file = NULL;
 	
 	sprintf(nbuf,"/etc/hostapd/hostapd.conf");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -420,7 +419,7 @@ int write_network_interfaces(int num)
 	FILE* file = NULL;
 	
 	sprintf(nbuf,"/etc/network/interfaces");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -454,7 +453,7 @@ int write_dhcpd(int num)
 	FILE* file = NULL;
 	
 	sprintf(nbuf,"/etc/dhcp/dhcpd.conf");
-	qprintf("%s %s...",opString,nbuf);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -485,9 +484,9 @@ int write_brain_num(int num)
 {
 	FILE* file = NULL;
 
-	sprintf(nbuf,"%s/.wfu-brain-num",SRC_DIR);
-	qprintf("%s %s...",opString,nbuf);
-	
+	//num, normal
+	sprintf(nbuf,"%s/.brain-num",WFU_HOME);
+	qprintf("Writing %s...",nbuf);
 	if ((file = fopen(nbuf,"w")) == NULL)
 	{
 		qprintf("error. are you root?\n");
@@ -495,10 +494,8 @@ int write_brain_num(int num)
 	}
 	fprintf(file,"%d\n",num);
 	fclose(file);
-	
-	sprintf(sbuf,"WFU_BRAIN_NUM=`cat \"%s/.wfu-brain-num\" | grep -i -E -o \"([1-2][0-9]{2}|[1-9][0-9]|[1-9])\"`; export WFU_BRAIN_NUM", SRC_DIR);
+	sprintf(sbuf,"WFU_BRAIN_NUM=%d; export WFU_BRAIN_NUM", num);
 	system(sbuf);
-	
 	qprintf(" [ok]\n");
 	
 	return TRUE;
@@ -509,7 +506,7 @@ int read_brain_num()
 	FILE* file = NULL;
 	int val = FALSE;
 	
-	sprintf(nbuf,"%s/.wfu-brain-num",SRC_DIR);
+	sprintf(nbuf,"%s/.brain-num",WFU_HOME);
 	if ((file = fopen(nbuf,"r")) == NULL)
 		return FALSE;
 	fscanf(file, "%d", &val);
@@ -551,8 +548,6 @@ int main(int argc, char **argv)
 				num = FALSE;
 		}
 	}
-	
-	strcpy(opString,"Writing");
 	
 	if (detailedHelpMode)
 	{

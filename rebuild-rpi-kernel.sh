@@ -2,7 +2,7 @@
 #===============================================================
 # File: rebuild-rpi-kernel
 # Author: Mark Gillard
-# Target environment: Debian/Unix
+# Target environment: Debian PC
 # Description:
 #   Helper script for compiling new kernels.
 #

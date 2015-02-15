@@ -6,12 +6,18 @@
 # Description:
 #   Re-clones, rebuilds and re-links local wfu tools.
 #===============================================================
-cd "$SRC_DIR"
+if [ -z $WFU_HOME ]; then
+	WFU_HOME="/usr/local/wifindus"
+fi
+if [ -z $WFU_TOOLS ]; then
+	WFU_TOOLS="$WFU_HOME/wfu-tools"
+fi
+cd $WFU_HOME
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
 if [ -d wfu-tools-old ]; then
 	echo -e "  ${STYLE_HEADING}deleting old tools backup...${STYLE_NONE}"
-	sudo rm -f -r wfu-tools-old
+	sudo rm -rf wfu-tools-old
 fi
 
 if [ -d wfu-tools ]; then
@@ -40,19 +46,19 @@ if [ -d wfu-tools ]; then
 		sudo chmod 755 wfu-setup
 		
 		sudo rm -f /usr/bin/wfu-initial-setup
-		sudo ln -s "$WFU_TOOLS_DIR/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
+		sudo ln -s "$WFU_TOOLS/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
 
 		sudo rm -f /usr/bin/wfu-update
-		sudo ln -s "$WFU_TOOLS_DIR/wfu-update.sh" /usr/bin/wfu-update
+		sudo ln -s "$WFU_TOOLS/wfu-update.sh" /usr/bin/wfu-update
 
 		sudo rm -f /usr/bin/wfu-preimage-purge
-		sudo ln -s "$WFU_TOOLS_DIR/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
+		sudo ln -s "$WFU_TOOLS/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
 
 		sudo rm -f /usr/bin/wfu-setup
-		sudo ln -s "$WFU_TOOLS_DIR/wfu-setup" /usr/bin/wfu-setup
+		sudo ln -s "$WFU_TOOLS/wfu-setup" /usr/bin/wfu-setup
 		
 		sudo rm -f /usr/bin/wfu-heartbeat
-		sudo ln -s "$WFU_TOOLS_DIR/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
+		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then
