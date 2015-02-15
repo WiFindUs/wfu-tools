@@ -35,7 +35,7 @@ if [ -z "$WFU_HOME" ]; then
 	
 	PROFILE_CONFIG="~/.profile"
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
-	if  [ "$HAYSTACK" == "" ]; then
+	if  [ -z "$HAYSTACK" ]; then
 		echo -e "" >> "$PROFILE_CONFIG"
 		echo -e "" >> "$PROFILE_CONFIG"
 		echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
