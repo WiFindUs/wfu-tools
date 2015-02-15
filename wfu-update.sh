@@ -8,12 +8,15 @@
 #===============================================================
 if [ -z $WFU_HOME ]; then
 	WFU_HOME="/usr/local/wifindus"
+	export WFU_HOME
 fi
 if [ -z $WFU_TOOLS ]; then
 	WFU_TOOLS="$WFU_HOME/wfu-tools"
+	export WFU_TOOLS
 fi
 if [ -z $WFU_TOOLS_REPO ]; then
 	WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
+	export WFU_TOOLS_REPO
 fi
 cd $WFU_HOME
 
