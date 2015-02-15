@@ -94,7 +94,7 @@ while true; do
 		fi
 	fi
 	
-	HOSTAPD=`pstree | grep -m 1 -o "hostapd"`
+	HOSTAPD=`pgrep -l hostapd`
 	AP_0=`ifconfig | grep -m 1 "^ap0"`
 	MON_AP_0=`ifconfig | grep -m 1 "^mon.ap0"`
 	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ] && [ -n "$MON_AP_0" ]; then
@@ -103,14 +103,14 @@ while true; do
 		PACKET="$PACKET|ap:0"
 	fi
 	
-	DHCPD=`pstree | grep -m 1 -o "dhcpd"`
+	DHCPD=`pgrep -l dhcpd`
 	if [ -n "$DHCPD" ]; then
 		PACKET="$PACKET|dhcp:1"
 	else
 		PACKET="$PACKET|dhcp:0"
 	fi	
 
-	GPSD=`pstree | grep -m 1 -o "gpsd"`
+	GPSD=`pgrep -l gpsd`
 	if [ -n "$GPSD" ]; then
 		PACKET="$PACKET|gps:1"
 		GPS_DATA=`gpspipe -w -n 6`
