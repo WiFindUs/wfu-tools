@@ -306,8 +306,13 @@ int write_rc_local(int num)
 	fprintf(file,"	sleep 3\n");
 	fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
 	fprintf(file,"	sleep 1\n");
-	fprintf(file,"	echo \"Starting dhcpd...\"\n");
-	fprintf(file,"	dhcpd -4 -q\n");
+	fprintf(file,"	HOSTAPD=`pgrep -l hostapd`\n");
+	fprintf(file,"	if [ -n \"$HOSTAPD\" ]; then\n");
+	fprintf(file,"		echo \"Starting dhcpd...\"\n");
+	fprintf(file,"		dhcpd -4 -q\n");
+	fprintf(file,"	else\n");
+	fprintf(file,"		echo \"ERROR: hostapd not running! Skipping dhcpd.\"\n");
+	fprintf(file,"	fi\n");
 	fprintf(file,"fi\n\n");
 
 	
