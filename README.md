@@ -24,8 +24,9 @@ SD Card Setup - GOING IN DRY
 5. Connect the Pi's ethernet port to a router or switch with internet connectivity.  
 6. Enter the following commands in the pi's terminal:  
 ```Shell
-    mkdir -p /home/pi/src  
-	cd /home/pi/src  
+	sudo mkdir -p /usr/local/wifindus
+	sudo chown $(id -u -n) /usr/local/wifindus
+	cd /usr/local/wifindus
 	git clone --depth 1 git://github.com/WiFindUs/wfu-tools  
 	sudo chmod 755 wfu-tools/*.sh  
 	wfu-tools/wfu-initial-setup.sh  
