@@ -210,6 +210,7 @@ sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/host
 echo -e "${STYLE_HEADING}Writing ~/.bash_aliases...${STYLE_NONE}"
 echo 'alias wusr="wfu-update; sudo wfu-setup -r"' > ~/.bash_aliases
 echo 'alias editrc="sudo nano /etc/rc.local"' >> ~/.bash_aliases
+echo 'alias cdtools="cd $WFU_TOOLS"' >> ~/.bash_aliases
 sudo chmod 755 "~/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
