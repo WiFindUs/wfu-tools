@@ -7,57 +7,73 @@
 #   Adds some global stuff to the shell environment
 #===============================================================
 
+# wfu globals
+if [ -z "$WFU_HOME" ]; then
+	WFU_HOME="/usr/local/wifindus"
+	export WFU_HOME
+fi
+if [ -z "$WFU_TOOLS" ]; then
+	WFU_TOOLS="$WFU_HOME/wfu-tools"
+	export WFU_TOOLS
+fi
+if [ -z "$WFU_TOOLS_REPO" ]; then
+	WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
+	export WFU_TOOLS_REPO
+fi
+
 # user globals
-CURRENT_USER=`id -u -n`
-CURRENT_HOME=`eval echo ~$CURRENT_USER`
+if [ -z "$CURRENT_USER" ]; then
+	CURRENT_USER=`id -u -n`
+	export CURRENT_USER
+fi
+if [ -z "$CURRENT_HOME" ]; then
+	CURRENT_HOME=`eval echo ~$CURRENT_USER`
+	export CURRENT_HOME
+fi
 
 # machine model
-MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
-if [ ! -f "$WFU_HOME/.machine-model" ]; then
-	echo $MACHINE_MODEL > "$WFU_HOME/.machine-model"
+if [ -z "$MACHINE_MODEL" ]; then
+	MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
+	export MACHINE_MODEL
 fi
-
-# wfu globals
-WFU_HOME="/usr/local/wifindus"
-WFU_TOOLS="$WFU_HOME/wfu-tools"
-WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
 
 # brain number
-if [ -f "$WFU_HOME/.brain-num" ]; then
-	WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
-fi
 if [ -z "$WFU_BRAIN_NUM" ]; then
-	WFU_BRAIN_NUM=0
-	echo $WFU_BRAIN_NUM > "$WFU_HOME/.brain-num"
+	if [ -f "$WFU_HOME/.brain-num" ]; then
+		WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+	fi
+	if [ -z "$WFU_BRAIN_NUM" ]; then
+		WFU_BRAIN_NUM=0
+		echo $WFU_BRAIN_NUM > "$WFU_HOME/.brain-num"
+	fi
+	export WFU_BRAIN_NUM
 fi
-WFU_BRAIN_NUM_HEX=`printf "%x\n" $WFU_BRAIN_NUM | tr '[:lower:]' '[:upper:]'`
+if [ -z "$WFU_BRAIN_NUM_HEX" ]; then
+	WFU_BRAIN_NUM_HEX=`printf "%x\n" $WFU_BRAIN_NUM | tr '[:lower:]' '[:upper:]'`
+	export WFU_BRAIN_NUM_HEX
+fi
 
 # brain id
-if [ -f "$WFU_HOME/.brain-id" ]; then
-	WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
-fi
 if [ -z "$WFU_BRAIN_ID" ]; then
-	WFU_BRAIN_ID=$RANDOM
-	echo $WFU_BRAIN_ID > "$WFU_HOME/.brain-id"
+	if [ -f "$WFU_HOME/.brain-id" ]; then
+		WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+	fi
+	if [ -z "$WFU_BRAIN_ID" ]; then
+		WFU_BRAIN_ID=$RANDOM
+		echo $WFU_BRAIN_ID > "$WFU_HOME/.brain-id"
+	fi
+	export WFU_BRAIN_ID
 fi
-WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
-
-# exports
-export CURRENT_USER
-export CURRENT_HOME
-export MACHINE_MODEL
-export WFU_HOME
-export WFU_TOOLS
-export WFU_TOOLS_REPO
-export WFU_BRAIN_NUM
-export WFU_BRAIN_NUM_HEX
-export WFU_BRAIN_ID
-export WFU_BRAIN_ID_HEX
+if [ -z "$WFU_BRAIN_ID_HEX" ]; then
+	WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
+	export WFU_BRAIN_ID_HEX
+fi
 
 if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS/wfu-shell-styles.sh"
 fi
 
+unset -f read_plaintext
 read_plaintext ()
 {
 	VALID=0
@@ -91,9 +107,9 @@ read_plaintext ()
 	done
 	echo $VALUE
 }
-
 export -f read_plaintext
 
+unset -f read_number
 read_number ()
 {
 	VALUE=""
@@ -113,9 +129,9 @@ read_number ()
 
 	return $VALUE
 }
-
 export -f read_number
 
+unset -f read_password
 read_password ()
 {
 	PASS=""
@@ -161,5 +177,4 @@ read_password ()
 	done
 	echo $PASS
 }
-
 export -f read_password
