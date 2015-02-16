@@ -92,7 +92,8 @@ penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
-udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant
+udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
+vim-common vim-tiny
 
 echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
@@ -131,14 +132,14 @@ sudo apt-get -y dist-upgrade
 
 if [ -n "$RASPBIAN" ]; then
 	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
-	sudo apt-get -y install rpi-update
+	sudo apt-get -y install rpi-update raspi-config
 	sudo rpi-update
 fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
 libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-firmware-ralink ntp bc
+firmware-ralink ntp bc nano
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
