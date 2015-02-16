@@ -47,7 +47,7 @@ if [ -z "$WFU_HOME" ]; then
 		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo"if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "fi" >> "$PROFILE_CONFIG"'
 		sudo sh -c "echo \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
