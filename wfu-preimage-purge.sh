@@ -7,18 +7,11 @@
 #   Disk operations to make a recorded SD Card image smaller.
 #===============================================================
 # environment
-if [ -z "$WFU_HOME" ]; then
-	WFU_HOME="/usr/local/wifindus"
-	WFU_TOOLS="$WFU_HOME/wfu-tools"
-	export WFU_HOME
-	export WFU_TOOLS
-	
-	IMPORT_SCRIPT="$WFU_TOOLS/wfu-shell-globals.sh"
-	if [ -f "$IMPORT_SCRIPT" ]; then
-		source "$IMPORT_SCRIPT"
-	else
-		exit 1
-	fi
+if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
+	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
+else
+	echo "could not find globals for current user. aborting."
+	exit 1
 fi
 
 echo -e "${STYLE_HEADING}Performing SD card imaging-prep operations...${STYLE_NONE}"
