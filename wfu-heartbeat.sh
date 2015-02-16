@@ -69,7 +69,7 @@ while true; do
 			MESH_PEER_LIST=""
 			while read -r PEER; do
 				if [[ $PEER =~ $REGEX ]]; then
-					if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[3]}" ]; then
+					if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
 						NEW_PEER=`echo "${BASH_REMATCH[1]}" | cut -d':' -f6`
 						NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
 						if [ -n "$MESH_PEER_LIST" ]; then
@@ -111,7 +111,7 @@ while true; do
 	GPSD=`pgrep -l gpsd`
 	if [ -n "$GPSD" ]; then
 		PACKET="$PACKET|gps:1"
-		GPS_DATA=`gpspipe -w -n 6`
+		GPS_DATA=`gpspipe -w -n 7`
 		if [ -n "$GPS_DATA" ]; then
 			TPV_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"TPV\""`
 			if [ -n "$TPV_DATA" ]; then

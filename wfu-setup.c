@@ -294,12 +294,12 @@ int write_rc_local(int num)
 	fprintf(file,"echo \"Checking for supported GPS module...\"\n");
 	fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
 	fprintf(file,"if [ -n \"$GPS_MODULE\" ]; then\n");
-	fprintf(file,"	echo \"MediaTek MT3328 detected ($GPS_MODULE). Looking for serial stream...\"\n");
+	fprintf(file,"	echo \"MediaTek MT3329 detected ($GPS_MODULE). Looking for serial stream...\"\n");
 	fprintf(file,"	GPS_STREAM=`echo -e \"$DMESG\" | grep -E -i -o \"ttyACM[0-9]+\"`\n");
 	fprintf(file,"	if [ -n \"$GPS_STREAM\" ]; then\n");
 	fprintf(file,"		GPS_STREAM=\"/dev/$GPS_STREAM\"\n");
 	fprintf(file,"		echo \"GPS serial stream detected ($GPS_STREAM). Launching gpsd...\"\n");
-	fprintf(file,"		stty -F \"$GPS_STREAM\" 38400\n");
+	//fprintf(file,"		stty -F \"$GPS_STREAM\" 38400\n");
 	fprintf(file,"		gpsd -n \"$GPS_STREAM\" -F /var/run/gpsd.sock\n");
 	fprintf(file,"	else\n");
 	fprintf(file,"		echo \"ERROR: No serial stream detected. Perhaps update firmware or drivers?\"\n");
