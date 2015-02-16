@@ -259,6 +259,14 @@ if [ ! -f "$CURRENT_HOME/.bash_aliases" ] || [ -z "$HAYSTACK" ]; then
 	sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
 fi
 
+HAYSTACK=`cat $CURRENT_HOME/.bashrc | grep -o -m 1 -E "bash_aliases"`
+if [ ! -f "$CURRENT_HOME/.bashrc" ] || [ -z "$HAYSTACK" ]; then
+	echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bashrc...${STYLE_NONE}"
+	sudo sh -c 'echo "if [ -f ~/.bash_aliases ]; then" >> $CURRENT_HOME/.bashrc'
+	sudo sh -c 'echo "    . ~/.bash_aliases" >> $CURRENT_HOME/.bashrc'
+	sudo sh -c 'echo "fi" >> $CURRENT_HOME/.bashrc'
+fi
+
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
 
