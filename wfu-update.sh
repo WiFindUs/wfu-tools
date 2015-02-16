@@ -18,6 +18,15 @@ if [ -z $WFU_TOOLS_REPO ]; then
 	WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
 	export WFU_TOOLS_REPO
 fi
+if [ -z $CURRENT_USER ]; then
+	CURRENT_USER=`id -u -n`
+	export CURRENT_USER
+fi
+if [ -z $CURRENT_HOME ]; then
+	CURRENT_HOME=`eval echo ~$CURRENT_USER`
+	export CURRENT_HOME
+fi
+
 cd $WFU_HOME
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
@@ -65,6 +74,12 @@ if [ -d wfu-tools ]; then
 		
 		sudo rm -f /usr/bin/wfu-heartbeat
 		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
+		
+		sudo rm -f "$CURRENT_HOME/.bashrc"
+		sudo mv .bashrc "$CURRENT_HOME/.bashrc"
+		
+		sudo rm -f "$CURRENT_HOME/.bash_aliases"
+		sudo mv .bashrc "$CURRENT_HOME/.bash_aliases"
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then

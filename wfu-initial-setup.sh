@@ -249,24 +249,6 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
-HAYSTACK=`cat $CURRENT_HOME/.bash_aliases | grep -o -m 1 -E "wusr"`
-if [ ! -f "$CURRENT_HOME/.bash_aliases" ] || [ -z "$HAYSTACK" ]; then
-	echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
-	sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' >> $CURRENT_HOME/.bash_aliases"
-	sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
-	sudo sh -c "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
-	sudo sh -c "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
-	sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
-fi
-
-HAYSTACK=`cat $CURRENT_HOME/.bashrc | grep -o -m 1 -E "bash_aliases"`
-if [ ! -f "$CURRENT_HOME/.bashrc" ] || [ -z "$HAYSTACK" ]; then
-	echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bashrc...${STYLE_NONE}"
-	sudo sh -c 'echo "if [ -f ~/.bash_aliases ]; then" >> $CURRENT_HOME/.bashrc'
-	sudo sh -c 'echo "    . ~/.bash_aliases" >> $CURRENT_HOME/.bashrc'
-	sudo sh -c 'echo "fi" >> $CURRENT_HOME/.bashrc'
-fi
-
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
 
