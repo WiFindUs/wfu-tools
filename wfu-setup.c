@@ -379,7 +379,7 @@ int write_rc_local(int num)
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo \"Launching heartbeat packet process...\"\n");
 	fprintf(file,"if [ \"$WFU_BRAIN_NUM\" -eq 1 ] || [ -z \"$MESH_0\" ]; then\n");
-	fprintf(file,"	wfu-heartbeat -1 15 &\n\n");
+	fprintf(file,"	wfu-heartbeat -1 &\n\n");
 	fprintf(file,"else\n");
 	fprintf(file,"	echo \"ERROR: heartbeat sends only when brain number == 1 OR mesh0 is present.\"\n");
 	fprintf(file,"fi\n\n");
