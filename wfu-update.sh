@@ -6,28 +6,21 @@
 # Description:
 #   Re-clones, rebuilds and re-links local wfu tools.
 #===============================================================
-if [ -z $WFU_HOME ]; then
+# environment
+if [ -z "$WFU_HOME" ]; then
 	WFU_HOME="/usr/local/wifindus"
-	export WFU_HOME
-fi
-if [ -z $WFU_TOOLS ]; then
 	WFU_TOOLS="$WFU_HOME/wfu-tools"
+	export WFU_HOME
 	export WFU_TOOLS
+	
+	IMPORT_SCRIPT="$WFU_TOOLS/wfu-shell-globals.sh"
+	if [ -f "$IMPORT_SCRIPT" ]; then
+		source "$IMPORT_SCRIPT"
+	else
+		exit 1
+	fi
 fi
-if [ -z $WFU_TOOLS_REPO ]; then
-	WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
-	export WFU_TOOLS_REPO
-fi
-if [ -z $CURRENT_USER ]; then
-	CURRENT_USER=`id -u -n`
-	export CURRENT_USER
-fi
-if [ -z $CURRENT_HOME ]; then
-	CURRENT_HOME=`eval echo ~$CURRENT_USER`
-	export CURRENT_HOME
-fi
-
-cd $WFU_HOME
+cd "$WFU_HOME"
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
 if [ -d wfu-tools-old ]; then

@@ -53,7 +53,6 @@ export WFU_BRAIN_NUM_HEX
 export WFU_BRAIN_ID
 export WFU_BRAIN_ID_HEX
 
-
 if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS/wfu-shell-styles.sh"
 fi

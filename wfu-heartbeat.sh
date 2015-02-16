@@ -8,21 +8,18 @@
 #===============================================================
 
 # environment
-if [ -z $WFU_HOME ]; then
+if [ -z "$WFU_HOME" ]; then
 	WFU_HOME="/usr/local/wifindus"
+	WFU_TOOLS="$WFU_HOME/wfu-tools"
 	export WFU_HOME
-fi
-if [ -z $WFU_BRAIN_NUM ]; then
-	WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
-	export WFU_BRAIN_NUM
-fi
-if [ -z $WFU_BRAIN_ID ]; then
-	WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
-	export WFU_BRAIN_ID
-fi
-if [ -z $WFU_BRAIN_ID_HEX ]; then
-	WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
-	export WFU_BRAIN_ID_HEX
+	export WFU_TOOLS
+	
+	IMPORT_SCRIPT="$WFU_TOOLS/wfu-shell-globals.sh"
+	if [ -f "$IMPORT_SCRIPT" ]; then
+		source "$IMPORT_SCRIPT"
+	else
+		exit 1
+	fi
 fi
 
 # parameters
@@ -105,8 +102,7 @@ while true; do
 	
 	HOSTAPD=`pgrep -l hostapd`
 	AP_0=`ifconfig | grep -m 1 "^ap0"`
-	MON_AP_0=`ifconfig | grep -m 1 "^mon.ap0"`
-	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ] && [ -n "$MON_AP_0" ]; then
+	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ]; then
 		PACKET="$PACKET|ap:1"
 	else
 		PACKET="$PACKET|ap:0"
