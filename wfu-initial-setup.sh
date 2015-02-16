@@ -41,7 +41,8 @@ if [ -z "$WFU_HOME" ]; then
 	fi
 	
 	PROFILE_CONFIG="$CURRENT_HOME/.profile"
-	if  [ -z `cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"` ]; then
+	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
+	if  [ -z "$HAYSTACK" ]; then
 		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
@@ -56,6 +57,7 @@ fi
 sudo mkdir -p "$WFU_HOME"
 sudo chown "$CURRENT_USER" "$WFU_HOME"
 sudo sh -c 'echo "$MACHINE_MODEL" > "$WFU_HOME/.machine-model"'
+RASPBIAN=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"`
 
 #===============================================================
 # INTRO
@@ -90,7 +92,7 @@ penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
-udhcpd xdg-utils libfreetype* bash-completion ncurses-term
+udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant
 
 echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
@@ -126,7 +128,8 @@ echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
 sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
 
-if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
+
+if [ -n "$RASPBIAN" ]; then
 	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
 	sudo apt-get -y install rpi-update
 	sudo rpi-update
@@ -151,7 +154,7 @@ sudo apt-get -y autoclean
 #===============================================================
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
-if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
+if [ -n "$RASPBIAN" ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
 		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 		sudo wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
@@ -191,7 +194,7 @@ sudo sh -c 'echo "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
 
-if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
+if [ -n "$RASPBIAN" ]; then
 	echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
 	sudo dphys-swapfile swapoff
 	sudo dphys-swapfile uninstall
@@ -227,7 +230,8 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
-if [ ! -f "$CURRENT_HOME/.bash_aliases" ] || [ -z `cat $CURRENT_HOME/.bash_aliases | grep -o -m 1 -E "wusr"` ]; then
+HAYSTACK=`cat $CURRENT_HOME/.bash_aliases | grep -o -m 1 -E "wusr"`
+if [ ! -f "$CURRENT_HOME/.bash_aliases" ] || [ -z "$HAYSTACK" ]; then
 	echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
 	sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' >> $CURRENT_HOME/.bash_aliases"
 	sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
@@ -239,7 +243,8 @@ fi
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
 
-if [ ! -f "/etc/ntp.conf" ] || [ -z `cat /etc/ntp.conf | grep -o -m 1 -E "NMEA"` ]; then
+HAYSTACK=`cat /etc/ntp.conf | grep -o -m 1 -E "NMEA"`
+if [ ! -f "/etc/ntp.conf" ] || [ -z "$HAYSTACK" ]; then
 	echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
 	sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
 	sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
