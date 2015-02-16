@@ -106,7 +106,7 @@ fi
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
 libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-firmware-ralink firmware-atheros ntp bc nano
+firmware-ralink firmware-atheros ntp bc nano psmisc
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
