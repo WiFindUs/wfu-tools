@@ -262,6 +262,15 @@ if [ ! -f "/etc/ntp.conf" ] || [ -z "$HAYSTACK" ]; then
 	sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
 fi
 
+HAYSTACK=`cat /etc/sysctl.conf | grep -o -m 1 -E "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1"`
+if [ -z "$HAYSTACK" ]; then
+	echo -e "${STYLE_HEADING}Updating /etc/sysctl.conf...${STYLE_NONE}"
+	sudo sh -c 'echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf'
+	sudo sh -c 'echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf'
+	sudo sh -c 'echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.conf'
+	sudo sh -c 'echo "net.ipv6.conf.eth0.disable_ipv6 = 1" >> /etc/sysctl.conf'
+fi
+
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
 
