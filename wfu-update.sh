@@ -75,11 +75,13 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /usr/bin/wfu-heartbeat
 		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
 		
+		echo -e "  ${STYLE_HEADING}updating .bash scripts...${STYLE_NONE}"
+				
 		sudo rm -f "$CURRENT_HOME/.bashrc"
-		sudo mv .bashrc "$CURRENT_HOME/.bashrc"
+		sudo mv -f .bashrc "$CURRENT_HOME"
 		
 		sudo rm -f "$CURRENT_HOME/.bash_aliases"
-		sudo mv .bashrc "$CURRENT_HOME/.bash_aliases"
+		sudo mv -f .bash_aliases "$CURRENT_HOME"
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then
