@@ -185,16 +185,16 @@ int write_rc_local(int num)
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Environment Logging\n");
 	fprintf(file,"#############################################################\n");
-	fprintf(file,"rm -f ~/*.log\n");
-	fprintf(file,"exec > ~/rc.local.log 2>&1\n\n");
+	fprintf(file,"rm -f $WFU_HOME/*.log\n");
+	fprintf(file,"exec > \"$WFU_HOME/rc.local.log\" 2>&1\n");
 	fprintf(file,"#exec 1>&2\n");
 	fprintf(file,"#set -x\n");
 	fprintf(file,"DMESG=`dmesg 2>&1`\n");
-	fprintf(file,"echo -e \"$DMESG\" > ~/dmesg_boot.log\n");
+	fprintf(file,"echo -e \"$DMESG\" > \"$WFU_HOME/dmesg_boot.log\"\n");
 	fprintf(file,"LSUSB=`lsusb 2>&1`\n");
-	fprintf(file,"echo -e \"$LSUSB\" > ~/lsusb_boot.log\n");
+	fprintf(file,"echo -e \"$LSUSB\" > \"$WFU_HOME/lsusb_boot.log\"\n");
 	fprintf(file,"LSMOD=`lsmod 2>&1`\n");
-	fprintf(file,"echo -e \"$LSMOD\" > ~/lsmod_boot.log\n\n");
+	fprintf(file,"echo -e \"$LSMOD\" > \"$WFU_HOME/lsmod_boot.log\"\n\n");
 	
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"### Mesh and AP\n");
