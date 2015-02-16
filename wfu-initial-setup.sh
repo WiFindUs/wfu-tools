@@ -78,6 +78,9 @@ echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few
 #===============================================================
 # PURGE PACKAGES
 #===============================================================
+echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
+sudo apt-get -y update
+
 echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
 sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
 wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
@@ -99,7 +102,7 @@ echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 
 echo -e "${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
-cd $CURRENT_HOME
+cd "$CURRENT_HOME"
 sudo rm -f ocr_pi.png
 sudo rm -f /lib/modules.bak
 sudo rm -rf /var/lib/apt/list
@@ -122,9 +125,6 @@ sudo rm -rf /usr/share/man/fr.*
 #===============================================================
 # UPDATE PACKAGES
 #===============================================================
-echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
-sudo apt-get -y update
-
 echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
 sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
@@ -173,18 +173,20 @@ if [ -n "$RASPBIAN" ]; then
 	fi
 fi
 
+#===============================================================
+# UPDATE TOOLCHAIN
+#===============================================================
 if [ ! -d "$WFU_TOOLS" ]; then
 	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
 	cd "$WFU_HOME"
 	git clone --depth 1 $WFU_TOOLS_REPO
-	cd "$WFU_TOOLS"
-	sudo rm -rf .git
-	sudo rm -f .gitattributes
-	sudo rm -f .gitignore
-	sudo chmod 755 *.sh
-	./wfu-update.sh
 fi
-
+cd "$WFU_TOOLS"
+sudo rm -rf .git
+sudo rm -f .gitattributes
+sudo rm -f .gitignore
+sudo chmod 755 *.sh
+./wfu-update.sh
 
 #===============================================================
 # CONFIGURATION
