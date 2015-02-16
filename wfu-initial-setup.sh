@@ -43,14 +43,14 @@ if [ -z "$WFU_HOME" ]; then
 	PROFILE_CONFIG="$CURRENT_HOME/.profile"
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
 	if  [ -z "$HAYSTACK" ]; then
-		sudo sh -c 'echo -e "" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "fi" >> "$PROFILE_CONFIG"'
-		sudo sh -c "echo -e \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo"if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo "fi" >> "$PROFILE_CONFIG"'
+		sudo sh -c "echo \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
 	fi
 fi
 
@@ -125,9 +125,13 @@ sudo apt-get -y update
 
 echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
 sudo apt-get -y upgrade
-
-echo -e "${STYLE_HEADING}Updating distro...${STYLE_NONE}"
 sudo apt-get -y dist-upgrade
+
+if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
+	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
+	sudo apt-get -y install rpi-update
+	sudo rpi-update
+fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
@@ -182,19 +186,21 @@ fi
 #===============================================================
 # CONFIGURATION
 #===============================================================
-echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
-
 echo -e "${STYLE_HEADING}Writing /etc/default/ifplugd...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
 sudo sh -c 'echo "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
 sudo sh -c 'echo "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
 
-echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
-sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
+if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
+	echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
+	sudo dphys-swapfile swapoff
+	sudo dphys-swapfile uninstall
+	sudo update-rc.d dphys-swapfile remove
+
+	echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
+	sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
+fi
 
 echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
 sudo sh -c 'echo "rt2800usb" > /etc/modules'
