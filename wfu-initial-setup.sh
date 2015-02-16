@@ -202,6 +202,7 @@ if [ -n "$RASPBIAN" ]; then
 	sudo dphys-swapfile swapoff
 	sudo dphys-swapfile uninstall
 	sudo update-rc.d dphys-swapfile remove
+	sudo apt-get -y remove dphys-swapfile
 
 	echo -e "${STYLE_HEADING}Writing /boot/cmdline.txt...${STYLE_NONE}"
 	sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
