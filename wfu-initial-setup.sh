@@ -187,6 +187,7 @@ sudo rm -f .gitattributes
 sudo rm -f .gitignore
 sudo chmod 755 *.sh
 ./wfu-update.sh
+cd "$WFU_TOOLS"
 
 #===============================================================
 # CONFIGURATION
@@ -208,13 +209,27 @@ if [ -n "$RASPBIAN" ]; then
 	sudo sh -c 'echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt'
 fi
 
-echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
-sudo sh -c 'echo "rt2800usb" > /etc/modules'
+HAYSTACK=`cat "/etc/modules" | grep -o -m 1 -E "rt2800usb"`
+if [ ! -f "/etc/modules" ] || [ -z "$HAYSTACK" ]; then
+	echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
+	sudo sh -c 'echo "rt2800usb" >> "/etc/modules"'
+fi
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
 sudo sh -c 'echo "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
 sudo sh -c 'echo "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist bluetooth" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_lirc_codec" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_mce_kbd_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_sony_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_sanyo_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_jvc_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_rc6_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_rc5_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ir_nec_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist gpio_ir_recv" >> /etc/modprobe.d/raspi-blacklist.conf'
+sudo sh -c 'echo "blacklist ipv6" >> /etc/modprobe.d/raspi-blacklist.conf'
 
 echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8188eu.conf...${STYLE_NONE}"
 sudo sh -c 'echo "options 8188eu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8188eu.conf'

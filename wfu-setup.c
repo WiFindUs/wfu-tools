@@ -176,6 +176,10 @@ int write_rc_local(int num)
 	fprintf(file,"if [ -z $WFU_HOME ]; then\n");
 	fprintf(file,"	WFU_HOME=\"/usr/local/wifindus\"\n");
 	fprintf(file,"	export WFU_HOME\n");
+	fprintf(file,"fi\n");
+	fprintf(file,"if [ -z $WFU_BRAIN_NUM ]; then\n");
+	fprintf(file,"	WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 \"([1-2][0-9]{2}|[1-9][0-9]|[1-9])\"`\n");
+	fprintf(file,"	export WFU_BRAIN_NUM\n");
 	fprintf(file,"fi\n\n");
 	
 	fprintf(file,"#############################################################\n");
@@ -230,7 +234,7 @@ int write_rc_local(int num)
 	fprintf(file,"	echo \"$AP_ADAPTER detected ($AP_PHY).\"\n");
 	fprintf(file,"else\n");
 	fprintf(file,"	echo \"ERROR: no supported AP adapters detected.\"\n");
-	fprintf(file,"	if [ \"$MESH_PHY\" != \"\" ]; then\n");
+	fprintf(file,"	if [ -n \"$MESH_PHY\" ]; then\n");
 	fprintf(file,"		echo \"FALLBACK: Will use $MESH_PHY for both interfaces.\"\n");
 	fprintf(file,"		AP_PHY=\"$MESH_PHY\"\n");
 	fprintf(file,"		AP_ADAPTER=\"$MESH_ADAPTER\"\n");
@@ -241,13 +245,13 @@ int write_rc_local(int num)
 	fprintf(file,"WLANS=\"wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3\"\n");
 	fprintf(file,"for WLAN in $WLANS; do\n");
 	fprintf(file,"	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
-	fprintf(file,"	if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
+	fprintf(file,"	if [ -n \"$WLAN_IFACE\" ]; then\n");
 	fprintf(file,"		echo \"$WLAN_IFACE detected, attempting to remove...\"\n");
 	fprintf(file,"		ifconfig \"$WLAN_IFACE\" down\n");
 	fprintf(file,"		sleep 3\n");
 	fprintf(file,"		iw dev \"$WLAN_IFACE\" del\n");
 	fprintf(file,"		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i \"$WLAN\"`\n");
-	fprintf(file,"		if [ \"$WLAN_IFACE\" != \"\" ]; then\n");
+	fprintf(file,"		if [ -n \"$WLAN_IFACE\" ]; then\n");
 	fprintf(file,"			echo \"ERROR: $WLAN could not be removed, possibly not nl80211-compatible...\"\n");
 	fprintf(file,"		else\n");
 	fprintf(file,"			echo \"$WLAN removed OK.\"\n");
@@ -258,30 +262,29 @@ int write_rc_local(int num)
 	fprintf(file,"echo \"Setting regulatory domain...\"\n");
 	fprintf(file,"iw reg set AU\n\n");
 	
-	fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$MESH_PHY\" ]; then\n");
 	fprintf(file,"	echo \"Creating mesh0 interface on $MESH_PHY...\"\n");
 	fprintf(file,"	iw phy $MESH_PHY interface add mesh0 type mp mesh_id wifindus_mesh\n");
 	fprintf(file,"	ip link set dev mesh0 address 50:50:50:50:50:%s\n",hex);
 	fprintf(file,"fi\n\n");
 	
-	fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$AP_PHY\" ]; then\n");
 	fprintf(file,"	echo \"Creating ap0 interface on $AP_PHY...\"\n");
 	fprintf(file,"	iw phy $AP_PHY interface add ap0 type managed\n");
 	fprintf(file,"	ip link set dev ap0 address 60:60:60:60:60:%s\n",hex);
 	fprintf(file,"fi\n\n");
 	
-	fprintf(file,"if [ \"$MESH_PHY\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$MESH_PHY\" ]; then\n");
 	fprintf(file,"	echo \"Bringing mesh0 up...\"\n");
 	fprintf(file,"	ifconfig mesh0 up\n");
 	fprintf(file,"	ifconfig mesh0 10.1.0.%d\n",num);	
 	fprintf(file,"fi\n\n");
 	
-	fprintf(file,"if [ \"$AP_PHY\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$AP_PHY\" ]; then\n");
 	fprintf(file,"	echo \"Bringing ap0 up...\"\n");
 	fprintf(file,"	ifconfig ap0 up\n");
 	fprintf(file,"	ifconfig ap0 172.16.%d.1\n",num);
 	fprintf(file,"	ifconfig ap0 netmask 255.255.255.0\n");
-
 	fprintf(file,"fi\n\n");
 		
 	fprintf(file,"#############################################################\n");
@@ -290,10 +293,10 @@ int write_rc_local(int num)
 	//gpsd
 	fprintf(file,"echo \"Checking for supported GPS module...\"\n");
 	fprintf(file,"GPS_MODULE=`echo -e \"$LSUSB\" | grep -i -o \"0e8d:3329\"`\n");
-	fprintf(file,"if [ \"$GPS_MODULE\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$GPS_MODULE\" ]; then\n");
 	fprintf(file,"	echo \"MediaTek MT3328 detected ($GPS_MODULE). Looking for serial stream...\"\n");
 	fprintf(file,"	GPS_STREAM=`echo -e \"$DMESG\" | grep -E -i -o \"ttyACM[0-9]+\"`\n");
-	fprintf(file,"	if [ \"$GPS_STREAM\" != \"\" ]; then\n");
+	fprintf(file,"	if [ -n \"$GPS_STREAM\" ]; then\n");
 	fprintf(file,"		GPS_STREAM=\"/dev/$GPS_STREAM\"\n");
 	fprintf(file,"		echo \"GPS serial stream detected ($GPS_STREAM). Launching gpsd...\"\n");
 	fprintf(file,"		stty -F \"$GPS_STREAM\" 38400\n");
@@ -306,7 +309,7 @@ int write_rc_local(int num)
 	fprintf(file,"fi\n\n");
 	//hostapd && dhcpd
 	fprintf(file,"AP_0=`ifconfig | grep -o \"ap0\"`\n");
-	fprintf(file,"if [ \"$AP_0\" != \"\" ]; then\n");
+	fprintf(file,"if [ -n \"$AP_0\" ]; then\n");
 	fprintf(file,"	echo \"Starting hostapd...\"\n");
 	fprintf(file,"	sleep 3\n");
 	fprintf(file,"	hostapd -B /etc/hostapd/hostapd.conf\n");
@@ -325,11 +328,15 @@ int write_rc_local(int num)
 	fprintf(file,"### Routing\n");
 	fprintf(file,"#############################################################\n");
 	fprintf(file,"echo \"Configuring default gateway route...\"\n");
-	if (num != 1)
-		fprintf(file,"ip route del 192.168.1.0/24 dev eth0\n");
-	fprintf(file,"ip route add 0.0.0.0/0 via %s\n",num == 1 ? "192.168.1.254 dev eth0" : "10.1.0.1 dev mesh0");
-	fprintf(file,"\nMESH_0=`ifconfig | grep -o \"mesh0\"`\n");
-	fprintf(file,"if [ \"$MESH_0\" != \"\" ]; then\n");
+	fprintf(file,"MESH_0=`ifconfig | grep -o \"mesh0\"`\n");
+	fprintf(file,"if [ \"$WFU_BRAIN_NUM\" -eq 1 ] || [ -z \"$MESH_0\" ]; then\n");
+	fprintf(file,"	ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0\n");
+	fprintf(file,"else\n");
+	fprintf(file,"	ip route del 192.168.1.0/24 dev eth0\n");
+	fprintf(file,"	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0\n");
+	fprintf(file,"fi\n\n");
+		
+	fprintf(file,"if [ -n \"$MESH_0\" ]; then\n");
 	fprintf(file,"	echo \"Configuring mesh node routes...\"\n");
 	for (i = 1; i < 255; i++)
 	{
