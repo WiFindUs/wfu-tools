@@ -15,6 +15,13 @@
 #===============================================================
 # ENVIRONMENT
 #===============================================================
+CURRENT_USER=`id -u -n`
+CURRENT_HOME=`eval echo ~$CURRENT_USER`
+MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
+export CURRENT_USER
+export CURRENT_HOME
+export MACHINE_MODEL
+
 if [ -z "$WFU_HOME" ]; then
 	echo -e "\$WFU_HOME not detected. loading scripts and altering .profile..."
 	WFU_HOME="/usr/local/wifindus"
@@ -33,32 +40,38 @@ if [ -z "$WFU_HOME" ]; then
 		exit 1
 	fi
 	
-	PROFILE_CONFIG="~/.profile"
+	PROFILE_CONFIG="$CURRENT_HOME/.profile"
 	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
 	if  [ -z "$HAYSTACK" ]; then
-		echo -e "" >> "$PROFILE_CONFIG"
-		echo -e "" >> "$PROFILE_CONFIG"
-		echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"
-		echo -e "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"
-		echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"
-		echo -e "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"
-		echo -e "fi" >> "$PROFILE_CONFIG"
-		echo -e "TZ='Australia/Adelaide'; export TZ" >> "$PROFILE_CONFIG"
+		sudo sh -c 'echo -e "" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "fi" >> "$PROFILE_CONFIG"'
+		sudo sh -c 'echo -e "TZ='Australia/Adelaide'; export TZ" >> "$PROFILE_CONFIG"'
 	fi
 fi
+
+sudo mkdir -p "$WFU_HOME"
+sudo chown "$CURRENT_USER" "$WFU_HOME"
+sudo sh -c 'echo "$MACHINE_MODEL" > "$WFU_HOME/.machine-model"'
 
 #===============================================================
 # INTRO
 #===============================================================
 clear
 echo -e "${STYLE_TITLE}        WIFINDUS BRAIN #$WFU_BRAIN_ID_HEX INITIAL SETUP        ${STYLE_NONE}"
+echo -e "${STYLE_HEADING}Current user: ${STYLE_NONE}$CURRENT_USER ($CURRENT_HOME)\n"
+echo -e "${STYLE_HEADING}Machine model: ${STYLE_NONE}$MACHINE_MODEL\n"
 echo -e "${STYLE_WARNING}NOTE: The unit will be rebooted when this has completed.${STYLE_NONE}\n"
 echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${STYLE_NONE}"
 read_number "this unit's ID #" 1 254
 WFU_BRAIN_NUM=$?
 export WFU_BRAIN_NUM
 echo "$WFU_BRAIN_NUM" > "$WFU_HOME/.brain-num"
-PASSWORD=`read_password "a password for the 'pi' user" 6 12`
+PASSWORD=`read_password "a password for the user '$CURRENT_USER'" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
 #===============================================================
@@ -84,7 +97,7 @@ echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
 
 echo -e "${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
-cd ~
+cd $CURRENT_HOME
 sudo rm -f ocr_pi.png
 sudo rm -f /lib/modules.bak
 sudo rm -rf /var/lib/apt/list
@@ -135,20 +148,21 @@ sudo apt-get -y autoclean
 #===============================================================
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
-
-if [ ! -f /lib/firmware/htc_9271.fw ]; then
-	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
-	sudo wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
+if [ -n `echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"` ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
+		sudo wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
+		if [ ! -f /lib/firmware/htc_9271.fw ]; then
+			echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+		fi
 	fi
-fi
 
-if [ ! -f /lib/firmware/htc_7010.fw ]; then
-	echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
-	sudo wget -O /lib/firmware/htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
 	if [ ! -f /lib/firmware/htc_7010.fw ]; then
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+		echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
+		sudo wget -O /lib/firmware/htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
+		if [ ! -f /lib/firmware/htc_7010.fw ]; then
+			echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+		fi
 	fi
 fi
 
@@ -163,6 +177,7 @@ if [ ! -d "$WFU_TOOLS" ]; then
 	sudo chmod 755 *.sh
 	./wfu-update.sh
 fi
+
 
 #===============================================================
 # CONFIGURATION
@@ -207,11 +222,12 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
-echo -e "${STYLE_HEADING}Writing ~/.bash_aliases...${STYLE_NONE}"
-echo 'alias wusr="wfu-update; sudo wfu-setup -r"' > ~/.bash_aliases
-echo 'alias editrc="sudo nano /etc/rc.local"' >> ~/.bash_aliases
-echo 'alias cdtools="cd $WFU_TOOLS"' >> ~/.bash_aliases
-sudo chmod 755 "~/.bash_aliases"
+echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
+echo -e "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' > $CURRENT_HOME/.bash_aliases"
+echo -e "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
+echo -e "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
+echo -e "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
+sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
@@ -226,8 +242,8 @@ sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
 
-echo -e "\n${STYLE_HEADING}Setting Unix password for 'pi'...${STYLE_NONE}"
-echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd pi
+echo -e "\n${STYLE_HEADING}Setting Unix password for '$CURRENT_USER'...${STYLE_NONE}"
+echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd $CURRENT_USER
 
 echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
