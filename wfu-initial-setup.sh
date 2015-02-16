@@ -41,8 +41,7 @@ if [ -z "$WFU_HOME" ]; then
 	fi
 	
 	PROFILE_CONFIG="$CURRENT_HOME/.profile"
-	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
-	if  [ -z "$HAYSTACK" ]; then
+	if  [ -z `cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"` ]; then
 		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
@@ -228,22 +227,26 @@ sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
 echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
-echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
-sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' > $CURRENT_HOME/.bash_aliases"
-sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
-sudo sh -c "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
-sudo sh -c "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
-sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
+if [ ! -f "$CURRENT_HOME/.bash_aliases" ] || [ -z `cat $CURRENT_HOME/.bash_aliases | grep -o -m 1 -E "wusr"` ]; then
+	echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
+	sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' >> $CURRENT_HOME/.bash_aliases"
+	sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
+	sudo sh -c "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
+	sudo sh -c "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
+	sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
+fi
 
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
 sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
 
-echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
-sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
-sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
-sudo sh -c 'echo "fudge  127.127.28.0 time1 0.183 refid NMEA" >> /etc/ntp.conf'
-sudo sh -c 'echo "server 127.127.28.1 minpoll 4 prefer" >> /etc/ntp.conf'
-sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
+if [ ! -f "/etc/ntp.conf" ] || [ -z `cat /etc/ntp.conf | grep -o -m 1 -E "NMEA"` ]; then
+	echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
+	sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
+	sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
+	sudo sh -c 'echo "fudge  127.127.28.0 time1 0.183 refid NMEA" >> /etc/ntp.conf'
+	sudo sh -c 'echo "server 127.127.28.1 minpoll 4 prefer" >> /etc/ntp.conf'
+	sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
+fi
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 sudo wfu-setup $WFU_BRAIN_NUM
