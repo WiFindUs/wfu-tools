@@ -30,6 +30,7 @@ if [ -z "$WFU_BRAIN_NUM" ]; then
 	WFU_BRAIN_NUM=0
 	echo $WFU_BRAIN_NUM > "$WFU_HOME/.brain-num"
 fi
+WFU_BRAIN_NUM_HEX=`printf "%x\n" $WFU_BRAIN_NUM | tr '[:lower:]' '[:upper:]'`
 
 # brain id
 if [ -f "$WFU_HOME/.brain-id" ]; then
