@@ -21,9 +21,6 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-
-#--WFU-INCLUDES
-#do not edit anything below this section; put your additions above it
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 fi
