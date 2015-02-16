@@ -42,7 +42,7 @@ while true; do
 		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[-+]?[0-9]+"`
 	fi
 	if [ -z $SLEEP ] || [ $SLEEP -lt 0 ]; then
-		SLEEP=1
+		SLEEP=15
 	fi
 
 	SERVER=$3
