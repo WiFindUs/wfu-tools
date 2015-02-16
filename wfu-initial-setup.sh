@@ -41,22 +41,22 @@ if [ -z "$WFU_HOME" ]; then
 	fi
 	
 	PROFILE_CONFIG="$CURRENT_HOME/.profile"
-	HAYSTACK=`cat $PROFILE_CONFIG | grep "#--WFU-INCLUDES"`
+	HAYSTACK=`cat $PROFILE_CONFIG | grep -i -o -m 1 "#--WFU-INCLUDES"`
 	if  [ -z "$HAYSTACK" ]; then
-		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "#--WFU-INCLUDES" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "#do not edit anything below this section; put your additions above it" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo "fi" >> "$PROFILE_CONFIG"'
+		sudo sh -c "echo \"\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"#--WFU-INCLUDES\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"#do not edit anything below this section; put your additions above it\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"if [ -f $IMPORT_SCRIPT ]; then\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"	source $IMPORT_SCRIPT\" >> \"$PROFILE_CONFIG\""
+		sudo sh -c "echo \"fi\" >> \"$PROFILE_CONFIG\""
 		sudo sh -c "echo \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
 	fi
 fi
 
 sudo mkdir -p "$WFU_HOME"
 sudo chown "$CURRENT_USER" "$WFU_HOME"
-sudo sh -c 'echo "$MACHINE_MODEL" > "$WFU_HOME/.machine-model"'
+sudo sh -c "echo \"$MACHINE_MODEL\" > \"$WFU_HOME/.machine-model\""
 RASPBIAN=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"`
 
 #===============================================================
