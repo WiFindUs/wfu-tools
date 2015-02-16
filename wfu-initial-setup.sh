@@ -50,7 +50,7 @@ if [ -z "$WFU_HOME" ]; then
 		sudo sh -c 'echo -e "if [ -f \"$IMPORT_SCRIPT\" ]; then" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo -e "	source \"$IMPORT_SCRIPT\"" >> "$PROFILE_CONFIG"'
 		sudo sh -c 'echo -e "fi" >> "$PROFILE_CONFIG"'
-		sudo sh -c 'echo -e "TZ='Australia/Adelaide'; export TZ" >> "$PROFILE_CONFIG"'
+		sudo sh -c "echo -e \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
 	fi
 fi
 
@@ -223,10 +223,10 @@ echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
 sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
 
 echo -e "${STYLE_HEADING}Writing $CURRENT_HOME/.bash_aliases...${STYLE_NONE}"
-echo -e "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' > $CURRENT_HOME/.bash_aliases"
-echo -e "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
-echo -e "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
-echo -e "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
+sudo sh -c "echo 'alias wusr=\"wfu-update; sudo wfu-setup -r' > $CURRENT_HOME/.bash_aliases"
+sudo sh -c "echo 'alias editrc=\"sudo nano /etc/rc.local\"' >> $CURRENT_HOME/.bash_aliases"
+sudo sh -c "echo 'alias cdhome=\"cd $WFU_HOME\"' >> $CURRENT_HOME/.bash_aliases"
+sudo sh -c "echo 'alias cdtools=\"cd $WFU_TOOLS\"' >> $CURRENT_HOME/.bash_aliases"
 sudo chmod 755 "$CURRENT_HOME/.bash_aliases"
 
 echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
