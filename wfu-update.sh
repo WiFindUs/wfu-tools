@@ -57,8 +57,7 @@ if [ -d wfu-tools ]; then
 	make
 	if [ -f wfu-setup ]; then
 		echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
-		sudo chmod 755 *.sh
-		sudo chmod 755 wfu-setup
+		sudo chmod 755 *.sh wfu-setup .bashrc .bash_aliases .profile
 		
 		sudo rm -f /usr/bin/wfu-initial-setup
 		sudo ln -s "$WFU_TOOLS/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
@@ -82,6 +81,9 @@ if [ -d wfu-tools ]; then
 		
 		sudo rm -f "$CURRENT_HOME/.bash_aliases"
 		sudo mv -f .bash_aliases "$CURRENT_HOME"
+		
+		sudo rm -f "$CURRENT_HOME/.profile"
+		sudo mv -f .profile "$CURRENT_HOME"
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then

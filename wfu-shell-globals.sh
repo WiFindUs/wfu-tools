@@ -7,6 +7,17 @@
 #   Adds some global stuff to the shell environment
 #===============================================================
 
+# user globals
+CURRENT_USER=`id -u -n`
+CURRENT_HOME=`eval echo ~$CURRENT_USER`
+
+# machine model
+MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
+if [ ! -f "$WFU_HOME/.machine-model" ]; then
+	echo $MACHINE_MODEL > "$WFU_HOME/.machine-model"
+fi
+
+# wfu globals
 WFU_HOME="/usr/local/wifindus"
 WFU_TOOLS="$WFU_HOME/wfu-tools"
 WFU_TOOLS_REPO="git://github.com/WiFindUs/wfu-tools.git"
@@ -31,6 +42,9 @@ fi
 WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
 
 # exports
+export CURRENT_USER
+export CURRENT_HOME
+export MACHINE_MODEL
 export WFU_HOME
 export WFU_TOOLS
 export WFU_TOOLS_REPO

@@ -15,22 +15,12 @@
 #===============================================================
 # ENVIRONMENT
 #===============================================================
-CURRENT_USER=`id -u -n`
-CURRENT_HOME=`eval echo ~$CURRENT_USER`
-MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
-export CURRENT_USER
-export CURRENT_HOME
-export MACHINE_MODEL
-
 if [ -z "$WFU_HOME" ]; then
-	echo -e "\$WFU_HOME not detected. loading scripts and altering .profile..."
+	echo -e "\$WFU_HOME not detected. loading scripts..."
 	WFU_HOME="/usr/local/wifindus"
 	WFU_TOOLS="$WFU_HOME/wfu-tools"
 	export WFU_HOME
 	export WFU_TOOLS
-	
-	cd "$WFU_TOOLS"
-	sudo chmod 755 *.sh wfu-setup
 	
 	IMPORT_SCRIPT="$WFU_TOOLS/wfu-shell-globals.sh"
 	if [ -f "$IMPORT_SCRIPT" ]; then
@@ -39,24 +29,12 @@ if [ -z "$WFU_HOME" ]; then
 		echo -e "could not find globals for current user. aborting."
 		exit 1
 	fi
-	
-	PROFILE_CONFIG="$CURRENT_HOME/.profile"
-	HAYSTACK=`cat $PROFILE_CONFIG | grep -i -o -m 1 "#--WFU-INCLUDES"`
-	if  [ -z "$HAYSTACK" ]; then
-		sudo sh -c "echo \"\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"#--WFU-INCLUDES\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"#do not edit anything below this section; put your additions above it\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"if [ -f $IMPORT_SCRIPT ]; then\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"	source $IMPORT_SCRIPT\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"fi\" >> \"$PROFILE_CONFIG\""
-		sudo sh -c "echo \"TZ='Australia/Adelaide'; export TZ\" >> \"$PROFILE_CONFIG\""
-	fi
 fi
 
 sudo mkdir -p "$WFU_HOME"
 sudo chown "$CURRENT_USER" "$WFU_HOME"
-sudo sh -c "echo \"$MACHINE_MODEL\" > \"$WFU_HOME/.machine-model\""
+cd "$WFU_TOOLS"
+sudo chmod 755 *.sh
 RASPBIAN=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"`
 
 #===============================================================
@@ -105,8 +83,6 @@ echo -e "${STYLE_HEADING}Deleting GUI/junk files...${STYLE_NONE}"
 cd "$CURRENT_HOME"
 sudo rm -f ocr_pi.png
 sudo rm -f /lib/modules.bak
-sudo rm -rf /var/lib/apt/list
-sudo rm -rf /var/cache/apt
 sudo rm -rf /opt
 sudo rm -rf /usr/games/
 sudo rm -rf python_games
