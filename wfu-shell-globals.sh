@@ -2,7 +2,7 @@
 #===============================================================
 # File: wfu-shell-globals.sh
 # Author: Mark Gillard
-# Target environment: Debian/Raspbian Nodes
+# Target environment: Nodes
 # Description:
 #   Adds some global stuff to the shell environment
 #===============================================================
@@ -35,6 +35,24 @@ fi
 if [ -z "$MACHINE_MODEL" ]; then
 	MACHINE_MODEL=`dmesg | grep -i -E "Machine model: .+" | cut -d' ' -f8-`
 	export MACHINE_MODEL
+fi
+if [ -z "$IS_RASPBERRY_PI" ]; then
+	IS_RASPBERRY_PI=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"`
+	if [ -z "$IS_RASPBERRY_PI" ]; then
+		IS_RASPBERRY_PI=0
+	else
+		IS_RASPBERRY_PI=1
+	fi
+	export IS_RASPBERRY_PI
+fi
+if [ -z "$IS_CUBOX" ]; then
+	IS_CUBOX=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Cubox"`
+	if [ -z "$IS_CUBOX" ]; then
+		IS_CUBOX=0
+	else
+		IS_CUBOX=1
+	fi
+	export IS_CUBOX
 fi
 
 # brain number
