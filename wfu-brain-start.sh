@@ -206,7 +206,7 @@ fi
 if [ -n "$AP_0" ]; then
 	#launch new hostapd instance
 	echo "Starting hostapd..."
-	hostapd -B
+	hostapd -B /etc/hostapd/hostapd.conf
 	
 	#launch new dhcpd instance if hostapd is running ok
 	HOSTAPD=`pgrep hostapd`
