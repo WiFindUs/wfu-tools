@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <sys/stat.h>
 
 #ifndef TRUE
 #define TRUE 1
@@ -283,6 +284,7 @@ int write_brain_num(int num)
 	fclose(file);
 	sprintf(sbuf,"WFU_BRAIN_NUM=%d; export WFU_BRAIN_NUM", num);
 	system(sbuf);
+	chmod(nbuf, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
 	qprintf(" [ok]\n");
 	
 	return TRUE;
