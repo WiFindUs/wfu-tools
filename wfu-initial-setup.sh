@@ -39,7 +39,6 @@ echo -e "${STYLE_HEADING}Just a bit of information from you to start with...${ST
 read_number "this unit's ID #" 1 254
 WFU_BRAIN_NUM=$?
 export WFU_BRAIN_NUM
-echo "$WFU_BRAIN_NUM" > "$WFU_HOME/.brain-num"
 PASSWORD=`read_password "a password for the user '$CURRENT_USER'" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
