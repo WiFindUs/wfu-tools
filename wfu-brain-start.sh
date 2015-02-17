@@ -89,7 +89,6 @@ if [ -z "$MESH_0" ]; then
 else
 	echo "Bringing mesh0 down..."
 	ifconfig mesh0 down
-	sleep 1
 fi
 
 AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
@@ -121,6 +120,9 @@ if [ -z "$AP_0" ]; then
 else
 	echo "Bringing ap0 down..."
 	ifconfig ap0 down
+fi
+
+if [ -n "$MESH_0" ] || [ -n "$AP_0" ]; then
 	sleep 1
 fi
 
