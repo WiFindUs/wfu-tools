@@ -2,7 +2,7 @@
 #===============================================================
 # File: wfu-update.sh
 # Author: Mark Gillard
-# Target environment: Raspbian
+# Target environment: Nodes
 # Description:
 #   Re-clones, rebuilds and re-links local wfu tools.
 #===============================================================
@@ -45,7 +45,7 @@ if [ -d wfu-tools ]; then
 	make
 	if [ -f wfu-setup ]; then
 		echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
-		sudo chmod 755 *.sh wfu-setup .bashrc .bash_aliases .profile
+		sudo chmod 755 *.sh wfu-setup configs/*
 		
 		sudo rm -f /usr/bin/wfu-initial-setup
 		sudo ln -s "$WFU_TOOLS/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
@@ -62,16 +62,44 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /usr/bin/wfu-heartbeat
 		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
 		
-		echo -e "  ${STYLE_HEADING}updating .bash scripts...${STYLE_NONE}"
+		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				
 		sudo rm -f "$CURRENT_HOME/.bashrc"
-		sudo mv -f .bashrc "$CURRENT_HOME"
+		sudo mv -f configs/.bashrc "$CURRENT_HOME"
 		
 		sudo rm -f "$CURRENT_HOME/.bash_aliases"
-		sudo mv -f .bash_aliases "$CURRENT_HOME"
+		sudo mv -f configs/.bash_aliases "$CURRENT_HOME"
 		
 		sudo rm -f "$CURRENT_HOME/.profile"
-		sudo mv -f .profile "$CURRENT_HOME"
+		sudo mv -f configs/.profile "$CURRENT_HOME"
+		
+		sudo rm -f /etc/rc.local
+		sudo mv -f configs/rc.local /etc
+		
+		sudo rm -f /etc/ntp.conf
+		sudo mv -f configs/ntp.conf /etc
+		
+		sudo rm -f /etc/modprobe.d/ipv6.conf /etc/modprobe.d/raspi-blacklist.conf \
+			/etc/modprobe.d/8192cu.conf /etc/modprobe.d/8188eu.conf \
+			/etc/modprobe.d/wfu-module-options.conf
+		sudo mv -f configs/wfu-module-options.conf /etc/modprobe.d
+		
+		sudo rm -f /etc/resolv.conf
+		sudo mv -f configs/resolv.conf /etc
+		
+		sudo rm -f /etc/default/isc-dhcp-server
+		sudo mv -f configs/isc-dhcp-server /etc/default
+		
+		sudo rm -f /etc/default/ifplugd
+		sudo mv -f configs/ifplugd /etc/default
+		
+		sudo rm -f /etc/default/hostapd
+		sudo mv -f configs/hostapd /etc/default
+		
+		sudo rm -f /etc/default/crda
+		sudo mv -f configs/crda /etc/default
+		
+		sudo rm -rf configs
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then
@@ -92,7 +120,7 @@ if [ -d wfu-tools-old ]; then
 
 	if [ -d wfu-tools ]; then
 		echo -e "  ${STYLE_HEADING}deleting partial version of tools...${STYLE_NONE}"
-		sudo rm -f -r wfu-tools
+		sudo rm -rf wfu-tools
 	fi
 	
 	echo -e "  ${STYLE_HEADING}reverting to backup...${STYLE_NONE}"

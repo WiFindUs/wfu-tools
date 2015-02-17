@@ -1,0 +1,5 @@
+#! /bin/sh -e
+
+/bin/bash "/usr/local/wifindus/wfu-tools/wfu-brain-start.sh" || /bin/true
+
+exit 0

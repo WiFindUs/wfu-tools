@@ -2,7 +2,7 @@
 #===============================================================
 # File: wfu-initial-setup.sh
 # Author: Mark Gillard
-# Target environment: Debian/Raspbian Nodes
+# Target environment: Nodes
 # Description:
 #   Sets up a fresh install for use as a brain unit.
 #
@@ -26,7 +26,6 @@ sudo mkdir -p "$WFU_HOME"
 sudo chown "$CURRENT_USER" "$WFU_HOME"
 cd "$WFU_TOOLS"
 sudo chmod 755 *.sh
-RASPBIAN=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "Raspberry"`
 
 #===============================================================
 # INTRO
@@ -52,20 +51,20 @@ sudo apt-get -y update
 
 echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
 sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
-wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
-pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
-wolfram-engine sonic-pi xarchiver xauth xkb-data console-setup \
-xinit lightdm lxde* obconf openbox gtk* libgtk* alsa* netsurf-gtk \
-libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
-lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
-scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
-poppler* parted libvorbis* libv41* libsamplerate* \
-penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
-idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
-libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
-raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
-udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
-vim-common vim-tiny
+	wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
+	pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
+	wolfram-engine sonic-pi xarchiver xauth xkb-data console-setup \
+	xinit lightdm lxde* obconf openbox gtk* libgtk* alsa* netsurf-gtk \
+	libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
+	lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
+	scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
+	poppler* parted libvorbis* libv41* libsamplerate* \
+	penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
+	idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
+	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
+	raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
+	udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
+	vim-common vim-tiny
 
 echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
@@ -97,7 +96,7 @@ sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
 
 
-if [ -n "$RASPBIAN" ]; then
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
 	sudo apt-get -y install rpi-update raspi-config
 	sudo rpi-update
@@ -105,8 +104,8 @@ fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
-libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-firmware-ralink firmware-atheros ntp bc nano psmisc
+	libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
+	firmware-ralink firmware-atheros ntp bc nano psmisc
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
@@ -122,7 +121,7 @@ sudo apt-get -y autoclean
 #===============================================================
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
-if [ -n "$RASPBIAN" ]; then
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
 		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
 		sudo wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
@@ -159,13 +158,7 @@ cd "$WFU_TOOLS"
 #===============================================================
 # CONFIGURATION
 #===============================================================
-echo -e "${STYLE_HEADING}Writing /etc/default/ifplugd...${STYLE_NONE}"
-sudo sh -c 'echo "INTERFACES=\"eth0\"" > /etc/default/ifplugd'
-sudo sh -c 'echo "HOTPLUG_INTERFACES=\"eth0\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo "ARGS=\"-q -f -u0 -d10 -w -I\"" >> /etc/default/ifplugd'
-sudo sh -c 'echo "SUSPEND_ACTION=\"stop\"" >> /etc/default/ifplugd'
-
-if [ -n "$RASPBIAN" ]; then
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
 	sudo dphys-swapfile swapoff
 	sudo dphys-swapfile uninstall
@@ -180,53 +173,6 @@ HAYSTACK=`cat "/etc/modules" | grep -o -m 1 -E "rt2800usb"`
 if [ ! -f "/etc/modules" ] || [ -z "$HAYSTACK" ]; then
 	echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
 	sudo sh -c 'echo "rt2800usb" >> "/etc/modules"'
-fi
-
-echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/raspi-blacklist.conf...${STYLE_NONE}"
-sudo sh -c 'echo "blacklist spi-bcm2708" > /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist i2c-bcm2708" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist snd_bcm2835" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist bluetooth" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_lirc_codec" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_mce_kbd_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_sony_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_sanyo_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_jvc_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_rc6_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_rc5_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ir_nec_decoder" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist gpio_ir_recv" >> /etc/modprobe.d/raspi-blacklist.conf'
-sudo sh -c 'echo "blacklist ipv6" >> /etc/modprobe.d/raspi-blacklist.conf'
-
-echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8188eu.conf...${STYLE_NONE}"
-sudo sh -c 'echo "options 8188eu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8188eu.conf'
-
-echo -e "${STYLE_HEADING}Writing /etc/modprobe.d/8192cu.conf...${STYLE_NONE}"
-sudo sh -c 'echo "options 8192cu rtw_power_mgnt=0 rtw_enusbss=0" > /etc/modprobe.d/8192cu.conf'
-
-echo -e "${STYLE_HEADING}Writing /etc/resolv.conf...${STYLE_NONE}"
-sudo sh -c 'echo "domain wfu.gateway" > /etc/resolv.conf'
-sudo sh -c 'echo "search wfu.gateway" >> /etc/resolv.conf'
-sudo sh -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
-sudo sh -c 'echo "nameserver 8.8.4.4" >> /etc/resolv.conf'
-
-echo -e "${STYLE_HEADING}Writing /etc/default/crda...${STYLE_NONE}"
-sudo sh -c 'echo "REGDOMAIN=AU" > /etc/default/crda'
-
-echo -e "${STYLE_HEADING}Writing /etc/default/hostapd...${STYLE_NONE}"
-sudo sh -c 'echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" > /etc/default/hostapd'
-
-echo -e "${STYLE_HEADING}Writing /etc/default/isc-dhcp-server...${STYLE_NONE}"
-sudo sh -c 'echo "INTERFACES=\"ap0\"" > /etc/default/isc-dhcp-server'
-
-HAYSTACK=`cat /etc/ntp.conf | grep -o -m 1 -E "NMEA"`
-if [ ! -f "/etc/ntp.conf" ] || [ -z "$HAYSTACK" ]; then
-	echo -e "${STYLE_HEADING}Updating /etc/ntp.conf...${STYLE_NONE}"
-	sudo sh -c 'echo "restrict 192.168.1.0 mask 255.255.255.0 modify" >> /etc/ntp.conf'
-	sudo sh -c 'echo "server 127.127.28.0 minpoll 4" >> /etc/ntp.conf'
-	sudo sh -c 'echo "fudge  127.127.28.0 time1 0.183 refid NMEA" >> /etc/ntp.conf'
-	sudo sh -c 'echo "server 127.127.28.1 minpoll 4 prefer" >> /etc/ntp.conf'
-	sudo sh -c 'echo "fudge  127.127.28.1 refid PPS" >> /etc/ntp.conf'
 fi
 
 HAYSTACK=`cat /etc/sysctl.conf | grep -o -m 1 -E "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1"`
