@@ -2,7 +2,7 @@
 #===============================================================
 # File: wfu-heartbeat.sh
 # Author: Mark Gillard
-# Target environment: Debian/Raspbian Nodes
+# Target environment: Nodes
 # Description:
 #   Sends a heartbeat packet back to the server.
 #===============================================================

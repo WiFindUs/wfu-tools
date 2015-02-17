@@ -2,7 +2,7 @@
 #===============================================================
 # File: wfu-preimage-purge.sh
 # Author: Mark Gillard
-# Target environment: Debian/Raspbain Nodes
+# Target environment: Nodes
 # Description:
 #   Disk operations to make a recorded SD Card image smaller.
 #===============================================================
