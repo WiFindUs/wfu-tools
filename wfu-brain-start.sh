@@ -72,7 +72,7 @@ fi
 ### Mesh and AP
 #############################################################
 
-MESH_0=`ifconfig | grep -o -i -m 1 "mesh0"`
+MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "mesh0"`
 if [ -z "$MESH_0" ]; then
 	echo "Checking for supported mesh adapter..."
 	MESH_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: Atheros AR9271"`
@@ -92,7 +92,7 @@ else
 	sleep 1
 fi
 
-AP_0=`ifconfig | grep -o -i -m 1 "ap0"`
+AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
 if [ -z "$AP_0" ]; then
 	echo "Checking for supported AP adapter..."
 	AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected"`
@@ -149,14 +149,14 @@ if [ -z "$MESH_0" ] && [ -n "$MESH_PHY" ]; then
 	echo "Creating mesh0 interface on $MESH_PHY..."
 	iw phy $MESH_PHY interface add mesh0 type mp mesh_id wifindus_mesh
 	ip link set dev mesh0 address 50:50:50:50:50:$WFU_BRAIN_NUM_HEX
-	MESH_0=`ifconfig | grep -o -i -m 1 "mesh0"`
+	MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "mesh0"`
 fi
 
 if [ -z "$AP_0" ] && [ -n "$AP_PHY" ]; then
 	echo "Creating ap0 interface on $AP_PHY..."
 	iw phy $AP_PHY interface add ap0 type managed
 	ip link set dev ap0 address 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
-	AP_0=`ifconfig | grep -o -i -m 1 "ap0"`
+	AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
 fi
 
 if [ -n "$MESH_0" ]; then
