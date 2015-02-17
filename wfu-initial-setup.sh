@@ -58,7 +58,7 @@ sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
 	libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
 	lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
 	scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
-	poppler* parted libvorbis* libv41* libsamplerate* \
+	poppler* libvorbis* libv41* libsamplerate* \
 	penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
 	idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
@@ -93,18 +93,20 @@ sudo rm -rf /usr/share/man/fr.*
 #===============================================================
 
 echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
+sudo apt-get -f -y install
 sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
 
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
 	sudo apt-get -y install rpi-update raspi-config
+	sudo apt-get -f -y install
 	sudo rpi-update
 fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
-	libgps-dev secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
+	secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
 	firmware-ralink firmware-atheros ntp bc nano psmisc
 sudo update-rc.d -f hostapd remove
 sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
