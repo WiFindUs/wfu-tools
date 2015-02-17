@@ -45,7 +45,7 @@ if [ -d wfu-tools ]; then
 	make
 	if [ -f wfu-setup ]; then
 		echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
-		sudo chmod 755 *.sh wfu-setup configs/*
+		sudo chmod 777 *.sh wfu-setup configs/*
 		
 		sudo rm -f /usr/bin/wfu-brain-start
 		sudo ln -s "$WFU_TOOLS/wfu-brain-start.sh" /usr/bin/wfu-brain-start

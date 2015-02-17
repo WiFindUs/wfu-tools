@@ -15,6 +15,7 @@
 #===============================================================
 # ENVIRONMENT
 #===============================================================
+
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 else
@@ -22,14 +23,13 @@ else
 	exit 1
 fi
 
-sudo mkdir -p "$WFU_HOME"
 sudo chown "$CURRENT_USER" "$WFU_HOME"
 cd "$WFU_TOOLS"
-sudo chmod 755 *.sh
 
 #===============================================================
 # INTRO
 #===============================================================
+
 clear
 echo -e "${STYLE_TITLE}        WIFINDUS BRAIN #$WFU_BRAIN_ID_HEX INITIAL SETUP        ${STYLE_NONE}"
 echo -e "${STYLE_HEADING}Current user: ${STYLE_NONE}$CURRENT_USER ($CURRENT_HOME)\n"
@@ -46,6 +46,7 @@ echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few
 #===============================================================
 # PURGE PACKAGES
 #===============================================================
+
 echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
 sudo apt-get -y update
 
@@ -91,10 +92,10 @@ sudo rm -rf /usr/share/man/fr.*
 #===============================================================
 # UPDATE PACKAGES
 #===============================================================
+
 echo -e "${STYLE_HEADING}Updating remaining packages...${STYLE_NONE}"
 sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
-
 
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo -e "${STYLE_HEADING}Updating Raspbian...${STYLE_NONE}"
@@ -121,6 +122,7 @@ sudo apt-get -y autoclean
 #===============================================================
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
+
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
 		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
@@ -142,22 +144,15 @@ fi
 #===============================================================
 # UPDATE TOOLCHAIN
 #===============================================================
-if [ ! -d "$WFU_TOOLS" ]; then
-	echo -e "\n${STYLE_HEADING}Cloning wfu-tools...${STYLE_NONE}"
-	cd "$WFU_HOME"
-	git clone --depth 1 $WFU_TOOLS_REPO
-fi
+
 cd "$WFU_TOOLS"
-sudo rm -rf .git
-sudo rm -f .gitattributes
-sudo rm -f .gitignore
-sudo chmod 755 *.sh
 ./wfu-update.sh
 cd "$WFU_TOOLS"
 
 #===============================================================
 # CONFIGURATION
 #===============================================================
+
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo -e "${STYLE_HEADING}Disabling swap..${STYLE_NONE}"
 	sudo dphys-swapfile swapoff
@@ -190,6 +185,12 @@ sudo wfu-setup $WFU_BRAIN_NUM
 echo -e "\n${STYLE_HEADING}Setting Unix password for '$CURRENT_USER'...${STYLE_NONE}"
 echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd $CURRENT_USER
 
+#===============================================================
+# FINISH
+#===============================================================
+
 echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
 sudo shutdown -r now
+
+exit 0
