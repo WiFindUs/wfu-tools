@@ -253,21 +253,20 @@ fi
 echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "Clearing ip tables..."
 iptables -F
-#iptables -P INPUT DROP
-iptables -P INPUT ACCEPT
+iptables -P INPUT DROP
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 echo "Adding firewall rules..."
-#iptables -A INPUT -i lo -j ACCEPT
-#iptables -A INPUT -j ACCEPT -m state --state ESTABLISHED,RELATED
-#iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
-#iptables -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT
-##iptables -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT
-#iptables -A INPUT -p tcp --sport 9418 -m state --state NEW -j ACCEPT
-#iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
-#iptables -A INPUT -p udp --sport 53 -j ACCEPT
-#iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT
-#iptables -A INPUT -p udp --dport 123 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -j ACCEPT -m state --state ESTABLISHED,RELATED
+iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT
+iptables -A INPUT -p tcp --sport 9418 -m state --state NEW -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -p udp --sport 53 -j ACCEPT
+iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT
+iptables -A INPUT -p udp --dport 123 -j ACCEPT
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 #############################################################
