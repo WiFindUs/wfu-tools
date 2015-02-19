@@ -190,6 +190,11 @@ echo -e "$PASSWORD\n$PASSWORD\n" | sudo passwd $CURRENT_USER
 # FINISH
 #===============================================================
 
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
+	echo -e "${STYLE_HEADING}Launching raspi-config...${STYLE_NONE}"
+	sudo raspi-config
+fi
+
 echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
 sudo shutdown -r now
