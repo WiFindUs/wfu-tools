@@ -145,6 +145,7 @@ while true; do
 				if [ -n "$ACC_Y" ] || [ -n "$ACC_X" ]; then
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 					if [ -n "$ACCURACY" ]; then
+						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"
 					fi
 				fi
