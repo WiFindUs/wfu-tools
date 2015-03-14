@@ -55,6 +55,18 @@ if [ -z "$IS_CUBOX" ]; then
 	export IS_CUBOX
 fi
 
+# machine family
+if [ -z "$MACHINE_FAMILY" ]; then
+	if [ $IS_RASPBERRY_PI -eq 1 ]; then
+		MACHINE_FAMILY="rpi"
+	elif [ $IS_CUBOX -eq 1 ]; then
+		MACHINE_FAMILY="cubox"
+	else
+		MACHINE_FAMILY="unknown"
+	fi
+	export MACHINE_FAMILY
+fi
+
 # brain number
 if [ -z "$WFU_BRAIN_NUM" ]; then
 	if [ -f "$WFU_HOME/.brain-num" ]; then
