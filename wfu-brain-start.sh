@@ -215,7 +215,7 @@ if [ -n "$AP_0" ]; then
 	fi;
 	rm -rf /etc/hostapd/hostapd.conf
 	cp -f $WFU_TOOLS/configs/hostapd.conf /etc/hostapd/hostapd.conf
-	echo "\n\ndriver=nl80211" >> /etc/hostapd/hostapd.conf
+	echo -e "\n\ndriver=nl80211" >> /etc/hostapd/hostapd.conf
 	echo "interface=ap0" >> /etc/hostapd/hostapd.conf
 	echo "channel=$AP_CHANNEL" >> /etc/hostapd/hostapd.conf
 	
