@@ -102,8 +102,6 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/default/crda
 		sudo mv -f configs/crda /etc/default
 		
-		sudo rm -rf configs
-		
 		cd ..
 		if [ -d wfu-tools-old ]; then
 			echo -e "  ${STYLE_HEADING}deleting tools backup...${STYLE_NONE}"
