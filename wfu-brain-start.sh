@@ -72,6 +72,24 @@ fi
 ### Mesh and AP
 #############################################################
 
+echo "Checking existing wireless interfaces..."
+WLANS="wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3"
+for WLAN in $WLANS; do
+	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
+	if [ -n "$WLAN_IFACE" ]; then
+		echo "$WLAN_IFACE detected, attempting to remove..."
+		ifconfig "$WLAN_IFACE" down
+		sleep 1
+		iw dev "$WLAN_IFACE" del
+		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
+		if [ -n "$WLAN_IFACE" ]; then
+			echo "ERROR: $WLAN could not be removed, possibly not nl80211-compatible..."
+		else
+			echo "$WLAN removed OK."
+		fi
+	fi
+done
+
 MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "mesh0"`
 if [ -z "$MESH_0" ]; then
 	echo "Checking for supported mesh adapter..."
@@ -125,24 +143,6 @@ fi
 if [ -n "$MESH_0" ] || [ -n "$AP_0" ]; then
 	sleep 1
 fi
-
-echo "Checking existing wireless interfaces..."
-WLANS="wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3"
-for WLAN in $WLANS; do
-	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
-	if [ -n "$WLAN_IFACE" ]; then
-		echo "$WLAN_IFACE detected, attempting to remove..."
-		ifconfig "$WLAN_IFACE" down
-		sleep 1
-		iw dev "$WLAN_IFACE" del
-		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
-		if [ -n "$WLAN_IFACE" ]; then
-			echo "ERROR: $WLAN could not be removed, possibly not nl80211-compatible..."
-		else
-			echo "$WLAN removed OK."
-		fi
-	fi
-done
 
 echo "Setting regulatory domain..."
 iw reg set AU
