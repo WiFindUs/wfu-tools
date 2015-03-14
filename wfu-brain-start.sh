@@ -114,8 +114,8 @@ if [ -n "$MESH_0" ]; then
 	ifconfig $MESH_0 down
 fi
 
-if [ -n "$NON_NL_WLAN" ]; then
-	echo "Detected non-iw AP adapter $NON_NL_WLAN."
+if [ -n "$NON_NL_IFACE" ]; then
+	echo "Detected non-iw AP adapter $NON_NL_IFACE."
 	AP_DRIVER="rtl871xdrv"
 	AP_0=$NON_NL_IFACE
 fi
