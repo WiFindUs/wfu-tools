@@ -26,7 +26,6 @@
 #define WFU_HOME "/usr/local/wifindus" 
 
 int quietMode = FALSE;
-int apChannel = 0;
 char sbuf[256], nbuf[256];
 char hex[3];
 
@@ -70,7 +69,6 @@ void print_usage(char * argv0)
 	qprintf("  -h:  halt after completion.\n");
 	qprintf("  -hl: print full description only.\n");
 	qprintf("  -q:  quiet mode (no text output).\n");
-	qprintf("  -ch[1-11]: explicitly set hostapd wireless channel\n");
 	qprintf("Remarks:\n");
 	qprintf("  If the number is omitted, the value stored in %s/.brain-num\n\
 will be used (if it exists; otherwise 1 is used as default).\n",WFU_HOME);
@@ -92,7 +90,6 @@ scripts needed to set up the mesh network.\n\n"
 "The following files are automatically generated/overwritten:\n\
     /etc/hosts\n\
     /etc/hostname\n\
-    /etc/hostapd/hostapd.conf\n\
     /etc/dhcp/dhcpd.conf\n\
     /etc/network/interfaces\n\
     %s/.brain-num\n\n",
@@ -156,49 +153,6 @@ int write_hostname(int num)
 	
 	fclose(file);
 	qprintf(" [ok]\n");
-	return TRUE;
-}
-
-int write_hostapd(int num)
-{
-	FILE* file = NULL;
-	
-	sprintf(nbuf,"/etc/hostapd/hostapd.conf");
-	qprintf("Writing %s...",nbuf);
-	if ((file = fopen(nbuf,"w")) == NULL)
-	{
-		qprintf("error. are you root?\n");
-		return FALSE;
-	}
-	
-	fprintf(file,"interface=ap0\n");
-	fprintf(file,"country_code=AU\n");
-	fprintf(file,"ieee80211d=1\n");
-	fprintf(file,"driver=nl80211\n"); //old: rtl871xdrv
-	fprintf(file,"ssid=wifindus_public\n");
-	fprintf(file,"hw_mode=g\n");
-	fprintf(file,"channel=%d\n",apChannel);
-	
-	//security
-	fprintf(file,"macaddr_acl=0\n");
-	fprintf(file,"auth_algs=1\n");
-	fprintf(file,"wpa=3\n");
-	fprintf(file,"wpa_passphrase=a8jFIVcag82H461\n");
-	fprintf(file,"wpa_key_mgmt=WPA-PSK\n");
-	fprintf(file,"wpa_pairwise=TKIP\n");
-	fprintf(file,"rsn_pairwise=CCMP\n");
-	fprintf(file,"ignore_broadcast_ssid=0\n");
-	
-	//wireless-n
-	fprintf(file,"ieee80211n=1\n");
-	fprintf(file,"preamble=1\n");
-	fprintf(file,"ap_max_inactivity=60\n");
-	fprintf(file,"disassoc_low_ack=1\n");
-	fprintf(file,"wmm_enabled=1\n");
-	
-	fclose(file);
-	qprintf(" [ok]\n");
-	
 	return TRUE;
 }
 
@@ -327,8 +281,6 @@ int main(int argc, char **argv)
 			detailedHelpMode = TRUE;
 		else if (strcmp(argv[i],"-q") == 0)
 			quietMode = TRUE;
-		else if (strncmp(argv[i],"-ch", 3) == 0 && strlen(argv[i]) > 3)
-			apChannel = atoi(argv[i]+3);
 		else
 		{
 			numExplicit = TRUE;
@@ -358,10 +310,7 @@ int main(int argc, char **argv)
 	}
 	
 	dtoh(num,hex);
-	
-	if (apChannel < 1 || apChannel > 11)
-		apChannel = 6 + (num%2) * 5; //default to 11 for odd numbers, 6 for even
-	
+
 	qprintf("[WiFindUs Brain Auto-Setup %s]\nUnit: wfu-brain-%d (%s)\n",VERSION_STR,num,hex);
 	if (numDefault)
 	{
@@ -376,8 +325,6 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 3;
 	if (!write_hostname(num))
 		return 4;
-	if (!write_hostapd(num))
-		return 6;
 	if (!write_dhcpd(num))
 		return 7;
 	if (!write_network_interfaces(num))
