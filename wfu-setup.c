@@ -238,6 +238,8 @@ int write_brain_num(int num)
 	fclose(file);
 	sprintf(sbuf,"WFU_BRAIN_NUM=%d; export WFU_BRAIN_NUM", num);
 	system(sbuf);
+	sprintf(sbuf,"WFU_BRAIN_NUM_HEX=%s; export WFU_BRAIN_NUM_HEX", hex);
+	system(sbuf);
 	chmod(nbuf, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
 	qprintf(" [ok]\n");
 	
