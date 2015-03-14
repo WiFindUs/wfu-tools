@@ -85,7 +85,7 @@ for WLAN in $WLANS; do
 		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
 		if [ -n "$WLAN_IFACE" ]; then
 			echo "WARNING: $WLAN could not be removed, possibly not nl80211-compatible..."
-			if [ -z "$WLAN_IFACE" ]; then
+			if [ -z "$NON_NL_IFACE" ]; then
 				NON_NL_IFACE=$WLAN_IFACE
 			fi
 		else
