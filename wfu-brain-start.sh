@@ -109,6 +109,7 @@ else
 	ifconfig mesh0 down
 fi
 
+AP_DRIVER="nl80211"
 AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
 if [ -z "$AP_0" ]; then
 	echo "Checking for supported AP adapter..."
@@ -215,8 +216,8 @@ if [ -n "$AP_0" ]; then
 	fi;
 	rm -rf /etc/hostapd/hostapd.conf
 	cp -f $WFU_TOOLS/configs/hostapd.conf /etc/hostapd/hostapd.conf
-	echo -e "\n\ndriver=nl80211" >> /etc/hostapd/hostapd.conf
-	echo "interface=ap0" >> /etc/hostapd/hostapd.conf
+	echo -e "\n\ndriver=$AP_DRIVER" >> /etc/hostapd/hostapd.conf
+	echo "interface=$AP_0" >> /etc/hostapd/hostapd.conf
 	echo "channel=$AP_CHANNEL" >> /etc/hostapd/hostapd.conf
 	
 	#launch new hostapd instance
