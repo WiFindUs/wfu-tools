@@ -1,3 +1,4 @@
+alias wure='wfu-update; sudo shutdown -r now'
 alias wuwu='wfu-update; wfu-update'
 alias wush='wfu-update; sudo wfu-setup -h'
 alias wusr='wfu-update; sudo wfu-setup -r'
