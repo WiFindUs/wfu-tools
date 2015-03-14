@@ -206,6 +206,19 @@ else
 fi
 
 if [ -n "$AP_0" ]; then
+	#append hostapd settings
+	AP_CHANNEL=`expr $WFU_BRAIN_NUM % 2`
+	if [ $AP_CHANNEL -eq 1 ]; then
+		AP_CHANNEL=11
+	else
+		AP_CHANNEL=6
+	fi;
+	rm -rf /etc/hostapd/hostapd.conf
+	cp -f $WFU_TOOLS/configs/hostapd.conf /etc/hostapd/hostapd.conf
+	echo "driver=nl80211" >> /etc/hostapd/hostapd.conf
+	echo "interface=ap0" >> /etc/hostapd/hostapd.conf
+	echo "channel=$AP_CHANNEL" >> /etc/hostapd/hostapd.conf
+	
 	#launch new hostapd instance
 	echo "Starting hostapd..."
 	hostapd -B /etc/hostapd/hostapd.conf
