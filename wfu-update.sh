@@ -89,10 +89,7 @@ if [ -d wfu-tools ]; then
 		
 		sudo rm -f /etc/resolv.conf
 		sudo mv -f configs/resolv.conf /etc
-		
-		sudo rm -f /etc/default/isc-dhcp-server
-		sudo mv -f configs/isc-dhcp-server /etc/default
-		
+	
 		sudo rm -f /etc/default/ifplugd
 		sudo mv -f configs/ifplugd /etc/default
 		

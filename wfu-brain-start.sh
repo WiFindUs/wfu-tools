@@ -226,6 +226,11 @@ if [ -n "$AP_0" ]; then
 	#launch new dhcpd instance if hostapd is running ok
 	HOSTAPD=`pgrep hostapd`
 	if [ -n "$HOSTAPD" ]; then
+		#handle settings
+		sudo rm -f /etc/default/isc-dhcp-server
+		echo -e "INTERFACES=\"$AP_0\"\n" > /etc/default/isc-dhcp-server
+	
+		#launch daemon
 		echo "Started hostapd OK. Starting dhcpd..."
 		dhcpd -4 -q
 	else
