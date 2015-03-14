@@ -73,6 +73,7 @@ fi
 #############################################################
 
 echo "Checking existing wireless interfaces..."
+NON_NL_IFACE=""
 WLANS="wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3"
 for WLAN in $WLANS; do
 	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
@@ -83,7 +84,10 @@ for WLAN in $WLANS; do
 		iw dev "$WLAN_IFACE" del
 		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
 		if [ -n "$WLAN_IFACE" ]; then
-			echo "ERROR: $WLAN could not be removed, possibly not nl80211-compatible..."
+			echo "WARNING: $WLAN could not be removed, possibly not nl80211-compatible..."
+			if [ -z "$WLAN_IFACE" ]; then
+				NON_NL_IFACE=$WLAN_IFACE
+			fi
 		else
 			echo "$WLAN removed OK."
 		fi
@@ -104,41 +108,52 @@ if [ -z "$MESH_0" ]; then
 	else
 		echo "ERROR: no supported mesh adapters detected."
 	fi
-else
-	echo "Bringing mesh0 down..."
-	ifconfig mesh0 down
+fi
+if [ -n "$MESH_0" ]; then
+	echo "Bringing $MESH_0 down..."
+	ifconfig $MESH_0 down
 fi
 
-AP_DRIVER="nl80211"
-AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
+if [ -n "$NON_NL_WLAN" ]; then
+	echo "Detected non-iw AP adapter $NON_NL_WLAN."
+	AP_DRIVER="rtl871xdrv"
+	AP_0=$NON_NL_IFACE
+fi
+
 if [ -z "$AP_0" ]; then
-	echo "Checking for supported AP adapter..."
-	AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected"`
-	if [ -n "$AP_PHY_INFO" ]; then
-		AP_ADAPTER="Ralink RT5370"
-	fi
-
-	if [ -z "$AP_PHY_INFO" ]; then
-		AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected"`
+	AP_DRIVER="nl80211"
+	AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
+	if [ -z "$AP_0" ]; then
+		echo "Checking for iw-supported AP adapter..."
+		AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected"`
 		if [ -n "$AP_PHY_INFO" ]; then
-			AP_ADAPTER="Ralink RT5572"
+			AP_ADAPTER="Ralink RT5370"
 		fi
-	fi
 
-	if [ -n "$AP_PHY_INFO" ]; then
-		AP_PHY=`echo -e "$AP_PHY_INFO" | grep -E -i -o -m 1 "phy[0-9]+"`
-		echo "$AP_ADAPTER detected ($AP_PHY)."
-	else
-		echo "ERROR: no supported AP adapters detected."
-		if [ -n "$MESH_PHY" ]; then
-			echo "FALLBACK: Will use $MESH_PHY for both interfaces."
-			AP_PHY="$MESH_PHY"
-			AP_ADAPTER="$MESH_ADAPTER"
+		if [ -z "$AP_PHY_INFO" ]; then
+			AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected"`
+			if [ -n "$AP_PHY_INFO" ]; then
+				AP_ADAPTER="Ralink RT5572"
+			fi
+		fi
+
+		if [ -n "$AP_PHY_INFO" ]; then
+			AP_PHY=`echo -e "$AP_PHY_INFO" | grep -E -i -o -m 1 "phy[0-9]+"`
+			echo "$AP_ADAPTER detected ($AP_PHY)."
+		else
+			echo "ERROR: no supported AP adapters detected."
+			if [ -n "$MESH_PHY" ]; then
+				echo "FALLBACK: Will use $MESH_PHY for both interfaces."
+				AP_PHY="$MESH_PHY"
+				AP_ADAPTER="$MESH_ADAPTER"
+			fi
 		fi
 	fi
-else
-	echo "Bringing ap0 down..."
-	ifconfig ap0 down
+fi
+
+if [ -n "$AP_0" ]; then
+	echo "Bringing $AP_0 down..."
+	ifconfig $AP_0 down
 fi
 
 if [ -n "$MESH_0" ] || [ -n "$AP_0" ]; then
@@ -149,30 +164,39 @@ echo "Setting regulatory domain..."
 iw reg set AU
 
 if [ -z "$MESH_0" ] && [ -n "$MESH_PHY" ]; then
-	echo "Creating mesh0 interface on $MESH_PHY..."
-	iw phy $MESH_PHY interface add mesh0 type mp mesh_id wifindus_mesh
-	ip link set dev mesh0 address 50:50:50:50:50:$WFU_BRAIN_NUM_HEX
-	MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "mesh0"`
+	MESH_0="mesh0"
+	echo "Creating $MESH_0 interface on $MESH_PHY..."
+	iw phy $MESH_PHY interface add $MESH_0 type mp mesh_id wifindus_mesh
+	MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "$MESH_0"`
+	if [ -n "$MESH_0" ]; then
+		ip link set dev $MESH_0 address 50:50:50:50:50:$WFU_BRAIN_NUM_HEX
+	fi
 fi
 
-if [ -z "$AP_0" ] && [ -n "$AP_PHY" ]; then
-	echo "Creating ap0 interface on $AP_PHY..."
-	iw phy $AP_PHY interface add ap0 type managed
-	ip link set dev ap0 address 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
-	AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
+if [ -z "$AP_0" ] && [ -n "$AP_PHY" ]; then #iw-compat
+	AP_0="ap0"
+	echo "Creating $AP_0 interface on $AP_PHY..."
+	iw phy $AP_PHY interface add $AP_0 type managed
+	AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "$AP_0"`
+	if [ -n "$AP_0" ]; then
+		ip link set dev $AP_0 address 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
+	fi
+elif [ -n "$AP_0" ] && [ -n "$NON_NL_IFACE" ]; then #rtl
+	echo "Configuring non-iw AP interface $AP_0..."
+	ifconfig $AP_0 hw ether 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
 fi
 
 if [ -n "$MESH_0" ]; then
-	echo "Bringing mesh0 up..."
-	ifconfig mesh0 up
-	ifconfig mesh0 10.1.0.$WFU_BRAIN_NUM
+	echo "Bringing $MESH_0 up..."
+	ifconfig $MESH_0 up
+	ifconfig $MESH_0 10.1.0.$WFU_BRAIN_NUM
 fi
 
 if [ -n "$AP_0" ]; then
-	echo "Bringing ap0 up..."
-	ifconfig ap0 up
-	ifconfig ap0 172.16.$WFU_BRAIN_NUM.1
-	ifconfig ap0 netmask 255.255.255.0
+	echo "Bringing $AP_0 up..."
+	ifconfig $AP_0 up
+	ifconfig $AP_0 172.16.$WFU_BRAIN_NUM.1
+	ifconfig $AP_0 netmask 255.255.255.0
 fi
 
 #############################################################
@@ -248,7 +272,7 @@ if [ $WFU_BRAIN_NUM -eq 1 ] || [ -z "$MESH_0" ]; then
 	ip route add 0.0.0.0/0 via 192.168.1.254 dev eth0
 else
 	ip route del 192.168.1.0/24 dev eth0
-	ip route add 0.0.0.0/0 via 10.1.0.1 dev mesh0
+	ip route add 0.0.0.0/0 via 10.1.0.1 dev $MESH_0
 fi
 
 if [ -n "$MESH_0" ]; then
@@ -256,7 +280,7 @@ if [ -n "$MESH_0" ]; then
 	COUNTER=1
 	while true; do
 		if [ $COUNTER -ne $WFU_BRAIN_NUM ]; then
-			ip route add 172.16.$COUNTER.0/24 via 10.1.0.$COUNTER dev mesh0
+			ip route add 172.16.$COUNTER.0/24 via 10.1.0.$COUNTER dev $MESH_0
 		fi
 		COUNTER=`expr $COUNTER + 1`
 		if [ $COUNTER -ge 255 ]; then
