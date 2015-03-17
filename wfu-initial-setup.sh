@@ -135,6 +135,14 @@ sudo apt-get -y autoclean
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
 
+if [ ! -f /lib/firmware/rt2870.bin ]; then
+	echo -e "${STYLE_HEADING}Downloading Ralink rt2870 firmware...${STYLE_NONE}"
+	sudo wget -O /lib/firmware/rt2870.bin http://www.wifindus.com/downloads/rt2870.bin
+	if [ ! -f /lib/firmware/rt2870.bin ]; then
+		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
+	fi
+fi
+
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
 		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
