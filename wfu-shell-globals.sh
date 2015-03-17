@@ -107,6 +107,15 @@ if [ -z "$STYLE_MARKER" ]; then
 	source "$WFU_TOOLS/wfu-shell-styles.sh"
 fi
 
+#ap channel
+WFU_AP_CHANNEL=`expr $WFU_BRAIN_NUM % 2`
+if [ $WFU_AP_CHANNEL -eq 1 ]; then
+	WFU_AP_CHANNEL=11
+else
+	WFU_AP_CHANNEL=6
+fi;
+export WFU_AP_CHANNEL
+
 unset -f read_plaintext
 read_plaintext ()
 {
