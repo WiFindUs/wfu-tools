@@ -56,20 +56,24 @@ echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
 
 echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
 sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
-	wpasupplicant wpagui scratch xpdf idle midori omxplayer netsurf-common \
-	pistore debian-reference* libpoppler19 x11-xserver-utils dillo \
-	wolfram-engine sonic-pi xarchiver xauth xkb-data console-setup \
+	wpasupplicant wpagui scratch xpdf idle midori netsurf-common \
+	debian-reference* libpoppler19 x11-xserver-utils dillo \
+	xarchiver xauth xkb-data console-setup \
 	xinit lightdm lxde* obconf openbox gtk* libgtk* alsa* netsurf-gtk \
 	libx{composite,cb,cursor,damage,dmcp,ext,font,ft,i,inerama,kbfile,klavier,mu,pm,randr,render,res,t,xf86}* \
 	lx{input,menu-data,panel,polkit,randr,session,session-edit,shortcut,task,terminal} \
 	scratch tsconf desktop-file-utils babeld libpng* libmtdev1 libjpeg8 \
 	poppler* libvorbis* libv41* libsamplerate* \
-	penguinspuzzle menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
-	idle-python* fonts-droid esound-common smbclient ^libraspberrypi-* \
+	menu-xdg ^lua* libyaml* libwebp2* libtiff* libsndfile* \
+	idle-python* fonts-droid esound-common smbclient \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
-	raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
+	 gnome-themes-standard-data plymouth netcat-* \
 	udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
 	vim-common vim-tiny hostapd
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
+	sudo apt-get -y purge omxplayer pistore wolfram-engine sonic-pi penguinspuzzle \
+	^libraspberrypi-* raspberrypi-artwork
+fi 
 
 echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
