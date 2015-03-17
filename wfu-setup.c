@@ -240,6 +240,8 @@ int write_brain_num(int num)
 	system(sbuf);
 	sprintf(sbuf,"WFU_BRAIN_NUM_HEX=%s; export WFU_BRAIN_NUM_HEX", hex);
 	system(sbuf);
+	sprintf(sbuf,"WFU_AP_CHANNEL=%d; export WFU_AP_CHANNEL", num % 2 == 0 ? 6 : 11);
+	system(sbuf);
 	chmod(nbuf, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
 	qprintf(" [ok]\n");
 	
