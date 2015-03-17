@@ -58,7 +58,6 @@ if [ $PATCH_HOSTAP -eq 1 ]; then
 	sed -i 's/^#CONFIG_IEEE80211N=y/CONFIG_IEEE80211N=y/g' hostap/hostapd/.config
 	sed -i 's/^#CONFIG_DRIVER_RTW=y/CONFIG_DRIVER_RTW=y/g' hostap/hostapd/.config
 	sed -i 's/^#CONFIG_SUPPORT_RTW_DRIVER=y/CONFIG_SUPPORT_RTW_DRIVER=y/g' hostap/hostapd/.config
-	sed -i 's/^#CONFIG_NO_STDOUT_DEBUG=y/CONFIG_NO_STDOUT_DEBUG=y/g' hostap/hostapd/.config
 fi
 
 #rebuild hostapd
