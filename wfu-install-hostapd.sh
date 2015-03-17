@@ -33,7 +33,7 @@ cd ~
 PATCH_HOSTAP=0
 if [ ! -d "hostap" ]; then
 	echo "Cloning hostapd..."
-	git clone -v http://w1.fi/hostap.git
+	git clone -v --depth 1 git://w1.fi/hostap.git
 	PATCH_HOSTAP=1
 fi
 
@@ -53,11 +53,11 @@ if [ $PATCH_HOSTAP -eq 1 ]; then
 	cp hostapd-rtl871xdrv/driver_rtw.c hostap/src/drivers/driver_rtw.c
 	cp hostapd-rtl871xdrv/.config hostap/hostapd/.config
 	
-	sed -i 's/^#CONFIG_DRIVER_HOSTAP=y/CONFIG_DRIVER_HOSTAP=y/g' hostap/hostapd/.config
-	sed -i 's/^#CONFIG_DRIVER_NL80211=y/CONFIG_DRIVER_NL80211=y/g' hostap/hostapd/.config
-	sed -i 's/^#CONFIG_IEEE80211N=y/CONFIG_IEEE80211N=y/g' hostap/hostapd/.config
-	sed -i 's/^#CONFIG_DRIVER_RTW=y/CONFIG_DRIVER_RTW=y/g' hostap/hostapd/.config
-	sed -i 's/^#CONFIG_SUPPORT_RTW_DRIVER=y/CONFIG_SUPPORT_RTW_DRIVER=y/g' hostap/hostapd/.config
+	echo -e "\nCONFIG_DRIVER_HOSTAP=y" >> hostap/hostapd/.config
+	echo "CONFIG_DRIVER_NL80211=y" >> hostap/hostapd/.config
+	echo "CONFIG_IEEE80211N=y" >> hostap/hostapd/.config
+	echo "CONFIG_DRIVER_RTW=y" >> hostap/hostapd/.config
+	echo "CONFIG_IEEE80211AC=y" >> hostap/hostapd/.config
 fi
 
 #rebuild hostapd
