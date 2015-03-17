@@ -105,6 +105,11 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/default/crda
 		sudo mv -f configs/crda /etc/default
 		
+		sudo rm -f /etc/hostapd/hostapd.conf
+		sudo mv -f configs/hostapd.conf /etc/hostapd/hostapd.conf
+		
+		sudo rm -rf configs
+		
 		cd ..
 		if [ -d wfu-tools-old ]; then
 			echo -e "  ${STYLE_HEADING}deleting tools backup...${STYLE_NONE}"
