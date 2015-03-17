@@ -69,7 +69,7 @@ sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 	 gnome-themes-standard-data plymouth netcat-* \
 	udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
-	vim-common vim-tiny hostapd
+	vim-common vim-tiny
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	sudo apt-get -y purge omxplayer pistore wolfram-engine sonic-pi penguinspuzzle \
 	^libraspberrypi-* raspberrypi-artwork
@@ -115,12 +115,11 @@ fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 sudo apt-get -y install build-essential haveged iw git autoconf gpsd \
-	secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-	firmware-ralink firmware-atheros ntp bc nano psmisc libnl-dev ncurses-dev \
+	secure-delete isc-dhcp-server gpsd-clients crda  \
+	firmware-ralink firmware-atheros ntp bc nano psmisc hostapd\
 	
-#sudo apt-get -y install hostapd
-#sudo update-rc.d -f hostapd remove
-#sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
+sudo update-rc.d -f hostapd remove
+sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
 sudo update-rc.d -f isc-dhcp-server stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f gpsd remove
@@ -134,14 +133,6 @@ sudo apt-get -y autoclean
 #===============================================================
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
-
-if [ ! -f /lib/firmware/rt2870.bin ]; then
-	echo -e "${STYLE_HEADING}Downloading Ralink rt2870 firmware...${STYLE_NONE}"
-	sudo wget -O /lib/firmware/rt2870.bin http://www.wifindus.com/downloads/rt2870.bin
-	if [ ! -f /lib/firmware/rt2870.bin ]; then
-		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-	fi
-fi
 
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
