@@ -65,6 +65,12 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /usr/bin/wfu-heartbeat
 		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
 		
+		sudo rm -f /usr/bin/wfu-install-hostapd
+		sudo ln -s "$WFU_TOOLS/wfu-install-hostapd.sh" /usr/bin/wfu-install-hostapd
+		
+		sudo rm -f /usr/bin/wfu-update-apt
+		sudo ln -s "$WFU_TOOLS/wfu-update-apt.sh" /usr/bin/wfu-update-apt
+		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				
 		sudo rm -f "$CURRENT_HOME/.bashrc"
@@ -126,3 +132,4 @@ if [ -d wfu-tools-old ]; then
 fi
 
 echo -e "$  {STYLE_WARNING}finished (with errors).${STYLE_NONE}\n"
+exit 1
