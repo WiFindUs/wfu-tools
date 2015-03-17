@@ -25,6 +25,7 @@ fi
 
 sudo chown "$CURRENT_USER" "$WFU_HOME"
 cd "$WFU_TOOLS"
+sudo chmod 777 *.sh
 
 #===============================================================
 # INTRO
@@ -43,11 +44,15 @@ PASSWORD=`read_password "a password for the user '$CURRENT_USER'" 6 12`
 echo -e "  ${STYLE_INFO}...that's all I need for now. The script will take a few minutes.${STYLE_NONE}\n"
 
 #===============================================================
-# PURGE PACKAGES
+# UPDATE APT
 #===============================================================
 
 echo -e "${STYLE_HEADING}Updating apt-get database...${STYLE_NONE}"
-sudo apt-get -y update
+./wfu-update-apt.sh
+
+#===============================================================
+# PURGE PACKAGES
+#===============================================================
 
 echo -e "${STYLE_HEADING}Uninstalling unnecessary packages...${STYLE_NONE}"
 sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
@@ -64,7 +69,7 @@ sudo apt-get -y purge xserver* x11-common x11-utils x11-xkb-utils  \
 	libsclang* libscsynth* libruby* libwibble* ^vim-* samba-common \
 	raspberrypi-artwork gnome-themes-standard-data plymouth netcat-* \
 	udhcpd xdg-utils libfreetype* bash-completion ncurses-term wpasupplicant \
-	vim-common vim-tiny
+	vim-common vim-tiny hostapd
 
 echo -e "${STYLE_HEADING}Removing config-only apt entries...${STYLE_NONE}"
 dpkg -l | grep -o -E "^rc  [a-zA-Z0-9\\.-]+" | grep -o -E "[a-zA-Z0-9\\.-]+$" | tr -s "\n" " " | xargs sudo apt-get -y purge
@@ -105,11 +110,13 @@ if [ $IS_RASPBERRY_PI -eq 1 ]; then
 fi
 
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
-sudo apt-get -y install build-essential haveged hostapd iw git autoconf gpsd \
+sudo apt-get -y install build-essential haveged iw git autoconf gpsd \
 	secure-delete isc-dhcp-server gpsd-clients crda firmware-realtek \
-	firmware-ralink firmware-atheros ntp bc nano psmisc
-sudo update-rc.d -f hostapd remove
-sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
+	firmware-ralink firmware-atheros ntp bc nano psmisc libnl-dev ncurses-dev \
+	
+#sudo apt-get -y install hostapd
+#sudo update-rc.d -f hostapd remove
+#sudo update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f isc-dhcp-server remove
 sudo update-rc.d -f isc-dhcp-server stop 80 0 1 2 3 4 5 6 .
 sudo update-rc.d -f gpsd remove
