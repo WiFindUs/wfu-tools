@@ -73,7 +73,6 @@ fi
 #############################################################
 
 echo "Checking existing wireless interfaces..."
-NON_NL_IFACE=""
 WLANS="wlan0 wlan1 wlan2 wlan3 ra0 ra1 ra2 ra3"
 for WLAN in $WLANS; do
 	WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
@@ -85,9 +84,6 @@ for WLAN in $WLANS; do
 		WLAN_IFACE=`iwconfig 2>&1 | grep -o -i -m 1 "$WLAN"`
 		if [ -n "$WLAN_IFACE" ]; then
 			echo "WARNING: $WLAN could not be removed, possibly not nl80211-compatible..."
-			if [ -z "$NON_NL_IFACE" ]; then
-				NON_NL_IFACE=$WLAN_IFACE
-			fi
 		else
 			echo "$WLAN removed OK."
 		fi
@@ -96,7 +92,7 @@ done
 
 MESH_0=`iwconfig 2>&1 | grep -o -i -m 1 "mesh0"`
 if [ -z "$MESH_0" ]; then
-	echo "Checking for supported mesh adapter..."
+	echo "Checking for iw-supported mesh adapter..."
 	MESH_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: Atheros AR9271"`
 	if [ -n "$MESH_PHY_INFO" ]; then
 		MESH_ADAPTER="Atheros AR9271"
@@ -108,50 +104,38 @@ if [ -z "$MESH_0" ]; then
 	else
 		echo "ERROR: no supported mesh adapters detected."
 	fi
-fi
-if [ -n "$MESH_0" ]; then
+else
 	echo "Bringing $MESH_0 down..."
 	ifconfig $MESH_0 down
 fi
 
-if [ -n "$NON_NL_IFACE" ]; then
-	echo "Detected non-iw AP adapter $NON_NL_IFACE."
-	AP_DRIVER="rtl871xdrv"
-	AP_0=$NON_NL_IFACE
-fi
-
+AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
 if [ -z "$AP_0" ]; then
-	AP_DRIVER="nl80211"
-	AP_0=`iwconfig 2>&1 | grep -o -i -m 1 "ap0"`
-	if [ -z "$AP_0" ]; then
-		echo "Checking for iw-supported AP adapter..."
-		AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected"`
-		if [ -n "$AP_PHY_INFO" ]; then
-			AP_ADAPTER="Ralink RT5370"
-		fi
+	echo "Checking for iw-supported AP adapter..."
+	AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rf: Info - RF chipset 5370(, rev [0-9]+)? detected"`
+	if [ -n "$AP_PHY_INFO" ]; then
+		AP_ADAPTER="Ralink RT5370"
+	fi
 
-		if [ -z "$AP_PHY_INFO" ]; then
-			AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected"`
-			if [ -n "$AP_PHY_INFO" ]; then
-				AP_ADAPTER="Ralink RT5572"
-			fi
-		fi
-
+	if [ -z "$AP_PHY_INFO" ]; then
+		AP_PHY_INFO=`echo -e $DMESG | grep -E -i -o -m 1 "phy[0-9]+: rt2x00_set_rt: Info - RT chipset 5592(, rev [0-9]+)? detected"`
 		if [ -n "$AP_PHY_INFO" ]; then
-			AP_PHY=`echo -e "$AP_PHY_INFO" | grep -E -i -o -m 1 "phy[0-9]+"`
-			echo "$AP_ADAPTER detected ($AP_PHY)."
-		else
-			echo "ERROR: no supported AP adapters detected."
-			if [ -n "$MESH_PHY" ]; then
-				echo "FALLBACK: Will use $MESH_PHY for both interfaces."
-				AP_PHY="$MESH_PHY"
-				AP_ADAPTER="$MESH_ADAPTER"
-			fi
+			AP_ADAPTER="Ralink RT5572"
 		fi
 	fi
-fi
 
-if [ -n "$AP_0" ]; then
+	if [ -n "$AP_PHY_INFO" ]; then
+		AP_PHY=`echo -e "$AP_PHY_INFO" | grep -E -i -o -m 1 "phy[0-9]+"`
+		echo "$AP_ADAPTER detected ($AP_PHY)."
+	else
+		echo "ERROR: no supported AP adapters detected."
+		if [ -n "$MESH_PHY" ]; then
+			echo "FALLBACK: Will use $MESH_PHY for both interfaces."
+			AP_PHY="$MESH_PHY"
+			AP_ADAPTER="$MESH_ADAPTER"
+		fi
+	fi
+else
 	echo "Bringing $AP_0 down..."
 	ifconfig $AP_0 down
 fi
@@ -181,9 +165,6 @@ if [ -z "$AP_0" ] && [ -n "$AP_PHY" ]; then #iw-compat
 	if [ -n "$AP_0" ]; then
 		ip link set dev $AP_0 address 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
 	fi
-elif [ -n "$AP_0" ] && [ -n "$NON_NL_IFACE" ]; then #rtl
-	echo "Configuring non-iw AP interface $AP_0..."
-	ifconfig $AP_0 hw ether 60:60:60:60:60:$WFU_BRAIN_NUM_HEX
 fi
 
 if [ -n "$MESH_0" ]; then
@@ -231,18 +212,9 @@ else
 fi
 
 if [ -n "$AP_0" ]; then
-	#append hostapd settings
-	AP_CHANNEL=`expr $WFU_BRAIN_NUM % 2`
-	if [ $AP_CHANNEL -eq 1 ]; then
-		AP_CHANNEL=11
-	else
-		AP_CHANNEL=6
-	fi;
-	rm -rf /etc/hostapd/hostapd.conf
-	cp -f $WFU_TOOLS/configs/hostapd.conf /etc/hostapd/hostapd.conf
-	echo -e "\n\ndriver=$AP_DRIVER" >> /etc/hostapd/hostapd.conf
-	echo "interface=$AP_0" >> /etc/hostapd/hostapd.conf
-	echo "channel=$AP_CHANNEL" >> /etc/hostapd/hostapd.conf
+	#update hostapd settings
+	sudo sed -i -r "s/^channel=[0-9]+/channel=$WFU_AP_CHANNEL/g" /etc/hostapd/hostapd.conf
+	sudo sed -i -r "s/^interface=[a-z0-9]+/interface=$AP_0/g" /etc/hostapd/hostapd.conf
 	
 	#launch new hostapd instance
 	echo "Starting hostapd..."
