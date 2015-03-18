@@ -113,11 +113,11 @@ while true; do
 		if [ -n "$GPS_DATA" ]; then
 			TPV_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"TPV\""`
 			if [ -n "$TPV_DATA" ]; then
-				LONGITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lon\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
-				LATITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lat\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
-				ALTITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"alt\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
-				ACC_X=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epx\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
-				ACC_Y=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epy\":[+-]?[0-9]+[.][0-9]+" | cut -d':' -f2`
+				LONGITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lon\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				LATITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lat\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ALTITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"alt\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ACC_X=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epx\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ACC_Y=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epy\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
 				
 				if [ -n "$LONGITUDE" ]; then
 					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
@@ -159,21 +159,21 @@ while true; do
 		fi
 	else
 		if [ -f "$WFU_HOME/.fakegps-latitude" ] && [ -f "$WFU_HOME/.fakegps-longitude" ]; then
-			LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
-			LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+			LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+			LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
 			if [ -n "$LATITUDE" ] && [ -n "LONGITUDE" ]; then
 				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
 				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
 				PACKET="$PACKET|gps:1|lat:$LATITUDE|long:$LONGITUDE"
 				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
-					ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+					ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
 					if [ -n "$ALTITUDE" ]; then
 						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
 						PACKET="$PACKET|alt:$ALTITUDE"
 					fi
 				fi
 				if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
-					ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+					ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"

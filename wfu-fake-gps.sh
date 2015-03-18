@@ -22,10 +22,10 @@ if [ -n "$REMOVE" ]; then
 	exit 0
 fi
 
-LATITUDE=`echo "$1" | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
-LONGITUDE=`echo "$2" | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
-ALTITUDE=`echo "$3" | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
-ACCURACY=`echo "$4" | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+LATITUDE=`echo "$1" | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+LONGITUDE=`echo "$2" | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+ALTITUDE=`echo "$3" | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+ACCURACY=`echo "$4" | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
 if [ -n "$LATITUDE" ] && [ -n "$LONGITUDE" ]; then
 	LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
 	LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
