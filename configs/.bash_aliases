@@ -6,3 +6,4 @@ alias rcedit='sudo nano /etc/rc.local'
 alias rclog="cat /usr/local/wifindus/rc.local.log"
 alias cdtools="cd /usr/local/wifindus/wfu-tools"
 alias cdhome="cd /usr/local/wifindus"
+alias fakegps="wfu-fake-gps"

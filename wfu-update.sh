@@ -11,7 +11,7 @@
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 else
-	echo "could not find globals for current user. aborting."
+	echo "ERROR: Could not find globals for current user. aborting."
 	exit 1
 fi
 
@@ -67,6 +67,9 @@ if [ -d wfu-tools ]; then
 		
 		sudo rm -f /usr/bin/wfu-update-apt
 		sudo ln -s "$WFU_TOOLS/wfu-update-apt.sh" /usr/bin/wfu-update-apt
+		
+		sudo rm -f /usr/bin/wfu-fake-gps
+		sudo ln -s "$WFU_TOOLS/wfu-fake-gps.sh" /usr/bin/wfu-fake-gps
 		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				

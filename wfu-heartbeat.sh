@@ -11,7 +11,7 @@
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 else
-	echo "could not find globals for current user. aborting."
+	echo "ERROR: Could not find globals for current user. aborting."
 	exit 1
 fi
 
@@ -91,8 +91,6 @@ while true; do
 		PACKET="$PACKET|mp:0|mpl:0"
 	fi
 	
-
-	
 	HOSTAPD=`pgrep -l hostapd`
 	AP_0=`ifconfig | grep -m 1 "^ap0"`
 	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ]; then
@@ -136,13 +134,13 @@ while true; do
 					PACKET="$PACKET|alt:$ALTITUDE"
 				fi
 				
-				if [ -z "$ACC_X" ] || [ -n "$ACC_Y" ]; then
+				if [ -z "$ACC_X" ] && [ -n "$ACC_Y" ]; then
 					ACC_X="$ACC_Y"
-				elif [ -z "$ACC_Y" ] || [ -n "$ACC_X" ]; then
+				elif [ -z "$ACC_Y" ] && [ -n "$ACC_X" ]; then
 					ACC_Y="$ACC_X"
 				fi
 				
-				if [ -n "$ACC_Y" ] || [ -n "$ACC_X" ]; then
+				if [ -n "$ACC_Y" ] && [ -n "$ACC_X" ]; then
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
@@ -154,14 +152,39 @@ while true; do
 			SKY_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"SKY\""`
 			if [ -n "$SKY_DATA" ]; then
 				SATCOUNT=`echo "$SKY_DATA" | grep -E -m 1 -o "\"satellites\":\[.*\]" | grep -o -P "{.*?\"used\":true.*?}" | wc -l`
-				
 				if [ -n "$SATCOUNT" ]; then
 					PACKET="$PACKET|sats:$SATCOUNT"
 				fi
 			fi
 		fi
 	else
-		PACKET="$PACKET|gps:0"
+		if [ -f "$WFU_HOME/.fakegps-latitude" ] && [ -f "$WFU_HOME/.fakegps-longitude" ]; then
+			LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+			LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+			if [ -n "$LATITUDE" ] && [ -n "LONGITUDE" ]; then
+				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
+				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
+				PACKET="$PACKET|gps:1|lat:$LATITUDE|long:$LONGITUDE"
+				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
+					ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+					if [ -n "$ALTITUDE" ]; then
+						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+						PACKET="$PACKET|alt:$ALTITUDE"
+					fi
+				else
+				if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
+					ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
+					if [ -n "$ACCURACY" ]; then
+						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
+						PACKET="$PACKET|acc:$ACCURACY"
+					fi
+				else
+			else
+				PACKET="$PACKET|gps:0"
+			fi
+		else
+			PACKET="$PACKET|gps:0"
+		fi
 	fi
 
 	echo "$PACKET}}" > "/dev/udp/$SERVER/$PORT"
