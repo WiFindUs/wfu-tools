@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-REMOVE=`echo "$1" | grep -E -o -m 1 -i "(remove|clear)"`
+REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off)"`
 if [ -n "$REMOVE" ]; then
 	rm -f $WFU_HOME/.fakegps-*
 	echo "Cleared all fakegps data."
