@@ -171,14 +171,14 @@ while true; do
 						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
 						PACKET="$PACKET|alt:$ALTITUDE"
 					fi
-				else
+				fi
 				if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
 					ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+[.][0-9]+"`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"
 					fi
-				else
+				fi
 			else
 				PACKET="$PACKET|gps:0"
 			fi
