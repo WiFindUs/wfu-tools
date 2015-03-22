@@ -19,6 +19,8 @@ fi
 while true; do
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
 		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
+	else
+		SLEEP=0
 	fi
 	if [ -z $SLEEP ]; then
 		SLEEP=10
@@ -28,6 +30,8 @@ while true; do
 
 	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
 		SERVER=`cat $WFU_HOME/.heartbeat-server`
+	else
+		SERVER=""
 	fi
 	if [ -z $SERVER ]; then
 		SERVER="wfu-server"
@@ -35,6 +39,8 @@ while true; do
 
 	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
 		PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
+	else
+		PORT=0
 	fi
 	if [ -z $PORT ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
 		PORT=33339
