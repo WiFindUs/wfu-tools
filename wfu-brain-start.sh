@@ -290,7 +290,8 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 echo "Launching heartbeat packet process..."
 if [ $WFU_BRAIN_NUM -eq 1 ] || [ -n "$MESH_0" ]; then
-	wfu-heartbeat -1 &
+	wfu-heartbeat &
+	echo "Heartbeat launched OK."
 else
 	echo "ERROR: heartbeat sends only when brain number == 1 OR mesh0 is present."
 fi
