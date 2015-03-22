@@ -16,7 +16,7 @@ else
 fi
 
 REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off|def(ault)?)"`
-if [ -n $REMOVE ]; then
+if [ -n "$REMOVE" ]; then
 	rm -f $WFU_HOME/.heartbeat-*
 	echo "Reset heartbeat packet configuration to default."
 	exit 0
@@ -26,21 +26,21 @@ SLEEP=`echo "$1" | grep -E -o -m 1 "[+]?[0-9]+"`
 SERVER=`echo "$2" | grep -E -o -i -m 1 "[0-9a-z:_./]"`
 PORT=`echo "$3" | grep -E -o -m 1 "[0-9]{1,5}"`
 
-if [ -n $SLEEP ]; then
+if [ -n "$SLEEP" ]; then
 	if [ $SLEEP -le 0 ]; then
 		SLEEP=1
 	fi
 	echo "$SLEEP" > $WFU_HOME/.heartbeat-sleep
 	MESSAGE="Set heartbeat packet configuration to Sleep: $SLEEP sec"
 	
-	if [ -n $SERVER ]; then
+	if [ -n "$SERVER" ]; then
 		echo "$SERVER" > $WFU_HOME/.heartbeat-server
 		MESSAGE="$MESSAGE, Server: $SERVER"
 	else
 		rm -f $WFU_HOME/.heartbeat-server
 	fi
 	
-	if [ -n $PORT ] && [ $PORT -gt 0 ] && [ $PORT -lt 65535 ]; then
+	if [ -n "$PORT" ] && [ $PORT -gt 0 ] && [ $PORT -lt 65535 ]; then
 		echo "$PORT" > $WFU_HOME/.heartbeat-port
 		MESSAGE="$MESSAGE, Port: $PORT"
 	else
