@@ -74,8 +74,6 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /usr/bin/wfu-heartbeat-config
 		sudo ln -s "$WFU_TOOLS/wfu-heartbeat-config.sh" /usr/bin/wfu-heartbeat-config
 		
-		wfu-heartbeat-config.sh
-		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				
 		sudo rm -f "$CURRENT_HOME/.bashrc"
