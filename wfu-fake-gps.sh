@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off)"`
+REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off|def(ault)?)"`
 if [ -n "$REMOVE" ]; then
 	rm -f $WFU_HOME/.fakegps-*
 	echo "Cleared all fakegps data."
@@ -55,5 +55,5 @@ else
 	echo "ERROR: invalid latitude or longitude arguments."
 fi
 
-echo -e "Usage: wfu-fake-gps latitude longitude [altitude] [accuracy]\n   or: wfu-fake-gps clear"
+echo -e "Usage: wfu-fake-gps <latitude> <longitude> [<altitude>] [<accuracy>]\n   or: wfu-fake-gps clear"
 exit 2
