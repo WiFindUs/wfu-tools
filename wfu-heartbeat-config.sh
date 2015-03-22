@@ -23,7 +23,7 @@ if [ -n "$REMOVE" ]; then
 fi
 
 SLEEP=`echo "$1" | grep -E -o -m 1 "[+]?[0-9]+"`
-SERVER=`echo "$2" | grep -E -o -i -m 1 "[0-9a-z:_./]"`
+SERVER=`echo "$2" | grep -E -o -i -m 1 "[0-9a-z:_./]+"`
 PORT=`echo "$3" | grep -E -o -m 1 "[0-9]{1,5}"`
 
 if [ -n "$SLEEP" ]; then
