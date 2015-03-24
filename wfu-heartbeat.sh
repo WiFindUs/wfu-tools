@@ -156,7 +156,7 @@ while true; do
 			if [ -n "$LATITUDE" ] && [ -n "LONGITUDE" ]; then
 				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
 				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
-				PACKET="$PACKET|gps:1|lat:$LATITUDE|long:$LONGITUDE"
+				PACKET="$PACKET|gps:2|lat:$LATITUDE|long:$LONGITUDE"
 				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
 					ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
 					if [ -n "$ALTITUDE" ]; then
