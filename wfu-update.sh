@@ -79,14 +79,14 @@ if [ -d wfu-tools ]; then
 		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				
-		sudo rm -f "$CURRENT_HOME/.bashrc"
-		sudo mv -f configs/.bashrc "$CURRENT_HOME"
+		sudo rm -f "$WFU_USER_HOME/.bashrc"
+		sudo mv -f configs/.bashrc "$WFU_USER_HOME"
 		
-		sudo rm -f "$CURRENT_HOME/.bash_aliases"
-		sudo mv -f configs/.bash_aliases "$CURRENT_HOME"
+		sudo rm -f "$WFU_USER_HOME/.bash_aliases"
+		sudo mv -f configs/.bash_aliases "$WFU_USER_HOME"
 		
-		sudo rm -f "$CURRENT_HOME/.profile"
-		sudo mv -f configs/.profile "$CURRENT_HOME"
+		sudo rm -f "$WFU_USER_HOME/.profile"
+		sudo mv -f configs/.profile "$WFU_USER_HOME"
 		
 		sudo rm -f /etc/rc.local
 		sudo mv -f configs/rc.local /etc
