@@ -15,6 +15,39 @@ else
 	exit 1
 fi
 
+if [ -z $1 ]; then
+	MESSAGE="Heartbeat packet configuration currently set to:"
+	
+	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
+		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
+	else
+		SLEEP=1
+	fi
+	if [ -z $SLEEP ]; then
+		SLEEP=10
+	fi
+	MESSAGE="$MESSAGE\n  Sleep: $SLEEP"
+	
+	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
+		SERVER=`cat $WFU_HOME/.heartbeat-server`
+	fi
+	if [ -z $SERVER ]; then
+		SERVER="wfu-server"
+	fi
+	MESSAGE="$MESSAGE\n  Server: $SERVER"
+	
+	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
+		PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
+	fi
+	if [ -z $PORT ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
+		PORT=33339
+	fi
+	MESSAGE="$MESSAGE\n  Port: $PORT"
+	
+	echo -e $MESSAGE
+	exit 0
+fi
+
 REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off|def(ault)?)"`
 if [ -n "$REMOVE" ]; then
 	rm -f $WFU_HOME/.heartbeat-*
@@ -25,33 +58,34 @@ fi
 SLEEP=`echo "$1" | grep -E -o -m 1 "[+]?[0-9]+"`
 SERVER=`echo "$2" | grep -E -o -i -m 1 "[0-9a-z:_./]+"`
 PORT=`echo "$3" | grep -E -o -m 1 "[0-9]{1,5}"`
-
 if [ -n "$SLEEP" ]; then
 	if [ $SLEEP -le 0 ]; then
 		SLEEP=1
 	fi
 	echo "$SLEEP" > $WFU_HOME/.heartbeat-sleep
-	MESSAGE="Set heartbeat packet configuration to Sleep: $SLEEP sec"
+	MESSAGE="Set heartbeat packet configuration to:\n  Sleep: $SLEEP sec"
 	
 	if [ -n "$SERVER" ]; then
 		echo "$SERVER" > $WFU_HOME/.heartbeat-server
-		MESSAGE="$MESSAGE, Server: $SERVER"
+		MESSAGE="$MESSAGE\n  Server: $SERVER"
 	else
 		rm -f $WFU_HOME/.heartbeat-server
+		MESSAGE="$MESSAGE\n  Server: wfu-server"
 	fi
 	
 	if [ -n "$PORT" ] && [ $PORT -gt 0 ] && [ $PORT -lt 65535 ]; then
 		echo "$PORT" > $WFU_HOME/.heartbeat-port
-		MESSAGE="$MESSAGE, Port: $PORT"
+		MESSAGE="$MESSAGE\n  Port: $PORT"
 	else
 		rm -f $WFU_HOME/.heartbeat-port
+		MESSAGE="$MESSAGE\n  Port: 33339"
 	fi
 	
-	echo $MESSAGE
+	echo -e $MESSAGE
 	exit 0
 else
-	echo "ERROR: invalid sleep argument."
+	echo "ERROR: sleep argument missing or invalid."
 fi
 
-echo -e "Usage: wfu-heartbeat-config <sleep> [<server>] [<port>]\n   or: wfu-heartbeat-config clear"
+echo -e "Usage:\n  wfu-heartbeat-config\n  wfu-heartbeat-config <sleep> [<server>] [<port>]\n  wfu-heartbeat-config clear"
 exit 2
