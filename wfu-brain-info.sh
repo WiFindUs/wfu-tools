@@ -19,8 +19,7 @@ fi
 MESSAGE="Brain environment information:"
 MESSAGE="$MESSAGE\n  Node ID (int): $WFU_BRAIN_ID"
 MESSAGE="$MESSAGE\n  Node ID (hex): $WFU_BRAIN_ID_HEX"
-MESSAGE="$MESSAGE\n  Station # (int): $WFU_BRAIN_NUM"
-MESSAGE="$MESSAGE\n  Station # (hex): $WFU_BRAIN_NUM_HEX"
+MESSAGE="$MESSAGE\n  Station #: $WFU_BRAIN_NUM"
 MESSAGE="$MESSAGE\n  AP channel: $WFU_AP_CHANNEL"
 echo -e $MESSAGE
 
