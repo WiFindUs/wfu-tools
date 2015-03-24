@@ -20,7 +20,7 @@ while true; do
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
 		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
 	else
-		SLEEP=0
+		SLEEP=1
 	fi
 	if [ -z $SLEEP ]; then
 		SLEEP=10
