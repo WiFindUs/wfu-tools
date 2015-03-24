@@ -282,7 +282,8 @@ iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
 iptables -A INPUT -p udp --dport 33339:33340 -j ACCEPT
 iptables -A INPUT -p udp --dport 123 -j ACCEPT
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o eth0 --dport 1:33338 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o eth0 --dport 33341:65535 -j MASQUERADE
 
 #############################################################
 ### Heartbeat
