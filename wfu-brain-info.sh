@@ -16,7 +16,7 @@ else
 fi
 
 #node info
-MESSAGE="Node environment information:"
+MESSAGE="Brain environment information:"
 MESSAGE="$MESSAGE\n  Node ID (int): $WFU_BRAIN_ID"
 MESSAGE="$MESSAGE\n  Node ID (hex): $WFU_BRAIN_ID_HEX"
 MESSAGE="$MESSAGE\n  Station # (int): $WFU_BRAIN_NUM"
