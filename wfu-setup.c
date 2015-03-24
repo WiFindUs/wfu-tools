@@ -66,7 +66,6 @@ void print_usage(char * argv0)
 	qprintf("Usage: %s [options] [1-254]\n",argv0);
 	qprintf("Options:\n");
 	qprintf("  -r:  reboot after completion.\n");
-	qprintf("  -h:  halt after completion.\n");
 	qprintf("  -hl: print full description only.\n");
 	qprintf("  -q:  quiet mode (no text output).\n");
 	qprintf("Remarks:\n");
@@ -271,7 +270,6 @@ int main(int argc, char **argv)
 	int numDefault = FALSE;
 	int numExplicit = FALSE;
 	int autoReboot = FALSE;
-	int autoHalt = FALSE;
 	int detailedHelpMode = FALSE;
 	//end vars
 	
@@ -279,8 +277,6 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(argv[i],"-r") == 0)
 			autoReboot = TRUE;
-		else if (strcmp(argv[i],"-h") == 0)
-			autoHalt = TRUE;
 		else if (strcmp(argv[i],"-hl") == 0)
 			detailedHelpMode = TRUE;
 		else if (strcmp(argv[i],"-q") == 0)
@@ -335,12 +331,12 @@ system. 1 has been used as default.\n",VERSION_STR,num);
 		return 9;
 	if (!write_brain_num(num))
 		return 11;
-	if (autoReboot || autoHalt)
+	if (autoReboot)
 	{
 		pid_t proc = fork();
 		if (proc == 0)
 		{
-			sprintf(sbuf,"shutdown -%s now > /dev/null", autoHalt ? "h" : "r");
+			sprintf(sbuf,"reboot");
 			return system(sbuf);
 		}
 		else if (proc < 0)
