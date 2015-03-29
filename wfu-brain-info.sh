@@ -17,11 +17,10 @@ fi
 
 #node info
 MESSAGE="Brain environment information:"
-MESSAGE="$MESSAGE\n  WFU Tools version: $WFU_VERSION_DATE"
-MESSAGE="$MESSAGE\n  Node ID (int): $WFU_BRAIN_ID"
-MESSAGE="$MESSAGE\n  Node ID (hex): $WFU_BRAIN_ID_HEX"
-MESSAGE="$MESSAGE\n  Station #: $WFU_BRAIN_NUM"
-MESSAGE="$MESSAGE\n  AP channel: $WFU_AP_CHANNEL"
+MESSAGE="$MESSAGE\n  Node version: $WFU_VERSION"
+MESSAGE="$MESSAGE\n  Node ID     : $WFU_BRAIN_ID_HEX"
+MESSAGE="$MESSAGE\n  Station #   : $WFU_BRAIN_NUM"
+MESSAGE="$MESSAGE\n  AP channel  : $WFU_AP_CHANNEL"
 echo -e $MESSAGE
 
 exit 0

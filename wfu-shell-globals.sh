@@ -92,7 +92,7 @@ if [ -z "$WFU_BRAIN_NUM_HEX" ]; then
 fi
 
 # brain id
-if [ -z "$WFU_BRAIN_ID" ]; then
+if [ -z "$WFU_BRAIN_ID_HEX" ]; then
 	if [ -f "$WFU_HOME/.brain-id" ]; then
 		sudo chmod 666 "$WFU_HOME/.brain-id"
 		WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
@@ -102,9 +102,7 @@ if [ -z "$WFU_BRAIN_ID" ]; then
 		echo $WFU_BRAIN_ID > "$WFU_HOME/.brain-id"
 		sudo chmod 666 "$WFU_HOME/.brain-id"
 	fi
-	export WFU_BRAIN_ID
-fi
-if [ -z "$WFU_BRAIN_ID_HEX" ]; then
+	
 	WFU_BRAIN_ID_HEX=`printf "%x\n" $WFU_BRAIN_ID | tr '[:lower:]' '[:upper:]'`
 	export WFU_BRAIN_ID_HEX
 fi
