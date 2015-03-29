@@ -135,6 +135,7 @@ if [ -d wfu-tools ]; then
 		if [[ $1 =~ ^reboot$ ]]; then
 			sleep 5
 			sudo reboot
+		fi
 		exit 0
 	else
 		echo -e "      ${STYLE_ERROR}error! wfu-tools was not built.${STYLE_NONE}"
