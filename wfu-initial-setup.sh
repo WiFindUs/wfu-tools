@@ -165,8 +165,8 @@ fi
 echo -e "${STYLE_HEADING}Installing packages required by WFU...${STYLE_NONE}"
 apt-get -y install build-essential haveged iw git autoconf gpsd \
 	secure-delete isc-dhcp-server gpsd-clients crda  \
-	firmware-ralink firmware-atheros ntp bc nano psmisc hostapd\
-	
+	firmware-ralink firmware-atheros ntp bc nano psmisc hostapd \
+	sshpass
 update-rc.d -f hostapd remove
 update-rc.d -f hostapd stop 80 0 1 2 3 4 5 6 .
 update-rc.d -f isc-dhcp-server remove

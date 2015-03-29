@@ -95,6 +95,16 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+#wifindus wfu aliases
+COUNTER=1
+while true; do
+	alias sshwfu${COUNTER}='sshpass -p "omgwtflol87" ssh -o StrictHostKeyChecking=no wifindus@wfu${COUNTER}'
+	COUNTER=`expr $COUNTER + 1`
+	if [ $COUNTER -ge 255 ]; then
+		break
+	fi
+done
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
