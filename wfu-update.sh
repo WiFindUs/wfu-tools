@@ -115,14 +115,32 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/hostapd/hostapd.conf
 		sudo mv -f configs/hostapd.conf /etc/hostapd/hostapd.conf
 		
-		sudo rm -rf configs
-		sudo rm -rf ".git"
-		sudo rm -f ".git*"
+		echo -e -n "  ${STYLE_HEADING}updating version number...${STYLE_NONE} "
+		
+		sudo rm -f "$WFU_HOME/.version"
+		sudo mv -f "configs/.version" "$WFU_HOME/.version"
+		if [ -f "$WFU_HOME/.version" ]; then
+			WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
+			if [ -z "$WFU_VERSION" ]; then
+				WFU_VERSION=20141231
+				echo $WFU_VERSION > "$WFU_HOME/.version"
+			fi
+		fi
+		export WFU_VERSION
+		echo $WFU_VERSION
+		
+		echo -e -n "  ${STYLE_HEADING}recording update timestamp...${STYLE_NONE} "
 		
 		LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
 		echo $LAST_UPDATE_TIME > "../.last-update"
-		sudo chmod 666 "../.last-update"
 		export LAST_UPDATE_TIME
+		echo $LAST_UPDATE_TIME
+		
+		echo -e "  ${STYLE_HEADING}cleaning up wfu-tools...${STYLE_NONE}"
+		
+		sudo rm -rf configs
+		sudo rm -rf ".git"
+		sudo rm -f ".git*"
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then

@@ -75,7 +75,6 @@ echo "  Machine model : $MACHINE_MODEL"
 echo "  Machine family: $MACHINE_FAMILY"
 echo "    - is Pi     : $IS_RPI"
 echo "    - is Cubox  : $IS_CBX"
-echo "  Mesh point    : $MESH_0"
 echo "  Access point  : $AP_0"
 echo "    - channel   : $WFU_AP_CHANNEL"
 echo "    - hostapd   : $HOSTAPD"
@@ -85,6 +84,9 @@ echo "  Mesh point    : $MESH_0"
 if [ -n "$MESH_PEERS" ]; then
 	echo "    - peers     :"
 	echo -e "$MESH_PEERS"
+else
+	echo "    - peers     : no peers"
 fi
+
 
 exit 0
