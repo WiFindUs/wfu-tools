@@ -17,6 +17,7 @@ fi
 
 #node info
 MESSAGE="Brain environment information:"
+MESSAGE="$MESSAGE\n  WFU Tools version: $WFU_VERSION_DATE"
 MESSAGE="$MESSAGE\n  Node ID (int): $WFU_BRAIN_ID"
 MESSAGE="$MESSAGE\n  Node ID (hex): $WFU_BRAIN_ID_HEX"
 MESSAGE="$MESSAGE\n  Station #: $WFU_BRAIN_NUM"

@@ -8,6 +8,10 @@
 #===============================================================
 
 # wfu globals
+if [ -z "$WFU_VERSION_DATE" ]; then
+	WFU_VERSION_DATE=20150329
+	export WFU_VERSION_DATE
+fi
 if [ -z "$WFU_HOME" ]; then
 	WFU_HOME="/usr/local/wifindus"
 	export WFU_HOME
