@@ -95,16 +95,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-#wifindus wfu aliases
-NODE_COUNTER=1
-while true; do
-	if [ $NODE_COUNTER -ge 255 ]; then
-		break
-	fi
-	alias sshwfu${NODE_COUNTER}='sshpass -p "omgwtflol87" ssh -o StrictHostKeyChecking=no wifindus@wfu${NODE_COUNTER}'
-	NODE_COUNTER=`expr $NODE_COUNTER + 1`
-done
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
