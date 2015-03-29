@@ -14,6 +14,32 @@ else
 	exit 1
 fi
 
+echo -e "${STYLE_HEADING}Terminating processes...${STYLE_NONE}"
+
+HEARTBEAT=`sudo pgrep wfu-heartbeat`
+if [ -n "$HEARTBEAT" ]; then
+	echo "wfu-heartbeat running, terminating..."
+	sudo kill -9 "$HEARTBEAT"
+fi
+
+GPSD=`sudo pgrep gpsd`
+if [ -n "$GPSD" ]; then
+	echo "gpsd running, terminating..."
+	sudo kill -9 "$GPSD"
+fi
+
+DHCPD=`sudo pgrep dhcpd`
+if [ -n "$DHCPD" ]; then
+	echo "dhcpd running, terminating..."
+	sudo kill -9 "$DHCPD"
+fi
+
+HOSTAPD=`sudo pgrep hostapd`
+if [ -n "$HOSTAPD" ]; then
+	echo "hostapd running, terminating..."
+	sudo kill -9 "$HOSTAPD"
+fi
+
 echo -e "${STYLE_HEADING}Performing SD card imaging-prep operations...${STYLE_NONE}"
 
 echo -e "  ${STYLE_HEADING}deleting git artefacts...${STYLE_NONE}"
@@ -34,6 +60,10 @@ sudo sfill -f -ll -z /
 
 echo -e "  ${STYLE_HEADING}deleting logs...${STYLE_NONE}"
 sudo rm `find /var/log -type f`
-echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"
+echo -e "  ${STYLE_SUCCESS}done! The system will halt in 5 seconds. ${STYLE_NONE}\n"
+
+sleep 5
+
+sudo shutdown -h now
 
 exit 0
