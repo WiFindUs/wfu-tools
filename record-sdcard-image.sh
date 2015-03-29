@@ -22,12 +22,12 @@ SRC_DIR="/home/marzer/src"
 #how much of the image to record, in megabytes
 #  a good practice is to make this (end_of_last_partition+2MB)
 #  e.g. if you shrink your partitions so that the last one
-#  ends at 2048MB in, set this to 2050
-SIZE_MB=2050
+#  ends at 2046MB in, set this to 2048
+SIZE_MB=2048
 
 #image name properties
-IMAGE_NAME="wfu-raspbian"
-IMAGE_VERSION="0.4"
+IMAGE_NAME="wfu-brain"
+IMAGE_VERSION="29032015"
 
 ##### END SETTINGS ####
 
