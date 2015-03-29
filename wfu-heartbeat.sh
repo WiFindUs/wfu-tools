@@ -48,7 +48,7 @@ while true; do
 
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
-	PACKET="EYE{NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP{num:$WFU_BRAIN_NUM"
+	PACKET="EYE{NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP{num:$WFU_BRAIN_NUM|ver:$WFU_VERSION"
 	
 	MESH_0=`ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
