@@ -183,21 +183,11 @@ apt-get -y autoclean
 # DOWNLOAD FIRMWARE AND BINARIES
 #===============================================================
 
-if [ $IS_RASPBERRY_PI -eq 1 ]; then
+if [ ! -f /lib/firmware/htc_9271.fw ]; then
+	echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
+	wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
 	if [ ! -f /lib/firmware/htc_9271.fw ]; then
-		echo -e "${STYLE_HEADING}Downloading Atheros 9271 firmware...${STYLE_NONE}"
-		wget -O /lib/firmware/htc_9271.fw http://www.wifindus.com/downloads/htc_9271.fw
-		if [ ! -f /lib/firmware/htc_9271.fw ]; then
-			echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-		fi
-	fi
-
-	if [ ! -f /lib/firmware/htc_7010.fw ]; then
-		echo -e "${STYLE_HEADING}Downloading Atheros 7010 firmware...${STYLE_NONE}"
-		wget -O /lib/firmware/htc_7010.fw http://www.wifindus.com/downloads/htc_7010.fw
-		if [ ! -f /lib/firmware/htc_7010.fw ]; then
-			echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
-		fi
+		echo -e "  ${STYLE_ERROR}error! probably 404.${STYLE_NONE}"
 	fi
 fi
 
