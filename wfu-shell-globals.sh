@@ -28,28 +28,26 @@ if [ -z "$WFU_USER_HOME" ]; then
 	WFU_USER_HOME="/home/$WFU_USER"
 	export WFU_USER_HOME
 fi
-if [ -z "$WFU_VERSION" ]; then
-	if [ -f "$WFU_HOME/.version" ]; then
-		WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
-	fi
-	if [ -z "$WFU_VERSION" ]; then
-		WFU_VERSION=20141231
-		echo $WFU_VERSION > "$WFU_HOME/.version"
-	fi
-	export WFU_VERSION
+
+#version
+if [ -f "$WFU_HOME/.version" ]; then
+	WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
 fi
+if [ -z "$WFU_VERSION" ]; then
+	WFU_VERSION=20141231
+	echo $WFU_VERSION > "$WFU_HOME/.version"
+fi
+export WFU_VERSION
 
 #last running of wfu-update
-if [ -z "$LAST_UPDATE_TIME" ]; then
-	if [ -f "$WFU_HOME/.last-update" ]; then
-		LAST_UPDATE_TIME=`cat "$WFU_HOME/.last-update" | grep -E -o -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}"`
-	fi
-	if [ -z "$LAST_UPDATE_TIME" ]; then
-		LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
-		echo $LAST_UPDATE_TIME > "$WFU_HOME/.last-update"
-	fi
-	export LAST_UPDATE_TIME
+if [ -f "$WFU_HOME/.last-update" ]; then
+	LAST_UPDATE_TIME=`cat "$WFU_HOME/.last-update" | grep -E -o -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}"`
 fi
+if [ -z "$LAST_UPDATE_TIME" ]; then
+	LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
+	echo $LAST_UPDATE_TIME > "$WFU_HOME/.last-update"
+fi
+export LAST_UPDATE_TIME
 
 # machine model
 if [ -z "$MACHINE_MODEL" ]; then
