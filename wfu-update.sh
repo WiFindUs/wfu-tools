@@ -57,7 +57,8 @@ if [ -d wfu-tools ]; then
 		sudo ln -s "$WFU_TOOLS/wfu-update.sh" /usr/bin/wfu-update
 
 		sudo rm -f /usr/bin/wfu-preimage-purge
-		sudo ln -s "$WFU_TOOLS/wfu-preimage-purge.sh" /usr/bin/wfu-preimage-purge
+		sudo rm -f /usr/bin/wfu-prep-sdcard
+		sudo ln -s "$WFU_TOOLS/wfu-prep-sdcard.sh" /usr/bin/wfu-prep-sdcard
 
 		sudo rm -f /usr/bin/wfu-setup
 		sudo ln -s "$WFU_TOOLS/wfu-setup" /usr/bin/wfu-setup
@@ -115,6 +116,13 @@ if [ -d wfu-tools ]; then
 		sudo mv -f configs/hostapd.conf /etc/hostapd/hostapd.conf
 		
 		sudo rm -rf configs
+		sudo rm -rf ".git"
+		sudo rm -f ".git*"
+		
+		LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
+		echo $LAST_UPDATE_TIME > "../.last-update"
+		sudo chmod 666 "../.last-update"
+		export LAST_UPDATE_TIME
 		
 		cd ..
 		if [ -d wfu-tools-old ]; then
@@ -123,6 +131,10 @@ if [ -d wfu-tools ]; then
 		fi
 		
 		echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"
+		
+		if [[ $1 =~ ^reboot$ ]]; then
+			sleep 5
+			sudo reboot
 		exit 0
 	else
 		echo -e "      ${STYLE_ERROR}error! wfu-tools was not built.${STYLE_NONE}"

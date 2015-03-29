@@ -9,7 +9,7 @@
 
 # wfu globals
 if [ -z "$WFU_VERSION" ]; then
-	WFU_VERSION=20150329
+	WFU_VERSION=20150330
 	export WFU_VERSION
 fi
 if [ -z "$WFU_HOME" ]; then
@@ -31,6 +31,18 @@ fi
 if [ -z "$WFU_USER_HOME" ]; then
 	WFU_USER_HOME="/home/$WFU_USER"
 	export WFU_USER_HOME
+fi
+
+#last running of wfu-update
+if [ -f "$WFU_HOME/.last-update" ]; then
+	sudo chmod 666 "$WFU_HOME/.last-update"
+	LAST_UPDATE_TIME=`cat "$WFU_HOME/.last-update" | grep -E -o -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}"`
+fi
+if [ -z "$LAST_UPDATE_TIME" ]; then
+	LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
+	echo $LAST_UPDATE_TIME > "$WFU_HOME/.last-update"
+	sudo chmod 666 "$WFU_HOME/.last-update"
+	export LAST_UPDATE_TIME
 fi
 
 # machine model
