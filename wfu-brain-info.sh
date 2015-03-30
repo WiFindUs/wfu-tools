@@ -59,6 +59,12 @@ else
 	IS_CBX="no"
 fi
 
+if [ $IS_PC -eq 1 ]; then
+	ISPC="yes"
+else
+	ISPC="no"
+fi
+
 if [ -n "$LAST_UPDATE_TIME" ]; then
 	LAST_UPDATE="$LAST_UPDATE_TIME"
 else
@@ -75,6 +81,7 @@ echo "  Machine model : $MACHINE_MODEL"
 echo "  Machine family: $MACHINE_FAMILY"
 echo "    - is Pi     : $IS_RPI"
 echo "    - is Cubox  : $IS_CBX"
+echo "    - is a PC   : $ISPC"
 echo "  Access point  : $AP_0"
 echo "    - channel   : $WFU_AP_CHANNEL"
 echo "    - hostapd   : $HOSTAPD"

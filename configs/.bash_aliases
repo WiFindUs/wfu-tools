@@ -11,5 +11,5 @@ alias brinfo="wfu-brain-info"
 alias fullinfo="brinfo; hbconfig; fakegps"
 
 for NUMBER in $(seq 1 254); do 
-	alias sshwfu${NUMBER}="sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
+	alias ssh${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...'; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
 done

@@ -77,12 +77,25 @@ if [ -z "$IS_CUBOX" ]; then
 	export IS_CUBOX
 fi
 
+# is pc boolean
+if [ -z "$IS_PC" ]; then
+	IS_PC=`echo "$MACHINE_MODEL" | grep -i -o -m 1 "i dunno, something about x86"`
+	if [ -z "$IS_PC" ]; then
+		IS_PC=0
+	else
+		IS_PC=1
+	fi
+	export IS_PC
+fi
+
 # machine family
 if [ -z "$MACHINE_FAMILY" ]; then
 	if [ $IS_RASPBERRY_PI -eq 1 ]; then
 		MACHINE_FAMILY="rpi"
 	elif [ $IS_CUBOX -eq 1 ]; then
 		MACHINE_FAMILY="cubox"
+	elif [ $IS_PC -eq 1 ]; then
+		MACHINE_FAMILY="pc"
 	else
 		MACHINE_FAMILY="unknown"
 	fi
