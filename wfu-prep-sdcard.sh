@@ -22,13 +22,15 @@ fi
 clear
 echo -e "${STYLE_TITLE}        WIFINDUS BRAIN SD CARD RECORDING PREP        ${STYLE_NONE}"
 echo -e "${STYLE_HEADING}Machine model: ${STYLE_NONE}$MACHINE_MODEL\n"
-echo -e "${STYLE_INFO}This utility performs cleaning and preparation to make the best and most${STYLE_NONE}"
-echo -e "${STYLE_INFO}streamlined brain image possible. ${STYLE_WARNING}The operating system will be halted${STYLE_NONE}"
-echo -e "${STYLE_INFO}afterward to ensure all volumes are unmounted$.{STYLE_NONE}"
+echo -e "${STYLE_INFO}This utility performs cleaning and preparation to make${STYLE_NONE}"
+echo -e "${STYLE_INFO} the best and most streamlined brain image possible.${STYLE_NONE}"
+echo -e "${STYLE_WARNING}The operating system will be halted afterward to${STYLE_NONE}"
+echo -e "${STYLE_WARNING}ensure all volumes are unmounted for the next boot.${STYLE_NONE}"
 
 echo -n -e "  ${STYLE_PROMPT}Continue?${STYLE_NONE} "
 read -n 1 -r
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+   echo ""
    exit 1
 fi
 
