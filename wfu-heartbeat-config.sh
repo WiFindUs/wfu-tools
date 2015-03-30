@@ -63,7 +63,7 @@ if [ -n "$SLEEP" ]; then
 		SLEEP=1
 	fi
 	echo "$SLEEP" > $WFU_HOME/.heartbeat-sleep
-	MESSAGE="Set heartbeat packet configuration to:\n  Sleep: $SLEEP sec"
+	MESSAGE="Set heartbeat packet configuration to:\n  Sleep : $SLEEP sec"
 	
 	if [ -n "$SERVER" ]; then
 		echo "$SERVER" > $WFU_HOME/.heartbeat-server
@@ -75,10 +75,10 @@ if [ -n "$SLEEP" ]; then
 	
 	if [ -n "$PORT" ] && [ $PORT -gt 0 ] && [ $PORT -lt 65535 ]; then
 		echo "$PORT" > $WFU_HOME/.heartbeat-port
-		MESSAGE="$MESSAGE\n  Port: $PORT"
+		MESSAGE="$MESSAGE\n  Port  : $PORT"
 	else
 		rm -f $WFU_HOME/.heartbeat-port
-		MESSAGE="$MESSAGE\n  Port: 33339"
+		MESSAGE="$MESSAGE\n  Port  : 33339"
 	fi
 	
 	echo -e $MESSAGE

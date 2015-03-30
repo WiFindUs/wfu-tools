@@ -27,7 +27,7 @@ if [ -z $1 ]; then
 	if [ -z "$LATITUDE" ]; then
 		LATITUDE="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Latitude: $LATITUDE"
+	MESSAGE="$MESSAGE\n  Latitude : $LATITUDE"
 	
 	if [ -f "$WFU_HOME/.fakegps-longitude" ]; then
 		LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -49,7 +49,7 @@ if [ -z $1 ]; then
 	if [ -z "$ALTITUDE" ]; then
 		ALTITUDE="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Altitude: $ALTITUDE"
+	MESSAGE="$MESSAGE\n  Altitude : $ALTITUDE"
 	
 	if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
 		ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -60,7 +60,7 @@ if [ -z $1 ]; then
 	if [ -z "$ACCURACY" ]; then
 		ACCURACY="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Accuracy: $ACCURACY"
+	MESSAGE="$MESSAGE\n  Accuracy : $ACCURACY"
 	
 	echo -e $MESSAGE
 	exit 0
