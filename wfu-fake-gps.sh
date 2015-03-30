@@ -16,7 +16,7 @@ else
 fi
 
 if [ -z $1 ]; then
-	MESSAGE="Fakegps data currently set to:"
+	echo "Fakegps configuration:"
 	
 	if [ -f "$WFU_HOME/.fakegps-latitude" ]; then
 		LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -27,7 +27,7 @@ if [ -z $1 ]; then
 	if [ -z "$LATITUDE" ]; then
 		LATITUDE="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Latitude : $LATITUDE"
+	echo "  Latitude      : $LATITUDE"
 	
 	if [ -f "$WFU_HOME/.fakegps-longitude" ]; then
 		LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -38,7 +38,7 @@ if [ -z $1 ]; then
 	if [ -z "$LONGITUDE" ]; then
 		LONGITUDE="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Longitude: $LONGITUDE"
+	echo "  Longitude     : $LONGITUDE"
 	
 	if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
 		ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -49,7 +49,7 @@ if [ -z $1 ]; then
 	if [ -z "$ALTITUDE" ]; then
 		ALTITUDE="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Altitude : $ALTITUDE"
+	echo "  Altitude      : $ALTITUDE"
 	
 	if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
 		ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -60,9 +60,8 @@ if [ -z $1 ]; then
 	if [ -z "$ACCURACY" ]; then
 		ACCURACY="n/a"
 	fi
-	MESSAGE="$MESSAGE\n  Accuracy : $ACCURACY"
+	echo "  Accuracy      : $ACCURACY"
 	
-	echo -e $MESSAGE
 	exit 0
 fi
 

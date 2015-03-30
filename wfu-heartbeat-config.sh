@@ -16,7 +16,7 @@ else
 fi
 
 if [ -z $1 ]; then
-	MESSAGE="Heartbeat packet configuration currently set to:"
+	echo "Heartbeat packet configuration:"
 	
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
 		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
@@ -26,7 +26,7 @@ if [ -z $1 ]; then
 	if [ -z $SLEEP ]; then
 		SLEEP=10
 	fi
-	MESSAGE="$MESSAGE\n  Sleep: $SLEEP"
+	echo "  Sleep         : $SLEEP"
 	
 	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
 		SERVER=`cat $WFU_HOME/.heartbeat-server`
@@ -34,7 +34,7 @@ if [ -z $1 ]; then
 	if [ -z $SERVER ]; then
 		SERVER="wfu-server"
 	fi
-	MESSAGE="$MESSAGE\n  Server: $SERVER"
+	echo "  Server        : $SERVER"
 	
 	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
 		PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
@@ -42,9 +42,8 @@ if [ -z $1 ]; then
 	if [ -z $PORT ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
 		PORT=33339
 	fi
-	MESSAGE="$MESSAGE\n  Port: $PORT"
-	
-	echo -e $MESSAGE
+	echo "  Port          : $PORT"
+
 	exit 0
 fi
 
