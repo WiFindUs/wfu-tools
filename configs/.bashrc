@@ -101,3 +101,8 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
+
+# import wfu globals
+if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
+	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
+fi

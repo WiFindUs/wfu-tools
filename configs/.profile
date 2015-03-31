@@ -21,7 +21,9 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
-	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
-fi
+# delete known ssh hosts (too hard to maintain with nodes being re-flashed all the time)
+rm -f ~/.ssh/known_hosts
+
+# set timezone
 TZ='Australia/Adelaide'; export TZ
+
