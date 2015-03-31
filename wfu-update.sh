@@ -50,8 +50,8 @@ if [ -d wfu-tools ]; then
 		for FILE in $WFU_TOOLS/*.sh; do
 			FILE_NAME="${FILE##*/}"
 			FILE_NAME_SANS_EXT=`echo "$FILE_NAME" | cut -d. -f1`
-			echo "/usr/bin/$FILE_NAME_SANS_EXT"
-			echo "$FILE /usr/bin/$FILE_NAME_SANS_EXT"
+			sudo rm -f "/usr/bin/$FILE_NAME_SANS_EXT"
+			sudo ln -s "$FILE" "/usr/bin/$FILE_NAME_SANS_EXT"
 		done
 		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
