@@ -65,7 +65,7 @@ while read -r PEER; do
 		if [ -n "$NEW_PEER" ]; then
 			NEW_PEER=`echo "$NEW_PEER" | cut -d':' -f6`
 			NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
-			if [ -z "$MESH_PEER_LIST" ]
+			if [ -z "$MESH_PEER_LIST" ]; then
 				MESH_PEER_LIST="$NEW_PEER"
 			else
 				MESH_PEER_LIST="${MESH_PEER_LIST}${DELIMITER}${NEW_PEER}"
