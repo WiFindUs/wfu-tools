@@ -37,7 +37,7 @@ fi
 MESH_0=`ifconfig | grep -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
 	MESH_0="mesh0"
-	MESH_PEERS=`sudo iw dev mesh0 mpath dump | grep mesh0`
+	MESH_PEERS=`sudo iw dev mesh0 mpath dump 2>&1`
 else
 	MESH_0="not found"
 fi
