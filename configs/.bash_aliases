@@ -12,5 +12,5 @@ alias fullinfo="brinfo; hbconfig; fakegps"
 alias dumpmesh="sudo iw dev mesh0 mpath dump 2>&1"
 
 for NUMBER in $(seq 1 254); do 
-	alias ssh${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...'  1>&2; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
+	alias ssh${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...' 1>&2; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
 done
