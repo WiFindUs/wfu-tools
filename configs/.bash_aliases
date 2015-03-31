@@ -9,6 +9,7 @@ alias fakegps="wfu-fake-gps"
 alias hbconfig="wfu-heartbeat-config"
 alias brinfo="wfu-brain-info"
 alias fullinfo="brinfo; hbconfig; fakegps"
+alias dumpmesh='echo "DEST ADDR         NEXT HOP          IFACE       SN      METRIC  QLEN    EXTIME  DTIME   DRET    FLAGS" ; sudo iw dev mesh0 mpath dump'
 
 for NUMBER in $(seq 1 254); do 
 	alias ssh${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...'; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
