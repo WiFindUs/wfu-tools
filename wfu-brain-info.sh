@@ -34,18 +34,18 @@ if [ -n "$GPSD" ]; then
 else
 	GPSD="not found"
 fi
-MESH_0=`ifconfig | grep -m 1 "^mesh0"`
+MESH_0=`ifconfig | grep -o -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
-	MESH_0="mesh0"
-	MESH_PEERS=`sudo iw dev mesh0 mpath dump 2>&1`
+	LOCAL_PEERS=`wfu-mesh-peers -l ,`
+	REMOTE_PEERS=`wfu-mesh-peers -r ,`
 else
 	MESH_0="not found"
+	LOCAL_PEERS="none"
+	REMOTE_PEERS="none"
 fi
-AP_0=`ifconfig | grep -m 1 "^ap0"`
-if [ -n "$AP_0" ]; then
-	AP_0="ap0"
-else
-	AP_0="not fount"
+AP_0=`ifconfig | grep -o -m 1 "^ap0"`
+if [ -z "$AP_0" ]; then
+	AP_0="not found"
 fi
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	IS_RPI="yes"
@@ -81,20 +81,13 @@ echo "  Machine model : $MACHINE_MODEL"
 echo "  Machine family: $MACHINE_FAMILY"
 echo "    - is Pi     : $IS_RPI"
 echo "    - is Cubox  : $IS_CBX"
-echo "    - is a PC   : $ISPC"
+echo "    - is PC     : $ISPC"
 echo "  Access point  : $AP_0"
 echo "    - channel   : $WFU_AP_CHANNEL"
 echo "    - hostapd   : $HOSTAPD"
 echo "    - dhcpd     : $DHCPD"
 echo "  GPS daemon    : $GPSD"
 echo "  Mesh point    : $MESH_0"
-if [ -n "$MESH_PEERS" ]; then
-	echo "    - peers     :"
-	echo "DEST ADDR         NEXT HOP          IFACE       SN      METRIC  QLEN    EXTIME  DTIME   DRET    FLAGS"
-	echo -e "$MESH_PEERS\n"
-else	
-	echo "    - peers     : no peers"
-fi
-
-
+echo "    - loc. peers: $LOCAL_PEERS"
+echo "    - rem. peers: $REMOTE_PEERS"
 exit 0
