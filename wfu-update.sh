@@ -47,36 +47,12 @@ if [ -d wfu-tools ]; then
 		echo -e "  ${STYLE_HEADING}recreating symlinks...${STYLE_NONE}"
 		sudo chmod 777 *.sh wfu-setup configs/*
 		
-		sudo rm -f /usr/bin/wfu-brain-start
-		sudo ln -s "$WFU_TOOLS/wfu-brain-start.sh" /usr/bin/wfu-brain-start
-		
-		sudo rm -f /usr/bin/wfu-initial-setup
-		sudo ln -s "$WFU_TOOLS/wfu-initial-setup.sh" /usr/bin/wfu-initial-setup
-
-		sudo rm -f /usr/bin/wfu-update
-		sudo ln -s "$WFU_TOOLS/wfu-update.sh" /usr/bin/wfu-update
-
-		sudo rm -f /usr/bin/wfu-preimage-purge
-		sudo rm -f /usr/bin/wfu-prep-sdcard
-		sudo ln -s "$WFU_TOOLS/wfu-prep-sdcard.sh" /usr/bin/wfu-prep-sdcard
-
-		sudo rm -f /usr/bin/wfu-setup
-		sudo ln -s "$WFU_TOOLS/wfu-setup" /usr/bin/wfu-setup
-		
-		sudo rm -f /usr/bin/wfu-heartbeat
-		sudo ln -s "$WFU_TOOLS/wfu-heartbeat.sh" /usr/bin/wfu-heartbeat
-		
-		sudo rm -f /usr/bin/wfu-update-apt
-		sudo ln -s "$WFU_TOOLS/wfu-update-apt.sh" /usr/bin/wfu-update-apt
-		
-		sudo rm -f /usr/bin/wfu-fake-gps
-		sudo ln -s "$WFU_TOOLS/wfu-fake-gps.sh" /usr/bin/wfu-fake-gps
-		
-		sudo rm -f /usr/bin/wfu-heartbeat-config
-		sudo ln -s "$WFU_TOOLS/wfu-heartbeat-config.sh" /usr/bin/wfu-heartbeat-config
-		
-		sudo rm -f /usr/bin/wfu-brain-info
-		sudo ln -s "$WFU_TOOLS/wfu-brain-info.sh" /usr/bin/wfu-brain-info
+		for FILE in "$WFU_TOOLS/*.sh"; do
+			FILE_NAME=${FILE##*/}
+			FILE_NAME_SANS_EXT=`echo "$FILE_NAME" | cut -d. -f1`
+			sudo rm -f "/usr/bin/$FILE_NAME_SANS_EXT"
+			sudo ln -s "$FILE" "/usr/bin/$FILE_NAME_SANS_EXT"
+		done
 		
 		echo -e "  ${STYLE_HEADING}updating scripts and configs...${STYLE_NONE}"
 				
