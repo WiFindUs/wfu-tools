@@ -36,11 +36,15 @@ else
 fi
 MESH_0=`ifconfig | grep -o -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
-	LOCAL_PEERS=`wfu-mesh-peers -l ,`
-	REMOTE_PEERS=`wfu-mesh-peers -r ,`
+	LOCAL_PEERS=`wfu-mesh-peers -l ", " 2>/dev/null`
+	REMOTE_PEERS=`wfu-mesh-peers -r ", " 2>/dev/null`
 else
 	MESH_0="not found"
+fi
+if [ -z "$LOCAL_PEERS" ]; then
 	LOCAL_PEERS="none"
+fi
+if [ -z "$REMOTE_PEERS" ]; then
 	REMOTE_PEERS="none"
 fi
 AP_0=`ifconfig | grep -o -m 1 "^ap0"`
