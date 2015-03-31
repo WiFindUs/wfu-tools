@@ -171,6 +171,7 @@ if [ -n "$MESH_0" ]; then
 	echo "Bringing $MESH_0 up..."
 	ifconfig $MESH_0 up
 	ifconfig $MESH_0 10.1.0.$WFU_BRAIN_NUM
+	iw $MESH_0 set txpower fixed 2000
 fi
 
 if [ -n "$AP_0" ]; then
@@ -178,6 +179,7 @@ if [ -n "$AP_0" ]; then
 	ifconfig $AP_0 up
 	ifconfig $AP_0 172.16.$WFU_BRAIN_NUM.1
 	ifconfig $AP_0 netmask 255.255.255.0
+	iw $AP_0 set txpower fixed 2000
 fi
 
 #############################################################
