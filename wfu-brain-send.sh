@@ -32,12 +32,13 @@ if [ -z "$COMMAND" ]; then
 	exit 4
 fi
 
-REMOTE_PEERS=`wfu-mesh-peers -r`
-LOCAL_PEERS=`wfu-mesh-peers -l`
+REMOTE_PEERS=`wfu-mesh-peers -r 2>/dev/null`
+LOCAL_PEERS=`wfu-mesh-peers -l 2>/dev/null`
 MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
 
 echo "Peer list: ${MESH_PEERS}" 1>&2
 for PEER in $MESH_PEERS; do
 	echo "Sending command to wfu-brain-${PEER}"... 1>&2
-	sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$COMMAND"
+	sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$COMMAND" &
+	sleep 1
 done
