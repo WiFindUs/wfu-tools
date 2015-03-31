@@ -18,7 +18,7 @@
 
 # root check
 if [[ $EUID -ne 0 ]]; then
-   echo "ERROR: wfu-initial-setup must be run as root!"
+   echo "ERROR: wfu-initial-setup must be run as root!" 1>&2
    exit 2
 fi
 
@@ -26,7 +26,7 @@ fi
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 else
-	echo "ERROR: Could not find globals for current user. aborting."
+	echo "ERROR: Could not find globals for current user. aborting." 1>&2
 	exit 1
 fi
 

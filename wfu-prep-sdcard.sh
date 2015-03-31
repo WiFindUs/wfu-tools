@@ -11,7 +11,7 @@
 if [ -f "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh" ]; then
 	source "/usr/local/wifindus/wfu-tools/wfu-shell-globals.sh"
 else
-	echo "ERROR: Could not find globals for current user. aborting."
+	echo "ERROR: Could not find globals for current user. aborting." 1>&2
 	exit 1
 fi
 
