@@ -90,8 +90,9 @@ echo "  GPS daemon    : $GPSD"
 echo "  Mesh point    : $MESH_0"
 if [ -n "$MESH_PEERS" ]; then
 	echo "    - peers     :"
-	echo -e "$MESH_PEERS"
-else
+	echo "DEST ADDR         NEXT HOP          IFACE       SN      METRIC  QLEN    EXTIME  DTIME   DRET    FLAGS"
+	echo -e "$MESH_PEERS\n"
+else	
 	echo "    - peers     : no peers"
 fi
 
