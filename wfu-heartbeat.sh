@@ -51,29 +51,9 @@ while true; do
 	MESH_0=`ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
 		PACKET="$PACKET|mp:1"
-		MESH_PEERS=`sudo iw dev mesh0 mpath dump | grep mesh0`
+		MESH_PEERS=`wfu-mesh-peers -l ,`
 		if [ -n "$MESH_PEERS" ]; then
-			MS="[0-9A-Za-z]{1,2}"
-			MAC="$MS[:]$MS[:]$MS[:]$MS[:]$MS[:]$MS"
-			REGEX="($MAC) +($MAC) +mesh0"
-			MESH_PEER_LIST=""
-			while read -r PEER; do
-				if [[ $PEER =~ $REGEX ]]; then
-					if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
-						NEW_PEER=`echo "${BASH_REMATCH[1]}" | cut -d':' -f6`
-						NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
-						if [ -n "$MESH_PEER_LIST" ]; then
-							MESH_PEER_LIST="${MESH_PEER_LIST},"
-						fi
-						MESH_PEER_LIST="${MESH_PEER_LIST}$NEW_PEER"
-					fi
-				fi
-			done <<< "$MESH_PEERS"
-			if [ -n "$MESH_PEER_LIST" ]; then
-				PACKET="$PACKET|mpl:$MESH_PEER_LIST"
-			else
-				PACKET="$PACKET|mpl:0"
-			fi
+			PACKET="$PACKET|mpl:${MESH_PEERS}"
 		else
 			PACKET="$PACKET|mpl:0"
 		fi
