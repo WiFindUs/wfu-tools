@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
 	echo "Heartbeat packet configuration:"
 	
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then

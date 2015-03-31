@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
 	echo "Fakegps configuration:"
 	
 	if [ -f "$WFU_HOME/.fakegps-latitude" ]; then
