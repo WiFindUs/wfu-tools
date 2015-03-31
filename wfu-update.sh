@@ -15,6 +15,8 @@ else
 	exit 1
 fi
 
+echo "WARNING: wfu-update has started. Do not run it yourself or reboot the system!" | sudo wall -n
+
 cd "$WFU_HOME"
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
@@ -130,6 +132,7 @@ if [ -d wfu-tools ]; then
 			sleep 5
 			sudo reboot
 		fi
+		echo "wfu-update has finished." | sudo wall -n
 		exit 0
 	else
 		echo -e "      ${STYLE_ERROR}error! wfu-tools was not built.${STYLE_NONE}"
@@ -150,4 +153,5 @@ if [ -d wfu-tools-old ]; then
 fi
 
 echo -e "$  {STYLE_WARNING}finished (with errors).${STYLE_NONE}\n"
+echo "wfu-update has finished." | sudo wall -n
 exit 1
