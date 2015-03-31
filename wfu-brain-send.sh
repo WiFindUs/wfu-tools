@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-if [ -z $WFU_BRAIN_NUM ] || [ $WFU_BRAIN_NUM -ne 1 ]; then
+if [ -z "$WFU_BRAIN_NUM" ] || [ $WFU_BRAIN_NUM -ne 1 ]; then
 	echo "ERROR: Must be node 1 to run wfu-brain-send. aborting." 1>&2
 	exit 2
 fi

@@ -27,15 +27,23 @@ if [ -z "$MESH_PEERS" ]; then
 	exit 0
 fi
 
-FLAGS=`echo "$1" | grep -E -o -m 1 -i "-[a-z]+"`
+FLAGS=`echo "$1" | grep -Eo "^[-][a-zA-Z]+$"`
 if [ -n "$FLAGS" ]; then
-	LOCAL_PEERS=`echo "$FLAGS" | grep -E -o -m 1 -i "l"`
-	REMOTE_PEERS=`echo "$FLAGS" | grep -E -o -m 1 -i "r"`
-fi
-if [ -z $LOCAL_PEERS ]; then
+	LOCAL_PEERS=`echo "$FLAGS" | grep -Eo "[lL]"`
+	REMOTE_PEERS=`echo "$FLAGS" | grep -Eo "[rR]"`
+	
+	if [ -n "$LOCAL_PEERS" ]; then
+		LOCAL_PEERS=1
+	else
+		LOCAL_PEERS=0
+	fi
+	if [ -n "$REMOTE_PEERS" ]; then
+		REMOTE_PEERS=1
+	else
+		REMOTE_PEERS=0
+	fi
+else
 	LOCAL_PEERS=1
-fi
-if [ -z $REMOTE_PEERS ]; then
 	REMOTE_PEERS=0
 fi
 
@@ -49,7 +57,7 @@ while read -r PEER; do
 		if ([ $LOCAL_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]) || ([ $REMOTE_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]); then
 			NEW_PEER=`echo "${BASH_REMATCH[1]}"`	
 		fi
-		if [ -n $NEW_PEER ]; then
+		if [ -n "$NEW_PEER" ]; then
 			NEW_PEER=`echo "$NEW_PEER" | cut -d':' -f6`
 			NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
 			MESH_PEER_LIST="$MESH_PEER_LIST $NEW_PEER"
