@@ -4,7 +4,7 @@
 # Author: Mark Gillard
 # Target environment: Nodes
 # Description:
-#   Sends an command to other nodes via ssh.
+#   Sends a command to all other nodes via ssh.
 #===============================================================
 
 # environment
@@ -26,3 +26,18 @@ if [ -z "$MESH_0" ]; then
 	exit 3
 fi
 
+COMMAND="$1"
+if [ -z "$COMMAND" ]; then
+	echo "ERROR: A command was not supplied. aborting." 1>&2
+	exit 4
+fi
+
+REMOTE_PEERS=`wfu-mesh-peers -r`
+LOCAL_PEERS=`wfu-mesh-peers -l`
+MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
+
+echo "Peer list: ${MESH_PEERS}" 1>&2
+for PEER in $MESH_PEERS; do
+	echo "Sending command to wfu-brain-${PEER}"... 1>&2
+	sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$COMMAND"
+done
