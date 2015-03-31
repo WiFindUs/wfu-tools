@@ -99,7 +99,7 @@ if [ -d wfu-tools ]; then
 			WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
 			if [ -z "$WFU_VERSION" ]; then
 				WFU_VERSION=20141231
-				echo $WFU_VERSION > "$WFU_HOME/.version"
+				sudo sh -c 'echo $WFU_VERSION > "$WFU_HOME/.version"'
 			fi
 		fi
 		export WFU_VERSION
@@ -108,7 +108,7 @@ if [ -d wfu-tools ]; then
 		echo -e -n "  ${STYLE_HEADING}recording update timestamp...${STYLE_NONE} "
 		
 		LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
-		echo $LAST_UPDATE_TIME > "../.last-update"
+		sudo sh -c 'echo $LAST_UPDATE_TIME > "../.last-update"'
 		export LAST_UPDATE_TIME
 		echo $LAST_UPDATE_TIME
 		
