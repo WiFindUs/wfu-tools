@@ -73,9 +73,9 @@ while read -r PEER; do
 			PEER_NUM=`echo "$PEER_MAC" | cut -d':' -f6`
 			PEER_NUM=`echo "ibase=16; $PEER_NUM" | bc`
 			if [ $INCLUDE_QUALITY -eq 1 ]; then
-				STATION_INFO=`sudo iw dev mesh0 station get $PEER_MAC`
-				SIGNAL_STRENGTH=`echo $STATION_INFO | grep -i "signal avg" | grep -Eo "[-+]?[0-9]+"`
-				TX_BITRATE=`echo $STATION_INFO | grep -i "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`
+				STATION_INFO=`sudo iw dev mesh0 station get "$PEER_MAC"`
+				SIGNAL_STRENGTH=`echo "$STATION_INFO" | grep -i "signal avg" | grep -Eo "[-+]?[0-9]+"`
+				TX_BITRATE=`echo "$STATION_INFO" | grep -i "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`
 				PEER_NUM="${PEER_NUM}($SIGNAL_STRENGTH,$TX_BITRATE)"
 			fi
 			if [ -z "$MESH_PEER_LIST" ]; then
