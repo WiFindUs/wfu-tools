@@ -49,3 +49,5 @@ for PEER in $MESH_PEERS; do
 done
 
 echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"
+
+exit 0
