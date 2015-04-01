@@ -140,8 +140,8 @@ if [ -d wfu-tools ]; then
 			sleep 5
 			sudo reboot
 		fi
-		echo "wfu-update has finished." | sudo wall -n
 		sudo rm -f "/usr/local/wifindus/.update-lock"
+		echo "wfu-update has finished on wfu-brain-$WFU_BRAIN_NUM." | sudo wall -n
 		exit 0
 	else
 		echo -e "      ${STYLE_ERROR}error! wfu-tools was not built.${STYLE_NONE}"
@@ -161,6 +161,6 @@ if [ -d wfu-tools-old ]; then
 fi
 
 echo -e "$  {STYLE_WARNING}finished (with errors).${STYLE_NONE}\n"
-echo "wfu-update has finished." | sudo wall -n
 sudo rm -f "/usr/local/wifindus/.update-lock"
+echo "wfu-update has finished on wfu-brain-$WFU_BRAIN_NUM." | sudo wall -n
 exit 3
