@@ -15,9 +15,15 @@ else
 	exit 1
 fi
 
-echo "WARNING: wfu-update has started. Do not run it yourself or reboot the system!" | sudo wall -n
+if [ -f "/usr/local/wifindus/.update-lock" ]; then
+	echo "ERROR: wfu-update already in progress. aborting." 1>&2
+	exit 2
+fi
+
+echo -e "WARNING: wfu-update has started on wfu-brain-$WFU_BRAIN_NUM.\nDo not reboot the system!" | sudo wall -n
 
 cd "$WFU_HOME"
+echo "lock" > "/usr/local/wifindus/.update-lock"
 
 echo -e "${STYLE_HEADING}Updating WFU-tools...${STYLE_NONE}"
 if [ -d wfu-tools-old ]; then
@@ -135,6 +141,7 @@ if [ -d wfu-tools ]; then
 			sudo reboot
 		fi
 		echo "wfu-update has finished." | sudo wall -n
+		sudo rm -f "/usr/local/wifindus/.update-lock"
 		exit 0
 	else
 		echo -e "      ${STYLE_ERROR}error! wfu-tools was not built.${STYLE_NONE}"
@@ -144,7 +151,6 @@ else
 fi
 
 if [ -d wfu-tools-old ]; then
-
 	if [ -d wfu-tools ]; then
 		echo -e "  ${STYLE_HEADING}deleting partial version of tools...${STYLE_NONE}"
 		sudo rm -rf wfu-tools
@@ -156,4 +162,5 @@ fi
 
 echo -e "$  {STYLE_WARNING}finished (with errors).${STYLE_NONE}\n"
 echo "wfu-update has finished." | sudo wall -n
-exit 1
+sudo rm -f "/usr/local/wifindus/.update-lock"
+exit 3
