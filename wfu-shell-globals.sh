@@ -36,6 +36,7 @@ fi
 if [ -z "$WFU_VERSION" ]; then
 	WFU_VERSION=20141231
 	echo $WFU_VERSION > "$WFU_HOME/.version"
+	sudo chmod 666 "$WFU_HOME/.version"
 fi
 export WFU_VERSION
 
@@ -46,6 +47,7 @@ fi
 if [ -z "$LAST_UPDATE_TIME" ]; then
 	LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
 	echo $LAST_UPDATE_TIME > "$WFU_HOME/.last-update"
+	sudo chmod 666 "$WFU_HOME/.last-update"
 fi
 export LAST_UPDATE_TIME
 

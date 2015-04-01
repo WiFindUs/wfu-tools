@@ -101,7 +101,7 @@ if [ -n "$LATITUDE" ]; then
 			rm -f $WFU_HOME/.fakegps-accuracy
 			MESSAGE="$MESSAGE\n  Accuracy: n/a"
 		fi
-		
+		sudo chmod 666 $WFU_HOME/.fakegps-*
 		echo -e $MESSAGE
 		exit 0
 	else
