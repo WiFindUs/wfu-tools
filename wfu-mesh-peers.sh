@@ -15,7 +15,7 @@ else
 	exit 1
 fi
 
-MESH_0=`ifconfig | grep -m 1 "^mesh0"`
+MESH_0=`sudo ifconfig | grep -m 1 "^mesh0"`
 if [ -z "$MESH_0" ]; then
 	echo "ERROR: Could not find the mesh0 interface. aborting." 1>&2
 	exit 3

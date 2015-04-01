@@ -20,7 +20,7 @@ if [ -z "$WFU_BRAIN_NUM" ] || [ $WFU_BRAIN_NUM -ne 1 ]; then
 	exit 2
 fi
 
-MESH_0=`ifconfig | grep -m 1 "^mesh0"`
+MESH_0=`sudo ifconfig | grep -m 1 "^mesh0"`
 if [ -z "$MESH_0" ]; then
 	echo "ERROR: Could not find the mesh0 interface. aborting." 1>&2
 	exit 3

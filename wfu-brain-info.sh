@@ -34,7 +34,7 @@ if [ -n "$GPSD" ]; then
 else
 	GPSD="not found"
 fi
-MESH_0=`ifconfig | grep -o -m 1 "^mesh0"`
+MESH_0=`sudo ifconfig | grep -o -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
 	LOCAL_PEERS=`wfu-mesh-peers -l ", " 2>/dev/null`
 	REMOTE_PEERS=`wfu-mesh-peers -r ", " 2>/dev/null`
@@ -47,7 +47,7 @@ fi
 if [ -z "$REMOTE_PEERS" ]; then
 	REMOTE_PEERS="none"
 fi
-AP_0=`ifconfig | grep -o -m 1 "^ap0"`
+AP_0=`sudo ifconfig | grep -o -m 1 "^ap0"`
 if [ -z "$AP_0" ]; then
 	AP_0="not found"
 fi
