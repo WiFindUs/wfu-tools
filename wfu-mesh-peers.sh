@@ -76,7 +76,7 @@ while read -r PEER; do
 				STATION_INFO=`sudo iw dev mesh0 station get "$PEER_MAC"`
 				SIGNAL_STRENGTH=`echo "$STATION_INFO" | grep -i "signal avg" | grep -Eo "[-+]?[0-9]+"`
 				TX_BITRATE=`echo "$STATION_INFO" | grep -i "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`
-				PEER_NUM="${PEER_NUM}($SIGNAL_STRENGTH,$TX_BITRATE)"
+				PEER_NUM="${PEER_NUM}($SIGNAL_STRENGTH)($TX_BITRATE)"
 			fi
 			if [ -z "$MESH_PEER_LIST" ]; then
 				MESH_PEER_LIST="$PEER_NUM"
