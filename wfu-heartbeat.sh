@@ -48,10 +48,10 @@ while true; do
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
 	PACKET="EYE{NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP{num:$WFU_BRAIN_NUM|ver:$WFU_VERSION"
 	
-	MESH_0=`ifconfig | grep -m 1 "^mesh0"`
+	MESH_0=`sudo ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
 		PACKET="$PACKET|mp:1"
-		MESH_PEERS=`wfu-mesh-peers -l ,`
+		MESH_PEERS=`wfu-mesh-peers -lq ,`
 		if [ -n "$MESH_PEERS" ]; then
 			PACKET="$PACKET|mpl:${MESH_PEERS}"
 		else
@@ -62,7 +62,7 @@ while true; do
 	fi
 	
 	HOSTAPD=`pgrep -l hostapd`
-	AP_0=`ifconfig | grep -m 1 "^ap0"`
+	AP_0=`sudo ifconfig | grep -m 1 "^ap0"`
 	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ]; then
 		PACKET="$PACKET|ap:1"
 	else
