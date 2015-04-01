@@ -38,7 +38,8 @@ MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
 
 echo "Peer list: ${MESH_PEERS}" 1>&2
 for PEER in $MESH_PEERS; do
-	echo "Sending command to wfu-brain-${PEER}"... 1>&2
-	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$COMMAND" & ) 
+	SUBCOMMAND=${COMMAND//_NUM_/$PEER}
+	echo "Sending '$SUBCOMMAND' to wfu-brain-${PEER}..." 1>&2
+	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$SUBCOMMAND" & ) 
 	sleep 1
 done
