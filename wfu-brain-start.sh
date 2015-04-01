@@ -20,6 +20,7 @@ else
 	echo "ERROR: Could not find globals for current user. aborting."
 	exit 1
 fi
+sudo rm -f "/usr/local/wifindus/.update-lock"
 
 #############################################################
 ### Logging
