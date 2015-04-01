@@ -51,7 +51,7 @@ while true; do
 	MESH_0=`sudo ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
 		PACKET="$PACKET|mp:1"
-		MESH_PEERS=`wfu-mesh-peers -lq ,`
+		MESH_PEERS=`wfu-mesh-peers -lq , 2>/dev/null`
 		if [ -n "$MESH_PEERS" ]; then
 			PACKET="$PACKET|mpl:${MESH_PEERS}"
 		else
