@@ -10,7 +10,8 @@ alias hbconfig="wfu-heartbeat-config"
 alias brinfo="wfu-brain-info"
 alias fullinfo="brinfo; hbconfig; fakegps"
 alias dumpmesh="sudo iw dev mesh0 mpath dump 2>&1"
+alias brsend='wfu-brain-send'
 
 for NUMBER in $(seq 1 254); do 
-	alias ssh${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...' 1>&2; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
+	alias br${NUMBER}="echo 'Attempting to auto-ssh into wfu-brain-${NUMBER}...' 1>&2; sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-${NUMBER}"
 done
