@@ -44,7 +44,7 @@ MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
 echo "Peer list: ${MESH_PEERS}"
 for PEER in $MESH_PEERS; do
 	SUBCOMMAND=${COMMAND//_NUM_/$PEER}
-	echo -e "  ${STYLE_HEADING}wfu-brain-${PEER}${STYLE_NONE}: $SUBCOMMAND"
+	echo -e "  ${STYLE_INFO}wfu-brain-${PEER}${STYLE_NONE}: '$SUBCOMMAND'"
 	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$SUBCOMMAND" & ) &>/dev/null
 done
 
