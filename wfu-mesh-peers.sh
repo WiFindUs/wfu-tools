@@ -31,6 +31,7 @@ FLAGS=`echo "$1" | grep -Eo "^[-][a-zA-Z]+$"`
 if [ -n "$FLAGS" ]; then
 	LOCAL_PEERS=`echo "$FLAGS" | grep -Eo "[lL]"`
 	REMOTE_PEERS=`echo "$FLAGS" | grep -Eo "[rR]"`
+	INCLUDE_QUALITY=`echo "$FLAGS" | grep -Eo "[qQ]"`
 	
 	if [ -n "$LOCAL_PEERS" ]; then
 		LOCAL_PEERS=1
@@ -42,9 +43,15 @@ if [ -n "$FLAGS" ]; then
 	else
 		REMOTE_PEERS=0
 	fi
+	if [ -n "$INCLUDE_QUALITY" ]; then
+		INCLUDE_QUALITY=1
+	else
+		INCLUDE_QUALITY=0
+	fi
 else
 	LOCAL_PEERS=1
 	REMOTE_PEERS=0
+	INCLUDE_QUALITY=0
 fi
 
 DELIMITER="$2"
@@ -58,17 +65,23 @@ REGEX="($MAC) +($MAC) +mesh0"
 MESH_PEER_LIST=""
 while read -r PEER; do
 	if [[ $PEER =~ $REGEX ]]; then
-		NEW_PEER=""
+		PEER_MAC=""
 		if ([ $LOCAL_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]) || ([ $REMOTE_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]); then
-			NEW_PEER=`echo "${BASH_REMATCH[1]}"`	
+			PEER_MAC="${BASH_REMATCH[1]}"
 		fi
-		if [ -n "$NEW_PEER" ]; then
-			NEW_PEER=`echo "$NEW_PEER" | cut -d':' -f6`
-			NEW_PEER=`echo "ibase=16; $NEW_PEER" | bc`
+		if [ -n "$PEER_MAC" ]; then
+			PEER_NUM=`echo "$PEER_MAC" | cut -d':' -f6`
+			PEER_NUM=`echo "ibase=16; $PEER_NUM" | bc`
+			if [ $INCLUDE_QUALITY -eq 1 ]; then
+				STATION_INFO=`sudo iw dev mesh0 mpath get $PEER_MAC`
+				SIGNAL_STRENGTH=`echo $STATION_INFO | grep "signal avg" | grep -Eo "[-+]?[0-9]+"`
+				TX_BITRATE=`echo $STATION_INFO | grep "signal avg" | grep "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`
+				PEER_NUM="${PEER_NUM}($SIGNAL_STRENGTH,$TX_BITRATE)"
+			fi
 			if [ -z "$MESH_PEER_LIST" ]; then
-				MESH_PEER_LIST="$NEW_PEER"
+				MESH_PEER_LIST="$PEER_NUM"
 			else
-				MESH_PEER_LIST="${MESH_PEER_LIST}${DELIMITER}${NEW_PEER}"
+				MESH_PEER_LIST="${MESH_PEER_LIST}${DELIMITER}${PEER_NUM}"
 			fi
 		fi
 	fi
