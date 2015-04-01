@@ -41,7 +41,7 @@ fi
 
 echo -e "${STYLE_HEADING}Sending command to mesh peers...${STYLE_NONE}"
 MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
-echo "Peer list: ${MESH_PEERS}"
+echo -e "  ${STYLE_INFO}Peer list${STYLE_NONE}: ${MESH_PEERS}"
 for PEER in $MESH_PEERS; do
 	SUBCOMMAND=${COMMAND//_NUM_/$PEER}
 	echo -e "  ${STYLE_INFO}wfu-brain-${PEER}${STYLE_NONE}: '$SUBCOMMAND'"

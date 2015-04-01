@@ -241,7 +241,7 @@ if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	raspi-config
 fi
 
-echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
+echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_WARNING}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
 reboot
 

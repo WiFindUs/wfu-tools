@@ -50,6 +50,7 @@ fi
 # SEND COMMANDS TO NODES
 #===============================================================
 
+echo ""
 wfu-brain-send "wfu-update; sleep 30; sudo reboot"
 
 #===============================================================
@@ -63,13 +64,13 @@ wfu-update
 # FINISH
 #===============================================================
 
-echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_YELLOW}The system will reboot in 30 seconds.${STYLE_NONE}"
+echo -e "${STYLE_SUCCESS}Finished :)\n${STYLE_WARNING}The system will reboot in 30 seconds.${STYLE_NONE}"
 sleep 10
-echo -e "${STYLE_YELLOW}The system will reboot in 20 seconds.${STYLE_NONE}"
+echo -e "${STYLE_WARNING}The system will reboot in 20 seconds.${STYLE_NONE}"
 sleep 10
-echo -e "${STYLE_YELLOW}The system will reboot in 10 seconds.${STYLE_NONE}"
+echo -e "${STYLE_WARNING}The system will reboot in 10 seconds.${STYLE_NONE}"
 sleep 5
-echo -e "${STYLE_YELLOW}The system will reboot in 5 seconds.${STYLE_NONE}"
+echo -e "${STYLE_WARNING}The system will reboot in 5 seconds.${STYLE_NONE}"
 sleep 5
 sudo reboot
 
