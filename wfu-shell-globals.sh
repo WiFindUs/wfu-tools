@@ -31,7 +31,7 @@ fi
 
 #version
 if [ -f "$WFU_HOME/.version" ]; then
-	WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
+	WFU_VERSION=`grep -Eo -m 1 "[0-9]+" "$WFU_HOME/.version"`
 fi
 if [ -z "$WFU_VERSION" ]; then
 	WFU_VERSION=20141231
@@ -42,7 +42,7 @@ export WFU_VERSION
 
 #last running of wfu-update
 if [ -f "$WFU_HOME/.last-update" ]; then
-	LAST_UPDATE_TIME=`cat "$WFU_HOME/.last-update" | grep -E -o -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}"`
+	LAST_UPDATE_TIME=`grep -Eo -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}" "$WFU_HOME/.last-update"`
 fi
 if [ -z "$LAST_UPDATE_TIME" ]; then
 	LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
@@ -108,7 +108,7 @@ fi
 if [ -z "$WFU_BRAIN_NUM" ]; then
 	if [ -f "$WFU_HOME/.brain-num" ]; then
 		sudo chmod 666 "$WFU_HOME/.brain-num"
-		WFU_BRAIN_NUM=`cat $WFU_HOME/.brain-num | grep -E -o -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])"`
+		WFU_BRAIN_NUM=`grep -Eo -m 1 "([1-2][0-9]{2}|[1-9][0-9]|[1-9])" "$WFU_HOME/.brain-num"`
 	fi
 	if [ -z "$WFU_BRAIN_NUM" ]; then
 		WFU_BRAIN_NUM=0
@@ -126,7 +126,7 @@ fi
 if [ -z "$WFU_BRAIN_ID_HEX" ]; then
 	if [ -f "$WFU_HOME/.brain-id" ]; then
 		sudo chmod 666 "$WFU_HOME/.brain-id"
-		WFU_BRAIN_ID=`cat $WFU_HOME/.brain-id | grep -E -o -m 1 "[1-9][0-9]*"`
+		WFU_BRAIN_ID=`grep -Eo -m 1 "[1-9][0-9]*" "$WFU_HOME/.brain-id"`
 	fi
 	if [ -z "$WFU_BRAIN_ID" ]; then
 		WFU_BRAIN_ID=$RANDOM
@@ -139,7 +139,7 @@ if [ -z "$WFU_BRAIN_ID_HEX" ]; then
 fi
 
 # ap channel
-WFU_AP_CHANNEL=`expr $WFU_BRAIN_NUM % 2`
+WFU_AP_CHANNEL=$(( $WFU_BRAIN_NUM % 2 ))
 if [ $WFU_AP_CHANNEL -eq 1 ]; then
 	WFU_AP_CHANNEL=11
 else

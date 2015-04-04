@@ -41,31 +41,36 @@ echo -e "$LSMOD" > "$WFU_HOME/lsmod_boot.log"
 ### Kill existing daemons
 #############################################################
 
+KILLED_DAEMON=0
 HEARTBEAT=`pgrep wfu-heartbeat`
 if [ -n "$HEARTBEAT" ]; then
 	echo "Existing wfu-heartbeat running, terminating..."
 	kill -9 "$HEARTBEAT"
+	KILLED_DAEMON=1
 fi
 
 GPSD=`pgrep gpsd`
 if [ -n "$GPSD" ]; then
 	echo "Existing gpsd running, terminating..."
 	kill -9 "$GPSD"
+	KILLED_DAEMON=1
 fi
 
 DHCPD=`pgrep dhcpd`
 if [ -n "$DHCPD" ]; then
 	echo "Existing dhcpd running, terminating..."
 	kill -9 "$DHCPD"
+	KILLED_DAEMON=1
 fi
 
 HOSTAPD=`pgrep hostapd`
 if [ -n "$HOSTAPD" ]; then
 	echo "Existing hostapd running, terminating..."
 	kill -9 "$HOSTAPD"
+	KILLED_DAEMON=1
 fi
 
-if [ -n "$HEARTBEAT" ] || [ -n "$GPSD" ] || [ -n "$DHCPD" ] || [ -n "$HOSTAPD" ]; then
+if [ $KILLED_DAEMON -eq 1 ]; then
 	sleep 5
 fi
 
@@ -257,7 +262,7 @@ if [ -n "$MESH_0" ]; then
 		if [ $COUNTER -ne $WFU_BRAIN_NUM ]; then
 			ip route add 172.16.$COUNTER.0/24 via 10.1.0.$COUNTER dev $MESH_0
 		fi
-		COUNTER=`expr $COUNTER + 1`
+		COUNTER=$(( $COUNTER + 1 ))
 		if [ $COUNTER -ge 255 ]; then
 			break
 		fi
@@ -292,7 +297,7 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 #############################################################
 
 echo "Launching heartbeat packet process..."
-if [ $WFU_BRAIN_NUM -eq 1 ] || [ -n "$MESH_0" ]; then
+if [ $WFU_BRAIN_NUM -eq 1 -o -n "$MESH_0" ]; then
 	wfu-heartbeat &
 	echo "Heartbeat launched OK."
 else

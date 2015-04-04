@@ -19,7 +19,7 @@ if [ -z "$1" ]; then
 	echo -e "${STYLE_HEADING}Heartbeat packet configuration:${STYLE_NONE}"
 	
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
-		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
+		SLEEP=`grep -Eo -m 1 "[+]?[0-9]+" "$WFU_HOME/.heartbeat-sleep"`
 	fi
 	if [ -z "$SLEEP" ]; then
 		SLEEP=10
@@ -35,7 +35,7 @@ if [ -z "$1" ]; then
 	echo "  Server        : $SERVER"
 	
 	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
-		PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
+		PORT=`grep -E -o -m 1 "[0-9]{1,5}" "$WFU_HOME/.heartbeat-port"`
 	fi
 	if [ -z "$PORT" ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
 		PORT=33339
@@ -59,22 +59,22 @@ if [ -n "$SLEEP" ]; then
 	if [ $SLEEP -le 0 ]; then
 		SLEEP=1
 	fi
-	echo "$SLEEP" > $WFU_HOME/.heartbeat-sleep
+	echo "$SLEEP" > "$WFU_HOME/.heartbeat-sleep"
 	echo -e "${STYLE_HEADING}Set heartbeat packet configuration to:${STYLE_NONE}"
 	echo -e "  Sleep         : $SLEEP sec"
 	
 	if [ -n "$SERVER" ]; then
-		echo "$SERVER" > $WFU_HOME/.heartbeat-server
+		echo "$SERVER" > "$WFU_HOME/.heartbeat-server"
 	else
-		rm -f $WFU_HOME/.heartbeat-server
+		rm -f "$WFU_HOME/.heartbeat-server"
 		SERVER="wfu-server"
 	fi
 	echo -e "  Server        : $SERVER"
 	
 	if [ -n "$PORT" ] && [ $PORT -gt 0 ] && [ $PORT -lt 65535 ]; then
-		echo "$PORT" > $WFU_HOME/.heartbeat-port
+		echo "$PORT" > "$WFU_HOME/.heartbeat-port"
 	else
-		rm -f $WFU_HOME/.heartbeat-port
+		rm -f "$WFU_HOME/.heartbeat-port"
 		PORT="33339"
 	fi
 	echo -e "  Port          : $PORT"

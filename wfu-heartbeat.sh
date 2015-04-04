@@ -18,7 +18,7 @@ fi
 # loop
 while true; do
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
-		SLEEP=`cat $WFU_HOME/.heartbeat-sleep | grep -E -o -m 1 "[+]?[0-9]+"`
+		SLEEP=`grep -Eo -m 1 "[+]?[0-9]+" "$WFU_HOME/.heartbeat-sleep"`
 	fi
 	if [ -z "$SLEEP" ]; then
 		SLEEP=10
@@ -26,21 +26,19 @@ while true; do
 		SLEEP=1
 	fi
 
+	SERVER=""
 	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
-		SERVER=`cat $WFU_HOME/.heartbeat-server`
-	else
-		SERVER=""
+		SERVER=`cat "$WFU_HOME/.heartbeat-server"`
 	fi
 	if [ -z "$SERVER" ]; then
 		SERVER="wfu-server"
 	fi
 
+	PORT=0
 	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
-		PORT=`cat $WFU_HOME/.heartbeat-port | grep -E -o -m 1 "[0-9]{1,5}"`
-	else
-		PORT=0
+		PORT=`grep -Eo -m 1 "[0-9]{1,5}" "$WFU_HOME/.heartbeat-port"`
 	fi
-	if [ -z "$PORT" ] || [ $PORT -le 0 ] || [ $PORT -ge 65535 ]; then
+	if [ -z "$PORT" ] || [ $PORT -le 0 -o $PORT -ge 65535 ]; then
 		PORT=33339
 	fi
 
@@ -63,7 +61,7 @@ while true; do
 	
 	HOSTAPD=`pgrep -l hostapd`
 	AP_0=`sudo ifconfig | grep -m 1 "^ap0"`
-	if [ -n "$HOSTAPD" ] && [ -n "$AP_0" ]; then
+	if [ -n "$HOSTAPD" -a -n "$AP_0" ]; then
 		PACKET="$PACKET|ap:1"
 	else
 		PACKET="$PACKET|ap:0"
@@ -104,13 +102,13 @@ while true; do
 					PACKET="$PACKET|alt:$ALTITUDE"
 				fi
 				
-				if [ -z "$ACC_X" ] && [ -n "$ACC_Y" ]; then
+				if [ -z "$ACC_X" -a -n "$ACC_Y" ]; then
 					ACC_X="$ACC_Y"
-				elif [ -z "$ACC_Y" ] && [ -n "$ACC_X" ]; then
+				elif [ -z "$ACC_Y" -a -n "$ACC_X" ]; then
 					ACC_Y="$ACC_X"
 				fi
 				
-				if [ -n "$ACC_Y" ] && [ -n "$ACC_X" ]; then
+				if [ -n "$ACC_Y" -a -n "$ACC_X" ]; then
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
@@ -128,22 +126,22 @@ while true; do
 			fi
 		fi
 	else
-		if [ -f "$WFU_HOME/.fakegps-latitude" ] && [ -f "$WFU_HOME/.fakegps-longitude" ]; then
-			LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
-			LONGITUDE=`cat $WFU_HOME/.fakegps-longitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
-			if [ -n "$LATITUDE" ] && [ -n "LONGITUDE" ]; then
+		if [ -f "$WFU_HOME/.fakegps-latitude" -a -f "$WFU_HOME/.fakegps-longitude" ]; then
+			LATITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-latitude"`
+			LONGITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-longitude"`
+			if [ -n "$LATITUDE" -a -n "LONGITUDE" ]; then
 				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
 				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
 				PACKET="$PACKET|gps:2|lat:$LATITUDE|long:$LONGITUDE"
 				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
-					ALTITUDE=`cat $WFU_HOME/.fakegps-altitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+					ALTITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-altitude"`
 					if [ -n "$ALTITUDE" ]; then
 						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
 						PACKET="$PACKET|alt:$ALTITUDE"
 					fi
 				fi
 				if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
-					ACCURACY=`cat $WFU_HOME/.fakegps-accuracy | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
+					ACCURACY=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-accuracy"`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"

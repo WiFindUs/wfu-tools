@@ -69,13 +69,13 @@ export WFU_BRAIN_NUM
 # WIFINDUS USER ACCOUNT
 #===============================================================
 
-HAS_WFU_USER=`cat /etc/passwd | grep $WFU_USER`
+HAS_WFU_USER=`grep $WFU_USER "/etc/passwd"`
 if [ -z "HAS_WFU_USER" ]; then
 	echo -e "${STYLE_HEADING}User '$WFU_USER' missing! creating...${STYLE_NONE}\n"
 	adduser "$WFU_USER"
 	echo "$WFU_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 	if [ $IS_RASPBERRY_PI -eq 1 ]; then
-		HAS_PI_USER=`cat /etc/passwd | grep pi`
+		HAS_PI_USER=`grep pi "/etc/passwd"`
 		if [ -n "HAS_PI_USER" ]; then
 			echo -e "${STYLE_HEADING}Deleting default user 'pi'...${STYLE_NONE}\n"
 			deluser -remove-home pi
@@ -214,13 +214,13 @@ if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt
 fi
 
-HAYSTACK=`cat "/etc/modules" | grep -o -m 1 -E "rt2800usb"`
+HAYSTACK=`grep -Eo -m 1 "rt2800usb" "/etc/modules"`
 if [ ! -f "/etc/modules" ] || [ -z "$HAYSTACK" ]; then
 	echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
 	echo "rt2800usb" >> "/etc/modules"
 fi
 
-HAYSTACK=`cat /etc/sysctl.conf | grep -o -m 1 -E "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1"`
+HAYSTACK=`grep -Eo -m 1 "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1" "/etc/sysctl.conf"`
 if [ -z "$HAYSTACK" ]; then
 	echo -e "${STYLE_HEADING}Updating /etc/sysctl.conf...${STYLE_NONE}"
 	echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf

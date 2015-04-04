@@ -110,7 +110,7 @@ if [ -d wfu-tools ]; then
 		sudo rm -f "$WFU_HOME/.version"
 		sudo mv -f "configs/.version" "$WFU_HOME/.version"
 		if [ -f "$WFU_HOME/.version" ]; then
-			WFU_VERSION=`cat "$WFU_HOME/.version" | grep -E -o -m 1 "[0-9]+"`
+			WFU_VERSION=`grep -Eo -m 1 "[0-9]+" "$WFU_HOME/.version"`
 			if [ -z "$WFU_VERSION" ]; then
 				WFU_VERSION=20141231
 				echo $WFU_VERSION > "$WFU_HOME/.version"
