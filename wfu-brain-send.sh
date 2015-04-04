@@ -41,7 +41,7 @@ COMMAND="${COMMAND//meshpeers/wfu-mesh-peers}"
 COMMAND="${COMMAND//meshdump/sudo iw dev mesh0 mpath dump 2>&1}"
 
 SLEEP=`echo "$2" | grep -Eo -m 1 "^[0-9]+$"`
-if [ -z "$SLEEP" -o $SLEEP -lt 0 ]; then
+if [ -z "$SLEEP" ] || [ $SLEEP -lt 0 ]; then
 	SLEEP=0
 fi
 

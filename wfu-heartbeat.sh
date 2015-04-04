@@ -127,7 +127,6 @@ while true; do
 			LATITUDE=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-latitude"`
 			LONGITUDE=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-longitude"`
 			if [ -n "$LATITUDE" -a -n "LONGITUDE" ]; then
-				FLAGS=$(($FLAGS | 8))
 				FLAGS=$(($FLAGS | 16))
 				LATITUDE=`printf '%.*f\n' 6 $LATITUDE | sed -r 's/^0+|0+$//'`
 				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE | sed -r 's/^0+|0+$//'`

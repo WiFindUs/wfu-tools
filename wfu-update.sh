@@ -102,7 +102,7 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/motd
 		
 		sudo rm -f /etc/profile
-		sudo mv -f configs/.etc.profile /etc
+		sudo mv -f configs/.etc.profile /etc/profile
 		
 		#remove this eventually
 		if [ -f /etc/ssh/sshd_config ]; then
