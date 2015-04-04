@@ -32,20 +32,26 @@ if [ -z "$COMMAND" ]; then
 	exit 4
 fi
 
-LOCAL_PEERS=`wfu-mesh-peers -l 2>/dev/null`
-REMOTE_PEERS=`wfu-mesh-peers -r 2>/dev/null`
-if [ -z "$LOCAL_PEERS" ] && [ -z "$REMOTE_PEERS" ]; then
+SLEEP=`echo "$2" | grep -Eo -m 1 "^[0-9]+$"`
+if [ -z "$SLEEP" ] || [ $SLEEP -lt 0 ]; then
+	SLEEP=0
+fi
+
+MESH_PEERS=`wfu-mesh-peers -lr " " 2>/dev/null`
+if [ -z "$MESH_PEERS" ]; then
 	echo "ERROR: No peers found. aborting." 1>&2
 	exit 5
 fi
 
 echo -e "${STYLE_HEADING}Sending command to mesh peers...${STYLE_NONE}"
-MESH_PEERS="${REMOTE_PEERS} ${LOCAL_PEERS}"
 echo -e "  ${STYLE_INFO}Peer list${STYLE_NONE}: ${MESH_PEERS}"
 for PEER in $MESH_PEERS; do
 	SUBCOMMAND=${COMMAND//_NUM_/$PEER}
 	echo -e "  ${STYLE_INFO}wfu-brain-${PEER}${STYLE_NONE}: '$SUBCOMMAND'"
 	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$SUBCOMMAND" & ) &>/dev/null
+	if [ $SLEEP -gt 0 ]; then
+		sleep $SLEEP
+	fi
 done
 
 echo -e "  ${STYLE_SUCCESS}done!${STYLE_NONE}\n"

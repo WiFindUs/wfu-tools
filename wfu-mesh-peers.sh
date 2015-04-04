@@ -62,12 +62,17 @@ fi
 MS="[0-9A-Za-z]{1,2}"
 MAC="$MS[:]$MS[:]$MS[:]$MS[:]$MS[:]$MS"
 REGEX="($MAC) +($MAC) +mesh0"
-MESH_PEER_LIST=""
+PEER_LIST=""
+REMOTE_PEER_LIST=""
 while read -r PEER; do
 	if [[ $PEER =~ $REGEX ]]; then
-		PEER_MAC=""
-		if ([ $LOCAL_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]) || ([ $REMOTE_PEERS -eq 1 ] && [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]); then
-			PEER_MAC="${BASH_REMATCH[1]}"
+		PEER_MAC="${BASH_REMATCH[1]}"
+		IS_LOCAL=0
+		if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
+			IS_LOCAL=1
+		fi
+		if [ $IS_LOCAL -eq 1 -a $LOCAL_PEERS -eq 0 ] || [ $IS_LOCAL -eq 0 -a $REMOTE_PEERS -eq 0 ]; then
+			continue
 		fi
 		if [ -n "$PEER_MAC" ]; then
 			PEER_NUM=`echo "$PEER_MAC" | cut -d':' -f6`
@@ -76,17 +81,27 @@ while read -r PEER; do
 				STATION_INFO=`sudo iw dev mesh0 station get "$PEER_MAC"`
 				SIGNAL_STRENGTH=`echo "$STATION_INFO" | grep -i "signal avg" | grep -Eo "[-+]?[0-9]+"`
 				TX_BITRATE=`echo "$STATION_INFO" | grep -i "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`
-				PEER_NUM="${PEER_NUM}($SIGNAL_STRENGTH)($TX_BITRATE)"
+				PEER_NUM="${PEER_NUM};$SIGNAL_STRENGTH;$TX_BITRATE"
 			fi
-			if [ -z "$MESH_PEER_LIST" ]; then
-				MESH_PEER_LIST="$PEER_NUM"
+			if [ $IS_LOCAL -eq 1 ]; then
+				if [ -n "$PEER_LIST" ]; then
+					PEER_LIST="${PEER_LIST}${DELIMITER}"
+				fi
+				PEER_LIST="${PEER_LIST}${PEER_NUM}"
 			else
-				MESH_PEER_LIST="${MESH_PEER_LIST}${DELIMITER}${PEER_NUM}"
+				if [ -n "$REMOTE_PEER_LIST" ]; then
+					REMOTE_PEER_LIST="${REMOTE_PEER_LIST}${DELIMITER}"
+				fi
+				REMOTE_PEER_LIST="${REMOTE_PEER_LIST}${PEER_NUM}"
 			fi
 		fi
 	fi
 done <<< "$MESH_PEERS"
 
+if [ -n "$REMOTE_PEER_LIST" -a -n "$PEER_LIST" ]; then
+	PEER_LIST="${REMOTE_PEER_LIST}${DELIMITER}${PEER_LIST}"
+fi
+
 echo "Peers found:" 1>&2
-echo "$MESH_PEER_LIST"
+echo "$PEER_LIST"
 exit 0
