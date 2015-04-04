@@ -18,67 +18,62 @@ fi
 # collect data
 HOSTAPD=`sudo pgrep -l hostapd`
 if [ -n "$HOSTAPD" ]; then
-	HOSTAPD="running"
+	HOSTAPD="${STYLE_SUCCESS}running${STYLE_NONE}"
 else
-	HOSTAPD="not found"
+	HOSTAPD="${STYLE_ERROR}not found${STYLE_NONE}"
 fi
+
 DHCPD=`sudo pgrep -l dhcpd`
 if [ -n "$DHCPD" ]; then
-	DHCPD="running"
+	DHCPD="${STYLE_SUCCESS}running${STYLE_NONE}"
 else
-	DHCPD="not found"
+	DHCPD="${STYLE_ERROR}not found${STYLE_NONE}"
 fi
+
 GPSD=`sudo pgrep -l gpsd`
 if [ -n "$GPSD" ]; then
-	GPSD="running"
+	GPSD="${STYLE_SUCCESS}running${STYLE_NONE}"
 else
-	GPSD="not found"
+	GPSD="${STYLE_WARNING}not found${STYLE_NONE}"
 fi
+
+MESH_PEERS="none"
 MESH_0=`sudo ifconfig | grep -o -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
-	LOCAL_PEERS=`wfu-mesh-peers -l ", " 2>/dev/null`
-	REMOTE_PEERS=`wfu-mesh-peers -r ", " 2>/dev/null`
+	MESH_PEERS=`wfu-mesh-peers -lrq ",\n" 2>/dev/null`
 else
-	MESH_0="not found"
+	MESH_0="${STYLE_ERROR}not found${STYLE_NONE}"
 fi
-if [ -z "$LOCAL_PEERS" ]; then
-	LOCAL_PEERS="none"
-fi
-if [ -z "$REMOTE_PEERS" ]; then
-	REMOTE_PEERS="none"
-fi
+
 AP_0=`sudo ifconfig | grep -o -m 1 "^ap0"`
 if [ -z "$AP_0" ]; then
-	AP_0="not found"
+	AP_0="${STYLE_ERROR}not found${STYLE_NONE}"
 fi
+
+IS_RPI="no"
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	IS_RPI="yes"
-else
-	IS_RPI="no"
 fi
 
+IS_CBX="no"
 if [ $IS_CUBOX -eq 1 ]; then
 	IS_CBX="yes"
-else
-	IS_CBX="no"
 fi
 
+ISPC="no"
 if [ $IS_PC -eq 1 ]; then
 	ISPC="yes"
-else
-	ISPC="no"
 fi
 
+LAST_UPDATE="${STYLE_WARNING}unknown${STYLE_NONE}"
 if [ -n "$LAST_UPDATE_TIME" ]; then
 	LAST_UPDATE="$LAST_UPDATE_TIME"
-else
-	LAST_UPDATE="unknown"
 fi
 
 #print info
 echo "Brain environment information:"
-echo "  Node version  : $WFU_VERSION"
 echo "  Node ID       : $WFU_BRAIN_ID_HEX"
+echo "  Version       : $WFU_VERSION"
 echo "  Last updated  : $LAST_UPDATE"
 echo "  Station #     : $WFU_BRAIN_NUM"
 echo "  Machine model : $MACHINE_MODEL"
@@ -92,6 +87,6 @@ echo "    - hostapd   : $HOSTAPD"
 echo "    - dhcpd     : $DHCPD"
 echo "  GPS daemon    : $GPSD"
 echo "  Mesh point    : $MESH_0"
-echo "    - loc. peers: $LOCAL_PEERS"
-echo "    - rem. peers: $REMOTE_PEERS"
+echo "    - peers     : $MESH_PEERS"
+
 exit 0
