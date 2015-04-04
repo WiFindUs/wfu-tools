@@ -71,7 +71,7 @@ if [ -n "$LAST_UPDATE_TIME" ]; then
 fi
 
 #print info
-echo -e "Brain environment information:"
+echo -e "${STYLE_HEADING}Brain environment information:${STYLE_NONE}"
 echo -e "  Node ID       : $WFU_BRAIN_ID_HEX"
 echo -e "  Version       : $WFU_VERSION"
 echo -e "  Last updated  : $LAST_UPDATE"

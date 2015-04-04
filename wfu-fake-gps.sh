@@ -16,7 +16,7 @@ else
 fi
 
 if [ -z "$1" ]; then
-	echo "Fakegps configuration:"
+	echo -e "${STYLE_HEADING}Fakegps configuration:${STYLE_NONE}"
 	
 	if [ -f "$WFU_HOME/.fakegps-latitude" ]; then
 		LATITUDE=`cat $WFU_HOME/.fakegps-latitude | grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?"`
@@ -68,7 +68,7 @@ fi
 REMOVE=`echo "$1" | grep -E -o -m 1 -i "(rem(ove)?|clear|none|del(ete)?|off|def(ault)?)"`
 if [ -n "$REMOVE" ]; then
 	rm -f $WFU_HOME/.fakegps-*
-	echo "Cleared all fakegps data."
+	echo -e "${STYLE_SUCCESS}Cleared all fakegps data.${STYLE_NONE}"
 	exit 0
 fi
 
@@ -82,27 +82,28 @@ if [ -n "$LATITUDE" ]; then
 		LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
 		echo "$LATITUDE" > $WFU_HOME/.fakegps-latitude
 		echo "$LONGITUDE" > $WFU_HOME/.fakegps-longitude
-		MESSAGE="Set fakegps data to:\n  Latitude: $LATITUDE\n  Longitude: $LONGITUDE"
+		echo -e "${STYLE_HEADING}Set fakegps data to:${STYLE_NONE}"
+		echo -e "  Latitude      : $LATITUDE"
+		echo -e "  Longitude     : $LONGITUDE"
 		
 		if [ -n "$ALTITUDE" ]; then
 			ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
 			echo "$ALTITUDE" > $WFU_HOME/.fakegps-altitude
-			MESSAGE="$MESSAGE\n  Altitude: $ALTITUDE"
 		else
 			rm -f $WFU_HOME/.fakegps-altitude
-			MESSAGE="$MESSAGE\n  Altitude: n/a"
+			ALTITUDE="n/a"
 		fi
+		echo -e "  Altitude      : $ALTITUDE"
 		
 		if [ -n "$ACCURACY" ]; then
 			ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 			echo "$ACCURACY" > $WFU_HOME/.fakegps-accuracy
-			MESSAGE="$MESSAGE\n  Accuracy: $ACCURACY"
 		else
 			rm -f $WFU_HOME/.fakegps-accuracy
-			MESSAGE="$MESSAGE\n  Accuracy: n/a"
+			ACCURACY="n/a"
 		fi
+		echo -e "  Accuracy      : $ACCURACY"
 		sudo chmod 666 $WFU_HOME/.fakegps-*
-		echo -e $MESSAGE
 		exit 0
 	else
 		echo "ERROR: longitude argument missing or invalid."
