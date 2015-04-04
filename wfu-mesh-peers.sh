@@ -27,31 +27,14 @@ if [ -z "$MESH_PEERS" ]; then
 	exit 0
 fi
 
-FLAGS=`echo "$1" | grep -Eo "^[-][a-zA-Z]+$"`
+LOCAL_PEERS="1"
+REMOTE_PEERS=""
+INCLUDE_QUALITY=""
+FLAGS=`echo "$1" | grep -Eo -m 1 "^[-][a-zA-Z]+$"`
 if [ -n "$FLAGS" ]; then
-	LOCAL_PEERS=`echo "$FLAGS" | grep -Eo "[lL]"`
-	REMOTE_PEERS=`echo "$FLAGS" | grep -Eo "[rR]"`
-	INCLUDE_QUALITY=`echo "$FLAGS" | grep -Eo "[qQ]"`
-	
-	if [ -n "$LOCAL_PEERS" ]; then
-		LOCAL_PEERS=1
-	else
-		LOCAL_PEERS=0
-	fi
-	if [ -n "$REMOTE_PEERS" ]; then
-		REMOTE_PEERS=1
-	else
-		REMOTE_PEERS=0
-	fi
-	if [ -n "$INCLUDE_QUALITY" ]; then
-		INCLUDE_QUALITY=1
-	else
-		INCLUDE_QUALITY=0
-	fi
-else
-	LOCAL_PEERS=1
-	REMOTE_PEERS=0
-	INCLUDE_QUALITY=0
+	LOCAL_PEERS=`echo "$FLAGS" | grep -Eo -m 1 "[lL]"`
+	REMOTE_PEERS=`echo "$FLAGS" | grep -Eo  -m 1 "[rR]"`
+	INCLUDE_QUALITY=`echo "$FLAGS" | grep -Eo  -m 1 "[qQ]"`
 fi
 
 DELIMITER="$2"
@@ -71,13 +54,13 @@ while read -r PEER; do
 		if [ "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]; then
 			IS_LOCAL=1
 		fi
-		if [ $IS_LOCAL -eq 1 -a $LOCAL_PEERS -eq 0 ] || [ $IS_LOCAL -eq 0 -a $REMOTE_PEERS -eq 0 ]; then
+		if [ $IS_LOCAL -eq 1 -a -z "$LOCAL_PEERS" ] || [ $IS_LOCAL -eq 0 -a -z "$REMOTE_PEERS" ]; then
 			continue
 		fi
 		if [ -n "$PEER_MAC" ]; then
 			PEER_NUM=`echo "$PEER_MAC" | cut -d':' -f6`
 			PEER_NUM=`echo "ibase=16; $PEER_NUM" | bc`
-			if [ $INCLUDE_QUALITY -eq 1 ]; then
+			if [ -n "$INCLUDE_QUALITY" ]; then
 				STATION_INFO=`sudo iw dev mesh0 station get "$PEER_MAC"`
 				SIGNAL_STRENGTH=`echo "$STATION_INFO" | grep -i "signal avg" | grep -Eo "[-+]?[0-9]+"`
 				TX_BITRATE=`echo "$STATION_INFO" | grep -i "tx bitrate" | grep -Eo "[-+]?[0-9]+([.][0-9]+)?"`

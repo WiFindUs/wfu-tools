@@ -127,11 +127,11 @@ if [ -d wfu-tools ]; then
 		
 		echo -e -n "  ${STYLE_HEADING}recording update timestamp...${STYLE_NONE} "
 		
-		LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
-		echo $LAST_UPDATE_TIME > "../.last-update"
+		WFU_LAST_UPDATED=`date +"%Y-%m-%d %H:%M:%S"`
+		echo $WFU_LAST_UPDATED > "../.last-update"
 		sudo chmod 666 "../.last-update"
-		export LAST_UPDATE_TIME
-		echo $LAST_UPDATE_TIME
+		export WFU_LAST_UPDATED
+		echo $WFU_LAST_UPDATED
 		
 		echo -e "  ${STYLE_HEADING}cleaning up wfu-tools...${STYLE_NONE}"
 		

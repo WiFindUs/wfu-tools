@@ -42,14 +42,14 @@ export WFU_VERSION
 
 #last running of wfu-update
 if [ -f "$WFU_HOME/.last-update" ]; then
-	LAST_UPDATE_TIME=`grep -Eo -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}" "$WFU_HOME/.last-update"`
+	WFU_LAST_UPDATED=`grep -Eo -m 1 "[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2}" "$WFU_HOME/.last-update"`
 fi
-if [ -z "$LAST_UPDATE_TIME" ]; then
-	LAST_UPDATE_TIME=`date +"%Y-%m-%d %H:%M:%S"`
-	echo $LAST_UPDATE_TIME > "$WFU_HOME/.last-update"
+if [ -z "$WFU_LAST_UPDATED" ]; then
+	WFU_LAST_UPDATED=`date +"%Y-%m-%d %H:%M:%S"`
+	echo $WFU_LAST_UPDATED > "$WFU_HOME/.last-update"
 	sudo chmod 666 "$WFU_HOME/.last-update"
 fi
-export LAST_UPDATE_TIME
+export WFU_LAST_UPDATED
 
 # machine model
 if [ -z "$MACHINE_MODEL" ]; then

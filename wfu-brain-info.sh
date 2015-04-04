@@ -18,14 +18,24 @@ fi
 # intro
 echo -e "${STYLE_HEADING}Brain environment information:${STYLE_NONE}"
 echo "  Node ID       : $WFU_BRAIN_ID_HEX"
-echo "  Version       : $WFU_VERSION"
 
-# version
-LAST_UPDATE="${STYLE_WARNING}unknown${STYLE_NONE}"
-if [ -n "$LAST_UPDATE_TIME" ]; then
-	LAST_UPDATE="$LAST_UPDATE_TIME"
+# version number
+CURRENT_DATE_VERSION=`date +"%Y%m%d"`
+OLDER_VERSION=$(( CURRENT_DATE_VERSION - 3 ))
+VERSION_STYLE="${STYLE_ERROR}"
+if [ $WFU_VERSION -ge $CURRENT_DATE_VERSION ]; then
+	VERSION_STYLE="${STYLE_SUCCESS}"
+elif [ $WFU_VERSION -ge $OLDER_VERSION ]; then
+	VERSION_STYLE="${STYLE_WARNING}"
 fi
-echo -e "  Last updated  : $LAST_UPDATE"
+echo "  Version       : ${VERSION_STYLE}$WFU_VERSION${STYLE_NONE}"
+
+# version date
+if [ -z "$WFU_LAST_UPDATED" ]; then
+	echo -e "  Last updated  : ${STYLE_WARNING}unknown${STYLE_NONE}"
+else
+	echo -e "  Last updated  : $WFU_LAST_UPDATED"
+fi
 
 # brain number
 echo "  Station #     : $WFU_BRAIN_NUM"
