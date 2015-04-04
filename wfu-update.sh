@@ -99,26 +99,16 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/hostapd/hostapd.conf
 		sudo mv -f configs/hostapd.conf /etc/hostapd/hostapd.conf
 		
+		sudo rm -f /etc/motd
+		
+		sudo rm -f /etc/profile
+		sudo mv -f configs/.etc.profile /etc
+		
 		#remove this eventually
 		if [ -f /etc/ssh/sshd_config ]; then
 			sudo sed -i 's/PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config
 			sudo sed -i 's/PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config
-		fi
-		rm -f /etc/motd
-		if [ ! -f /etc/profile ]; then
-			sudo sh -c 'echo "TZ='Australia/Adelaide'; export TZ" > /etc/profile'
-			sudo sh -c 'echo "LC_ALL='C'; export LC_ALL" >> /etc/profile'
-		else
-			NEEDLE=`grep "export TZ" "/etc/profile"`
-			if [ -z "$NEEDLE" ]; then
-				sudo sh -c 'echo "TZ='Australia/Adelaide'; export TZ" >> /etc/profile'
-			fi
-			NEEDLE=`grep "LC_ALL" "/etc/profile"`
-			if [ -z "$NEEDLE" ]; then
-				sudo sh -c 'echo "LC_ALL='C'; export LC_ALL" >> /etc/profile'
-			fi
-		fi
-			
+		fi			
 		
 		echo -e -n "  ${STYLE_HEADING}updating version number...${STYLE_NONE} "
 		

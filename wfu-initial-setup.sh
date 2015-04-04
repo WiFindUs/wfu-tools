@@ -214,14 +214,14 @@ if [ $IS_RASPBERRY_PI -eq 1 ]; then
 	echo "dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait smsc95xx.turbo_mode=N dwc_otg.microframe_schedule=1" > /boot/cmdline.txt
 fi
 
-HAYSTACK=`grep -Eo -m 1 "rt2800usb" "/etc/modules"`
-if [ ! -f "/etc/modules" ] || [ -z "$HAYSTACK" ]; then
+NEEDLE=`grep -Eo -m 1 "rt2800usb" "/etc/modules"`
+if [ -z "$NEEDLE" ]; then
 	echo -e "${STYLE_HEADING}Writing /etc/modules...${STYLE_NONE}"
 	echo "rt2800usb" >> "/etc/modules"
 fi
 
-HAYSTACK=`grep -Eo -m 1 "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1" "/etc/sysctl.conf"`
-if [ -z "$HAYSTACK" ]; then
+NEEDLE=`grep -Eo -m 1 "net[.]ipv6[.]conf[.]all[.]disable_ipv6 *= *1" "/etc/sysctl.conf"`
+if [ -z "$NEEDLE" ]; then
 	echo -e "${STYLE_HEADING}Updating /etc/sysctl.conf...${STYLE_NONE}"
 	echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 	echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
