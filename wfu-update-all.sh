@@ -51,7 +51,7 @@ fi
 #===============================================================
 
 echo ""
-wfu-brain-send "wfu-update; sleep 30; sudo reboot"
+wfu-brain-send "wfu-update; sleep 30; sudo reboot" 5
 
 #===============================================================
 # SELF-UPDATE
