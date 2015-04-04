@@ -17,8 +17,8 @@ fi
 
 # intro
 echo -e "${STYLE_HEADING}Brain environment information:${STYLE_NONE}"
-echo -e "  Node ID       : $WFU_BRAIN_ID_HEX"
-echo -e "  Version       : $WFU_VERSION"
+echo "  Node ID       : $WFU_BRAIN_ID_HEX"
+echo "  Version       : $WFU_VERSION"
 
 # version
 LAST_UPDATE="${STYLE_WARNING}unknown${STYLE_NONE}"
@@ -28,26 +28,26 @@ fi
 echo -e "  Last updated  : $LAST_UPDATE"
 
 # brain number
-echo -e "  Station #     : $WFU_BRAIN_NUM"
+echo "  Station #     : $WFU_BRAIN_NUM"
 
 # machine info
-echo -e  "  Machine model : $MACHINE_MODEL"
-echo -e  "  Machine family: $MACHINE_FAMILY"
-echo -ne "    - is Pi     : "
+echo "  Machine model : $MACHINE_MODEL"
+echo "  Machine family: $MACHINE_FAMILY"
+echo -n "    - is Pi     : "
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
-	echo "${STYLE_SUCCESS}yes${STYLE_NONE}"
+	echo -e  "${STYLE_SUCCESS}yes${STYLE_NONE}"
 else
 	echo "no"
 fi
-echo -ne "    - is Cubox  : "
+echo -n "    - is Cubox  : "
 if [ $IS_CUBOX -eq 1 ]; then
-	echo "${STYLE_SUCCESS}yes${STYLE_NONE}"
+	echo -e  "${STYLE_SUCCESS}yes${STYLE_NONE}"
 else
 	echo "no"
 fi
-echo -ne "    - is PC     : "
+echo -n "    - is PC     : "
 if [ $IS_PC -eq 1 ]; then
-	echo "${STYLE_SUCCESS}yes${STYLE_NONE}"
+	echo -e "${STYLE_SUCCESS}yes${STYLE_NONE}"
 else
 	echo "no"
 fi
@@ -58,7 +58,7 @@ if [ -z "$AP_0" ]; then
 	AP_0="${STYLE_ERROR}not found${STYLE_NONE}"
 fi
 echo -e "  Access point  : $AP_0"
-echo -e "    - channel   : $WFU_AP_CHANNEL"
+echo "    - channel   : $WFU_AP_CHANNEL"
 
 # access point daemon
 HOSTAPD=`sudo pgrep -l hostapd`
