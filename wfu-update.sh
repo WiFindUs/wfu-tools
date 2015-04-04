@@ -99,6 +99,12 @@ if [ -d wfu-tools ]; then
 		sudo rm -f /etc/hostapd/hostapd.conf
 		sudo mv -f configs/hostapd.conf /etc/hostapd/hostapd.conf
 		
+		#remove this eventually
+		if [ -f /etc/ssh/sshd_config ]; then
+			sudo sed -i 's/PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config
+			sudo sed -i 's/PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config
+		fi
+		
 		echo -e -n "  ${STYLE_HEADING}updating version number...${STYLE_NONE} "
 		
 		sudo rm -f "$WFU_HOME/.version"

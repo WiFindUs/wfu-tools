@@ -229,6 +229,11 @@ if [ -z "$HAYSTACK" ]; then
 	echo "net.ipv6.conf.eth0.disable_ipv6 = 1" >> /etc/sysctl.conf
 fi
 
+if [ -f /etc/ssh/sshd_config ]; then
+	sed -i 's/PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config
+	sed -i 's/PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config
+fi
+
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 wfu-setup $WFU_BRAIN_NUM
 
