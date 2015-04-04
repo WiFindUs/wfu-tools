@@ -42,13 +42,14 @@ while true; do
 		PORT=33339
 	fi
 
+	FLAGS=0
 	TIMESTAMP=`date +"%s"`
 	TIMESTAMP=`printf "%x\n" $TIMESTAMP  | tr '[:lower:]' '[:upper:]'`
 	PACKET="EYE{NODE|$WFU_BRAIN_ID_HEX|$TIMESTAMP{num:$WFU_BRAIN_NUM|ver:$WFU_VERSION"
 	
 	MESH_0=`sudo ifconfig | grep -m 1 "^mesh0"`
 	if [ -n "$MESH_0" ]; then
-		PACKET="$PACKET|mp:1"
+		FLAGS=$(($FLAGS | 1))
 		MESH_PEERS=`wfu-mesh-peers -lq , 2>/dev/null`
 		if [ -n "$MESH_PEERS" ]; then
 			PACKET="$PACKET|mpl:${MESH_PEERS}"
@@ -56,49 +57,45 @@ while true; do
 			PACKET="$PACKET|mpl:0"
 		fi
 	else
-		PACKET="$PACKET|mp:0|mpl:0"
+		PACKET="$PACKET|mpl:0"
 	fi
 	
 	HOSTAPD=`pgrep -l hostapd`
 	AP_0=`sudo ifconfig | grep -m 1 "^ap0"`
 	if [ -n "$HOSTAPD" -a -n "$AP_0" ]; then
-		PACKET="$PACKET|ap:1"
-	else
-		PACKET="$PACKET|ap:0"
+		FLAGS=$(($FLAGS | 2))
 	fi
 	
 	DHCPD=`pgrep -l dhcpd`
 	if [ -n "$DHCPD" ]; then
-		PACKET="$PACKET|dhcp:1"
-	else
-		PACKET="$PACKET|dhcp:0"
+		FLAGS=$(($FLAGS | 4))
 	fi	
 
 	GPSD=`pgrep -l gpsd`
 	if [ -n "$GPSD" ]; then
-		PACKET="$PACKET|gps:1"
+		FLAGS=$(($FLAGS | 8))
 		GPS_DATA=`gpspipe -w -n 7`
 		if [ -n "$GPS_DATA" ]; then
 			TPV_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"TPV\""`
 			if [ -n "$TPV_DATA" ]; then
-				LONGITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lon\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
-				LATITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"lat\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
-				ALTITUDE=`echo "$TPV_DATA" | grep -E -o -m 1 "\"alt\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
-				ACC_X=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epx\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
-				ACC_Y=`echo "$TPV_DATA" | grep -E -o -m 1 "\"epy\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				LONGITUDE=`echo "$TPV_DATA" | grep -Eo -m 1 "\"lon\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				LATITUDE=`echo "$TPV_DATA" | grep -Eo -m 1 "\"lat\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ALTITUDE=`echo "$TPV_DATA" | grep -Eo -m 1 "\"alt\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ACC_X=`echo "$TPV_DATA" | grep -Eo -m 1 "\"epx\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
+				ACC_Y=`echo "$TPV_DATA" | grep -Eo -m 1 "\"epy\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
 				
 				if [ -n "$LONGITUDE" ]; then
-					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
+					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE | sed -r 's/^0+|0+$//'`
 					PACKET="$PACKET|long:$LONGITUDE"
 				fi
 
 				if [ -n "$LATITUDE" ]; then
-					LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
+					LATITUDE=`printf '%.*f\n' 6 $LATITUDE | sed -r 's/^0+|0+$//'`
 					PACKET="$PACKET|lat:$LATITUDE"
 				fi
 
 				if [ -n "$ALTITUDE" ]; then
-					ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+					ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE | sed -r 's/^0+|0+$//'`
 					PACKET="$PACKET|alt:$ALTITUDE"
 				fi
 				
@@ -119,7 +116,7 @@ while true; do
 			
 			SKY_DATA=`echo "$GPS_DATA" | grep -E -m 1 "\"class\":\"SKY\""`
 			if [ -n "$SKY_DATA" ]; then
-				SATCOUNT=`echo "$SKY_DATA" | grep -E -m 1 -o "\"satellites\":\[.*\]" | grep -o -P "{.*?\"used\":true.*?}" | wc -l`
+				SATCOUNT=`echo "$SKY_DATA" | grep -Eo -m 1 "\"satellites\":\[.*\]" | grep -o -P "{.*?\"used\":true.*?}" | wc -l`
 				if [ -n "$SATCOUNT" ]; then
 					PACKET="$PACKET|sats:$SATCOUNT"
 				fi
@@ -127,35 +124,33 @@ while true; do
 		fi
 	else
 		if [ -f "$WFU_HOME/.fakegps-latitude" -a -f "$WFU_HOME/.fakegps-longitude" ]; then
-			LATITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-latitude"`
-			LONGITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-longitude"`
+			LATITUDE=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-latitude"`
+			LONGITUDE=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-longitude"`
 			if [ -n "$LATITUDE" -a -n "LONGITUDE" ]; then
-				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
-				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
-				PACKET="$PACKET|gps:2|lat:$LATITUDE|long:$LONGITUDE"
+				FLAGS=$(($FLAGS | 8))
+				FLAGS=$(($FLAGS | 16))
+				LATITUDE=`printf '%.*f\n' 6 $LATITUDE | sed -r 's/^0+|0+$//'`
+				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE | sed -r 's/^0+|0+$//'`
+				PACKET="$PACKET|lat:$LATITUDE|long:$LONGITUDE"
 				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
 					ALTITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-altitude"`
 					if [ -n "$ALTITUDE" ]; then
-						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE | sed -r 's/^0+|0+$//'`
 						PACKET="$PACKET|alt:$ALTITUDE"
 					fi
 				fi
 				if [ -f "$WFU_HOME/.fakegps-accuracy" ]; then
-					ACCURACY=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-accuracy"`
+					ACCURACY=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-accuracy"`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"
 					fi
 				fi
-			else
-				PACKET="$PACKET|gps:0"
 			fi
-		else
-			PACKET="$PACKET|gps:0"
 		fi
 	fi
 
-	echo "$PACKET}}" > "/dev/udp/$SERVER/$PORT"
+	echo "$PACKET|flg:$FLAGS}}" > "/dev/udp/$SERVER/$PORT"
 	
 	if [ $SLEEP -ge 1 ]; then
 		sleep $SLEEP
