@@ -57,7 +57,13 @@ wfu-brain-send "wfu-update; sleep 30; sudo reboot"
 # SELF-UPDATE
 #===============================================================
 
-sleep 10
+echo -e "${STYLE_INFO}Update command sent to all nodes.${STYLE_NONE}"
+echo -e "${STYLE_WARNING}Update will begin on this unit in 15 seconds.${STYLE_NONE}"
+sleep 5
+echo -e "${STYLE_WARNING}Update will begin on this unit in 10 seconds.${STYLE_NONE}"
+sleep 5
+echo -e "${STYLE_WARNING}Update will begin on this unit in 5 seconds.${STYLE_NONE}"
+sleep 5
 wfu-update
 
 #===============================================================
