@@ -21,6 +21,8 @@ else
 	exit 1
 fi
 sudo rm -f "/usr/local/wifindus/.update-lock"
+TZ='Australia/Adelaide'; export TZ
+LC_ALL=C; export LC_ALL
 
 #############################################################
 ### Logging

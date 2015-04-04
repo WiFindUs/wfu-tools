@@ -23,7 +23,3 @@ fi
 
 # delete known ssh hosts (too hard to maintain with nodes being re-flashed all the time)
 rm -f ~/.ssh/known_hosts
-
-# set timezone
-TZ='Australia/Adelaide'; export TZ
-
