@@ -104,6 +104,21 @@ if [ -d wfu-tools ]; then
 			sudo sed -i 's/PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config
 			sudo sed -i 's/PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config
 		fi
+		rm -f /etc/motd
+		if [ ! -f /etc/profile ]; then
+			sudo sh -c 'echo "TZ='Australia/Adelaide'; export TZ" > /etc/profile'
+			sudo sh -c 'echo "LC_ALL='C'; export LC_ALL" >> /etc/profile'
+		else
+			NEEDLE=`grep "export TZ" "/etc/profile"`
+			if [ -z "$NEEDLE" ]; then
+				sudo sh -c 'echo "TZ='Australia/Adelaide'; export TZ" >> /etc/profile'
+			fi
+			NEEDLE=`grep "LC_ALL" "/etc/profile"`
+			if [ -z "$NEEDLE" ]; then
+				sudo sh -c 'echo "LC_ALL='C'; export LC_ALL" >> /etc/profile'
+			fi
+		fi
+			
 		
 		echo -e -n "  ${STYLE_HEADING}updating version number...${STYLE_NONE} "
 		

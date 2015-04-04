@@ -233,6 +233,7 @@ if [ -f /etc/ssh/sshd_config ]; then
 	sed -i 's/PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config
 	sed -i 's/PrintMotd yes/PrintMotd no/' /etc/ssh/sshd_config
 fi
+rm -f /etc/motd
 
 echo -e "${STYLE_HEADING}Running wfu-setup...${STYLE_NONE}"
 wfu-setup $WFU_BRAIN_NUM
