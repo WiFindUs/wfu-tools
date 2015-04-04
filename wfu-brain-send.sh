@@ -41,7 +41,7 @@ COMMAND="${COMMAND//meshpeers/wfu-mesh-peers}"
 COMMAND="${COMMAND//meshdump/sudo iw dev mesh0 mpath dump 2>&1}"
 
 SLEEP=`echo "$2" | grep -Eo -m 1 "^[0-9]+$"`
-if [ -z "$SLEEP" ] || [ $SLEEP -lt 0 ]; then
+if [ -z "$SLEEP" -o $SLEEP -lt 0 ]; then
 	SLEEP=0
 fi
 
@@ -56,7 +56,7 @@ echo -e "  ${STYLE_INFO}Peer list${STYLE_NONE}: ${MESH_PEERS}"
 for PEER in $MESH_PEERS; do
 	SUBCOMMAND="${COMMAND//_NUM_/$PEER}"
 	echo -e "  ${STYLE_INFO}wfu-brain-${PEER}${STYLE_NONE}: '$SUBCOMMAND'"
-	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$SUBCOMMAND" & )
+	( sshpass -p 'omgwtflol87' ssh -o StrictHostKeyChecking=no wifindus@wfu-brain-$PEER "$SUBCOMMAND" & )  &>/dev/null
 	if [ $SLEEP -gt 0 ]; then
 		sleep $SLEEP
 	fi
