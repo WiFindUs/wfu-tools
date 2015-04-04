@@ -15,6 +15,15 @@ else
 	exit 1
 fi
 
+function trimz ()
+{
+	VAL=`echo "$1" | sed -r 's/^0+([1-9.])/\1/' | sed -r 's/([1-9.])0+$/\1/' | sed -r 's/[.]$//' | sed -r 's/^[.]/0&/'`
+	if [ -z "$VAL" ]; then
+		VAL=0
+	fi
+	echo $VAL	
+}
+
 # loop
 while true; do
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
@@ -85,17 +94,20 @@ while true; do
 				ACC_Y=`echo "$TPV_DATA" | grep -Eo -m 1 "\"epy\":[+-]?[0-9]+([.][0-9]+)?" | cut -d':' -f2`
 				
 				if [ -n "$LONGITUDE" ]; then
-					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE | sed -r 's/^0+|0+$//'`
+					LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
+					LONGITUDE=`trimz $LONGITUDE`
 					PACKET="$PACKET|long:$LONGITUDE"
 				fi
 
 				if [ -n "$LATITUDE" ]; then
-					LATITUDE=`printf '%.*f\n' 6 $LATITUDE | sed -r 's/^0+|0+$//'`
+					LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
+					LATITUDE=`trimz $LATITUDE`
 					PACKET="$PACKET|lat:$LATITUDE"
 				fi
 
 				if [ -n "$ALTITUDE" ]; then
-					ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE | sed -r 's/^0+|0+$//'`
+					ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+					ALTITUDE=`trimz $ALTITUDE`
 					PACKET="$PACKET|alt:$ALTITUDE"
 				fi
 				
@@ -109,6 +121,7 @@ while true; do
 					ACCURACY=`echo "($ACC_X + $ACC_Y) / 2.0" | bc`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
+						ACCURACY=`trimz $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"
 					fi
 				fi
@@ -128,13 +141,16 @@ while true; do
 			LONGITUDE=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-longitude"`
 			if [ -n "$LATITUDE" -a -n "LONGITUDE" ]; then
 				FLAGS=$(($FLAGS | 16))
-				LATITUDE=`printf '%.*f\n' 6 $LATITUDE | sed -r 's/^0+|0+$//'`
-				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE | sed -r 's/^0+|0+$//'`
+				LATITUDE=`printf '%.*f\n' 6 $LATITUDE`
+				LATITUDE=`trimz $LATITUDE`
+				LONGITUDE=`printf '%.*f\n' 6 $LONGITUDE`
+				LONGITUDE=`trimz $LONGITUDE`
 				PACKET="$PACKET|lat:$LATITUDE|long:$LONGITUDE"
 				if [ -f "$WFU_HOME/.fakegps-altitude" ]; then
 					ALTITUDE=`grep -E -o -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-altitude"`
 					if [ -n "$ALTITUDE" ]; then
-						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE | sed -r 's/^0+|0+$//'`
+						ALTITUDE=`printf '%.*f\n' 6 $ALTITUDE`
+						ALTITUDE=`trimz $ALTITUDE`
 						PACKET="$PACKET|alt:$ALTITUDE"
 					fi
 				fi
@@ -142,6 +158,7 @@ while true; do
 					ACCURACY=`grep -Eo -m 1 "[+-]?[0-9]+([.][0-9]+)?" "$WFU_HOME/.fakegps-accuracy"`
 					if [ -n "$ACCURACY" ]; then
 						ACCURACY=`printf '%.*f\n' 1 $ACCURACY`
+						ACCURACY=`trimz $ACCURACY`
 						PACKET="$PACKET|acc:$ACCURACY"
 					fi
 				fi
