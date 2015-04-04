@@ -28,13 +28,13 @@ if [ $WFU_VERSION -ge $CURRENT_DATE_VERSION ]; then
 elif [ $WFU_VERSION -ge $OLDER_VERSION ]; then
 	VERSION_STYLE="${STYLE_WARNING}"
 fi
-echo "  Version       : ${VERSION_STYLE}$WFU_VERSION${STYLE_NONE}"
+echo -e "  Version       : ${VERSION_STYLE}$WFU_VERSION${STYLE_NONE}"
 
 # version date
 if [ -z "$WFU_LAST_UPDATED" ]; then
 	echo -e "  Last updated  : ${STYLE_WARNING}unknown${STYLE_NONE}"
 else
-	echo -e "  Last updated  : $WFU_LAST_UPDATED"
+	echo "  Last updated  : $WFU_LAST_UPDATED"
 fi
 
 # brain number
