@@ -17,6 +17,14 @@ fi
 
 if [ -z "$1" ]; then
 	echo -e "${STYLE_HEADING}Heartbeat packet configuration:${STYLE_NONE}"
+
+	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
+		SERVER=`cat $WFU_HOME/.heartbeat-server`
+	fi
+	if [ -z "$SERVER" ]; then
+		SERVER="wfu-server"
+	fi
+	echo "  Server        : $SERVER"
 	
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
 		SLEEP=`grep -Eo -m 1 "[+]?[0-9]+" "$WFU_HOME/.heartbeat-sleep"`
@@ -25,14 +33,6 @@ if [ -z "$1" ]; then
 		SLEEP=10
 	fi
 	echo "  Sleep         : $SLEEP"
-	
-	if [ -f "$WFU_HOME/.heartbeat-server" ]; then
-		SERVER=`cat $WFU_HOME/.heartbeat-server`
-	fi
-	if [ -z "$SERVER" ]; then
-		SERVER="wfu-server"
-	fi
-	echo "  Server        : $SERVER"
 
 	exit 0
 fi

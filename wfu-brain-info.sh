@@ -66,6 +66,8 @@ fi
 AP_0=`sudo ifconfig | grep -o -m 1 "^ap0"`
 if [ -z "$AP_0" ]; then
 	AP_0="${STYLE_ERROR}not found${STYLE_NONE}"
+else
+	AP_0="${STYLE_SUCCESS}${AP_0}${STYLE_NONE}"
 fi
 echo -e "  Access point  : $AP_0"
 echo "    - channel   : $WFU_AP_CHANNEL"
@@ -101,6 +103,7 @@ echo -e "  GPS daemon    : $GPSD"
 MESH_PEERS="${STYLE_ERROR}none${STYLE_NONE}"
 MESH_0=`sudo ifconfig | grep -o -m 1 "^mesh0"`
 if [ -n "$MESH_0" ]; then
+	MESH_0="${STYLE_SUCCESS}${MESH_0}${STYLE_NONE}"
 	MESH_PEERS=`wfu-mesh-peers -lrq ",\n" 2>/dev/null`
 else
 	MESH_0="${STYLE_ERROR}not found${STYLE_NONE}"
