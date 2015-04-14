@@ -24,6 +24,8 @@ function trimz ()
 	echo $VAL	
 }
 
+PORT=`shuf -i 33339-33345 -n 1`
+
 # loop
 while true; do
 	if [ -f "$WFU_HOME/.heartbeat-sleep" ]; then
@@ -41,14 +43,6 @@ while true; do
 	fi
 	if [ -z "$SERVER" ]; then
 		SERVER="wfu-server"
-	fi
-
-	PORT=0
-	if [ -f "$WFU_HOME/.heartbeat-port" ]; then
-		PORT=`grep -Eo -m 1 "[0-9]{1,5}" "$WFU_HOME/.heartbeat-port"`
-	fi
-	if [ -z "$PORT" ] || [ $PORT -le 0 -o $PORT -ge 65535 ]; then
-		PORT=33339
 	fi
 
 	FLAGS=0
